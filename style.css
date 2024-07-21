@@ -76,7 +76,7 @@ h1 {
     color: black;
 }
 
-/* Styles pour le formulaire de connexion */
+/* login style */
 form {
     display: flex;
     flex-direction: column;
