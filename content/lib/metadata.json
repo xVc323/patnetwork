@@ -1,0 +1,1695 @@
+{
+  "vaultName": "MSc DAAI",
+  "lastExport": 1722814660245,
+  "pluginVersion": "1.8.01",
+  "validBodyClasses": "publish css-settings-manager theme-light show-inline-title show-ribbon",
+  "useCustomHeadContent": false,
+  "useCustomFavicon": false,
+  "files": [
+    "Marketing managment/Session 0 - Intro session/Introduction.md",
+    "Marketing managment/Session 0 - Intro session/Palmatier_Crecelius_AMSReview_2019.pdf",
+    "Marketing managment/Session 0 - Intro session/Session_Intro_MM_Online.pdf",
+    "Marketing managment/Session 1 - Environmental Analysis/ARTICLE - Consumer Behavior and the Buyer Process.pdf",
+    "Marketing managment/Session 1 - Environmental Analysis/ARTICLE - Marketing Analysis Toolkit Situation Analysis.pdf",
+    "Marketing managment/Session 1 - Environmental Analysis/Environmental Analysis.md",
+    "Marketing managment/Session 1 - Environmental Analysis/Session_1_MM_Online.pdf",
+    "Marketing managment/Session 2 - Segmentation and Targeting/ARTICLE - Benefits-Sought Segmentation.pdf",
+    "Marketing managment/Session 2 - Segmentation and Targeting/ARTICLE - Segmentation and Targeting.pdf",
+    "Marketing managment/Session 2 - Segmentation and Targeting/Segmentation Targeting.md",
+    "Marketing managment/Session 2 - Segmentation and Targeting/Session_2_MM_Online.pdf",
+    "Marketing managment/Session 3 - Positioning/ARTICLE - Perceptual Mapping.pdf",
+    "Marketing managment/Session 3 - Positioning/ARTICLE - The Elements of Value.pdf",
+    "Marketing managment/Session 3 - Positioning/Positioning.md",
+    "Marketing managment/Session 3 - Positioning/Session_3_MM_Online.pdf",
+    "Marketing managment/Session 4 - Product/ARTICLE - Product Policy.pdf",
+    "Marketing managment/Session 4 - Product/ARTICLE - The age of continuous connection.pdf",
+    "Marketing managment/Session 4 - Product/Product.md",
+    "Marketing managment/Session 4 - Product/Session_4_MM_Online.pdf",
+    "Marketing managment/Session 5 - Place and Promotion/ARTICLE - Developing and Managing Channels of Distribution.pdf",
+    "Marketing managment/Session 5 - Place and Promotion/ARTICLE - Marketing Communications.pdf",
+    "Marketing managment/Session 5 - Place and Promotion/Place and Promotion.md",
+    "Marketing managment/Session 5 - Place and Promotion/PP.md",
+    "Marketing managment/Session 5 - Place and Promotion/PP2.md",
+    "Marketing managment/Session 5 - Place and Promotion/Session_5_MM_Online.pdf",
+    "Marketing managment/Grading_Sheet_2324.pdf",
+    "Marketing managment/Syllabus - Marketing Management.pdf",
+    "lib/media/pasted-image-20240718225328.png",
+    "lib/media/pasted-image-20240718231136.png",
+    "lib/media/pasted-image-20240718231233.png",
+    "lib/media/pasted-image-20240719003546.png",
+    "lib/media/pasted-image-20240719004223.png",
+    "lib/media/pasted-image-20240719004639.png",
+    "lib/media/pasted-image-20240719004947.png",
+    "lib/media/pasted-image-20240719013014.png",
+    "lib/media/pasted-image-20240719013023.png",
+    "lib/media/pasted-image-20240719013039.png",
+    "lib/media/pasted-image-20240719013448.png",
+    "lib/media/pasted-image-20240719014612.png",
+    "lib/media/pasted-image-20240719014727.png",
+    "lib/media/pasted-image-20240719015031.png",
+    "lib/media/pasted-image-20240719015202.png",
+    "lib/media/pasted-image-20240719015236.png",
+    "lib/media/pasted-image-20240719015336.png",
+    "lib/media/pasted-image-20240719015949.png",
+    "lib/media/pasted-image-20240719020349.png",
+    "lib/media/pasted-image-20240719020502.png",
+    "lib/media/pasted-image-20240719232058.png",
+    "lib/media/pasted-image-20240719232107.png",
+    "lib/media/pasted-image-20240719232120.png",
+    "lib/media/pasted-image-20240719233545.png",
+    "lib/media/pasted-image-20240719233816.png",
+    "lib/media/pasted-image-20240719234213.png",
+    "lib/media/pasted-image-20240719234533.png",
+    "lib/media/pasted-image-20240719234642.png",
+    "lib/media/pasted-image-20240719234738.png",
+    "lib/media/pasted-image-20240728155842.png",
+    "lib/media/pasted-image-20240728160414.png",
+    "lib/media/pasted-image-20240730232353.png",
+    "lib/media/pasted-image-20240730232442.png",
+    "lib/media/pasted-image-20240730232521.png",
+    "lib/media/pasted-image-20240730232557.png",
+    "lib/media/pasted-image-20240730232626.png",
+    "lib/media/pasted-image-20240730232703.png",
+    "lib/media/pasted-image-20240730232818.png",
+    "lib/media/pasted-image-20240730233000.png",
+    "lib/media/pasted-image-20240730233100.png",
+    "lib/media/pasted-image-20240730233748.png",
+    "lib/media/pasted-image-20240730235013.png",
+    "lib/media/pasted-image-20240730235411.png",
+    "lib/media/pasted-image-20240731222625.png",
+    "lib/media/pasted-image-20240731222911.png",
+    "lib/media/pasted-image-20240731223009.png",
+    "lib/media/pasted-image-20240731224400.png",
+    "lib/media/pasted-image-20240731230825.png",
+    "lib/media/pasted-image-20240731231105.png",
+    "lib/media/pasted-image-20240731231251.png",
+    "lib/media/pasted-image-20240731235516.png",
+    "lib/media/pasted-image-20240731235630.png",
+    "lib/media/pasted-image-20240731235653.png",
+    "lib/media/pasted-image-20240801000611.png",
+    "lib/media/pasted-image-20240801000644.png",
+    "lib/media/pasted-image-20240801001210.png",
+    "lib/media/pasted-image-20240801001430.png",
+    "lib/media/pasted-image-20240801001543.png",
+    "lib/media/pasted-image-20240801001908.png",
+    "lib/media/pasted-image-20240801001920.png",
+    "lib/media/pasted-image-20240801001938.png",
+    "lib/media/pasted-image-20240801003727.png",
+    "lib/media/pasted-image-20240801005023.png",
+    "lib/media/pasted-image-20240801233853.png",
+    "lib/media/pasted-image-20240801235623.png",
+    "lib/media/pasted-image-20240801235923.png",
+    "lib/media/pasted-image-20240802000014.png",
+    "lib/media/pasted-image-20240802001323.png",
+    "lib/media/pasted-image-20240802001406.png",
+    "lib/media/pasted-image-20240802001725.png",
+    "lib/media/pasted-image-20240802002221.png",
+    "lib/media/pasted-image-20240802002846.png",
+    "lib/media/pasted-image-20240802004347.png",
+    "lib/media/pasted-image-20240802004740.png",
+    "lib/media/pasted-image-20240802220134.png",
+    "lib/media/pasted-image-20240802220246.png",
+    "lib/media/pasted-image-20240802220528.png",
+    "lib/media/pasted-image-20240802221724.png",
+    "lib/media/pasted-image-20240802221804.png",
+    "lib/media/pasted-image-20240802222020.png",
+    "lib/media/pasted-image-20240804190743.png",
+    "lib/media/pasted-image-20240802222233.png",
+    "lib/media/pasted-image-20240802222626.png",
+    "lib/media/pasted-image-20240802222713.png",
+    "lib/media/pasted-image-20240802223123.png",
+    "lib/media/pasted-image-20240802223211.png",
+    "lib/media/pasted-image-20240802223854.png",
+    "lib/media/pasted-image-20240802223925.png",
+    "lib/media/pasted-image-20240804190147.png",
+    "lib/media/pasted-image-20240804192402.png",
+    "lib/media/pasted-image-20240804193608.png",
+    "lib/media/pasted-image-20240804193635.png",
+    "lib/media/pasted-image-20240804193704.png",
+    "lib/media/pasted-image-20240804194043.png",
+    "lib/media/pasted-image-20240804194215.png",
+    "lib/media/pasted-image-20240804194559.png",
+    "lib/media/pasted-image-20240804195114.png",
+    "lib/media/pasted-image-20240804195136.png",
+    "lib/media/pasted-image-20240804195922.png",
+    "lib/media/pasted-image-20240804200622.png",
+    "lib/media/pasted-image-20240804231942.png",
+    "lib/media/pasted-image-20240804232345.png",
+    "lib/media/pasted-image-20240804232356.png",
+    "lib/media/pasted-image-20240804232410.png",
+    "lib/media/pasted-image-20240804233930.png",
+    "lib/media/pasted-image-20240804234357.png",
+    "lib/media/pasted-image-20240804234524.png",
+    "lib/media/pasted-image-20240804234913.png",
+    "lib/media/pasted-image-20240804235046.png",
+    "lib/media/pasted-image-20240804235119.png",
+    "lib/media/pasted-image-20240804235749.png",
+    "lib/media/pasted-image-20240805002253.png",
+    "lib/media/pasted-image-20240805002403.png",
+    "lib/media/pasted-image-20240805002600.png",
+    "lib/media/pasted-image-20240805002634.png",
+    "lib/media/pasted-image-20240805003143.png",
+    "lib/media/pasted-image-20240805004716.png",
+    "lib/media/pasted-image-20240805004635.png",
+    "lib/media/pasted-image-20240805004607.png",
+    "lib/media/pasted-image-20240805005117.png",
+    "lib/media/pasted-image-20240805005413.png",
+    "lib/media/pasted-image-20240805005454.png",
+    "lib/media/pasted-image-20240805010209.png",
+    "lib/media/pasted-image-20240805010234.png",
+    "lib/media/pasted-image-20240805010301.png",
+    "lib/media/pasted-image-20240805010644.png",
+    "lib/media/pasted-image-20240805010943.png",
+    "lib/media/pasted-image-20240805011010.png",
+    "lib/media/pasted-image-20240805011022.png",
+    "lib/media/pasted-image-20240805011033.png",
+    "lib/media/pasted-image-20240805011653.png",
+    "lib/media/pasted-image-20240805011714.png",
+    "lib/media/pasted-image-20240805012016.png",
+    "lib/media/pasted-image-20240805012107.png",
+    "lib/scripts/graph-wasm.wasm",
+    "lib/fonts/94f2f163d4b698242fef.otf",
+    "lib/fonts/72505e6a122c6acd5471.woff2",
+    "lib/fonts/2d5198822ab091ce4305.woff2",
+    "lib/fonts/c8ba52b05a9ef10f4758.woff2",
+    "lib/fonts/cb10ffd7684cd9836a05.woff2",
+    "lib/fonts/b5f0f109bc88052d4000.woff2",
+    "lib/fonts/cbe0ae49c52c920fd563.woff2",
+    "lib/fonts/535a6cf662596b3bd6a6.woff2",
+    "lib/fonts/70cc7ff27245e82ad414.ttf",
+    "lib/fonts/454577c22304619db035.ttf",
+    "lib/fonts/52ac8f3034507f1d9e53.ttf",
+    "lib/fonts/05b618077343fbbd92b7.ttf",
+    "lib/fonts/4bb6ac751d1c5478ff3a.woff2",
+    "lib/media/874d8b8e340f75575caa.svg",
+    "lib/media/3d6c1bdc4d87cde4de67.svg",
+    "lib/fonts/mathjax_zero.woff",
+    "lib/fonts/mathjax_main-regular.woff",
+    "lib/fonts/mathjax_main-bold.woff",
+    "lib/fonts/mathjax_math-italic.woff",
+    "lib/fonts/mathjax_main-italic.woff",
+    "lib/fonts/mathjax_math-bolditalic.woff",
+    "lib/fonts/mathjax_size1-regular.woff",
+    "lib/fonts/mathjax_size2-regular.woff",
+    "lib/fonts/mathjax_size3-regular.woff",
+    "lib/fonts/mathjax_size4-regular.woff",
+    "lib/fonts/mathjax_ams-regular.woff",
+    "lib/fonts/mathjax_calligraphic-regular.woff",
+    "lib/fonts/mathjax_calligraphic-bold.woff",
+    "lib/fonts/mathjax_fraktur-regular.woff",
+    "lib/fonts/mathjax_fraktur-bold.woff",
+    "lib/fonts/mathjax_sansserif-regular.woff",
+    "lib/fonts/mathjax_sansserif-bold.woff",
+    "lib/fonts/mathjax_sansserif-italic.woff",
+    "lib/fonts/mathjax_script-regular.woff",
+    "lib/fonts/mathjax_typewriter-regular.woff",
+    "lib/fonts/mathjax_vector-regular.woff",
+    "lib/fonts/mathjax_vector-bold.woff",
+    "lib/html/file-tree.html",
+    "lib/scripts/webpage.js",
+    "lib/scripts/graph-view.js",
+    "lib/scripts/graph-wasm.js",
+    "lib/scripts/graph-render-worker.js",
+    "lib/scripts/tinycolor.js",
+    "lib/scripts/pixi.js",
+    "lib/scripts/minisearch.js",
+    "lib/media/favicon.png",
+    "lib/scripts/graph-data.js",
+    "lib/styles/obsidian.css",
+    "lib/styles/global-variable-styles.css",
+    "lib/styles/main-styles.css"
+  ],
+  "mainDependencies": [
+    "lib/scripts/graph-wasm.wasm",
+    "lib/fonts/94f2f163d4b698242fef.otf",
+    "lib/fonts/72505e6a122c6acd5471.woff2",
+    "lib/fonts/2d5198822ab091ce4305.woff2",
+    "lib/fonts/c8ba52b05a9ef10f4758.woff2",
+    "lib/fonts/cb10ffd7684cd9836a05.woff2",
+    "lib/fonts/b5f0f109bc88052d4000.woff2",
+    "lib/fonts/cbe0ae49c52c920fd563.woff2",
+    "lib/fonts/535a6cf662596b3bd6a6.woff2",
+    "lib/fonts/70cc7ff27245e82ad414.ttf",
+    "lib/fonts/454577c22304619db035.ttf",
+    "lib/fonts/52ac8f3034507f1d9e53.ttf",
+    "lib/fonts/05b618077343fbbd92b7.ttf",
+    "lib/fonts/4bb6ac751d1c5478ff3a.woff2",
+    "lib/media/874d8b8e340f75575caa.svg",
+    "lib/media/3d6c1bdc4d87cde4de67.svg",
+    "lib/fonts/mathjax_zero.woff",
+    "lib/fonts/mathjax_main-regular.woff",
+    "lib/fonts/mathjax_main-bold.woff",
+    "lib/fonts/mathjax_math-italic.woff",
+    "lib/fonts/mathjax_main-italic.woff",
+    "lib/fonts/mathjax_math-bolditalic.woff",
+    "lib/fonts/mathjax_size1-regular.woff",
+    "lib/fonts/mathjax_size2-regular.woff",
+    "lib/fonts/mathjax_size3-regular.woff",
+    "lib/fonts/mathjax_size4-regular.woff",
+    "lib/fonts/mathjax_ams-regular.woff",
+    "lib/fonts/mathjax_calligraphic-regular.woff",
+    "lib/fonts/mathjax_calligraphic-bold.woff",
+    "lib/fonts/mathjax_fraktur-regular.woff",
+    "lib/fonts/mathjax_fraktur-bold.woff",
+    "lib/fonts/mathjax_sansserif-regular.woff",
+    "lib/fonts/mathjax_sansserif-bold.woff",
+    "lib/fonts/mathjax_sansserif-italic.woff",
+    "lib/fonts/mathjax_script-regular.woff",
+    "lib/fonts/mathjax_typewriter-regular.woff",
+    "lib/fonts/mathjax_vector-regular.woff",
+    "lib/fonts/mathjax_vector-bold.woff",
+    "lib/html/file-tree.html",
+    "lib/scripts/webpage.js",
+    "lib/scripts/graph-view.js",
+    "lib/scripts/graph-wasm.js",
+    "lib/scripts/graph-render-worker.js",
+    "lib/scripts/tinycolor.js",
+    "lib/scripts/pixi.js",
+    "lib/scripts/minisearch.js",
+    "lib/media/favicon.png",
+    "lib/scripts/graph-data.js",
+    "lib/styles/obsidian.css",
+    "lib/styles/global-variable-styles.css",
+    "lib/styles/main-styles.css"
+  ],
+  "fileInfo": {
+    "Marketing managment/Session 3 - Positioning/Positioning.md": {
+      "modifiedTime": 1722814660245,
+      "sourceSize": 9848,
+      "exportedPath": "marketing-managment/session-3-positioning/positioning.html",
+      "dependencies": [
+        "lib/media/pasted-image-20240731222625.png",
+        "lib/media/pasted-image-20240731222911.png",
+        "lib/media/pasted-image-20240731223009.png",
+        "lib/media/pasted-image-20240731224400.png",
+        "lib/media/pasted-image-20240731230825.png",
+        "lib/media/pasted-image-20240731231105.png",
+        "lib/media/pasted-image-20240731231251.png",
+        "lib/media/pasted-image-20240731235516.png",
+        "lib/media/pasted-image-20240731235630.png",
+        "lib/media/pasted-image-20240731235653.png",
+        "lib/media/pasted-image-20240801000611.png",
+        "lib/media/pasted-image-20240801000644.png",
+        "lib/media/pasted-image-20240801001210.png",
+        "lib/media/pasted-image-20240801001430.png",
+        "lib/media/pasted-image-20240801001543.png",
+        "lib/media/pasted-image-20240801001908.png",
+        "lib/media/pasted-image-20240801001920.png",
+        "lib/media/pasted-image-20240801001938.png",
+        "lib/media/pasted-image-20240801003727.png",
+        "lib/media/pasted-image-20240801005023.png"
+      ]
+    },
+    "lib/media/pasted-image-20240731222625.png": {
+      "modifiedTime": 1722814660245,
+      "sourceSize": 168723,
+      "exportedPath": "lib/media/pasted-image-20240731222625.png",
+      "dependencies": []
+    },
+    "lib/media/pasted-image-20240731222911.png": {
+      "modifiedTime": 1722814660245,
+      "sourceSize": 158541,
+      "exportedPath": "lib/media/pasted-image-20240731222911.png",
+      "dependencies": []
+    },
+    "lib/media/pasted-image-20240731223009.png": {
+      "modifiedTime": 1722814660245,
+      "sourceSize": 64325,
+      "exportedPath": "lib/media/pasted-image-20240731223009.png",
+      "dependencies": []
+    },
+    "lib/media/pasted-image-20240731224400.png": {
+      "modifiedTime": 1722814660245,
+      "sourceSize": 221161,
+      "exportedPath": "lib/media/pasted-image-20240731224400.png",
+      "dependencies": []
+    },
+    "lib/media/pasted-image-20240731230825.png": {
+      "modifiedTime": 1722814660245,
+      "sourceSize": 76123,
+      "exportedPath": "lib/media/pasted-image-20240731230825.png",
+      "dependencies": []
+    },
+    "lib/media/pasted-image-20240731231105.png": {
+      "modifiedTime": 1722814660245,
+      "sourceSize": 244934,
+      "exportedPath": "lib/media/pasted-image-20240731231105.png",
+      "dependencies": []
+    },
+    "lib/media/pasted-image-20240731231251.png": {
+      "modifiedTime": 1722814660245,
+      "sourceSize": 105219,
+      "exportedPath": "lib/media/pasted-image-20240731231251.png",
+      "dependencies": []
+    },
+    "lib/media/pasted-image-20240731235516.png": {
+      "modifiedTime": 1722814660245,
+      "sourceSize": 29048,
+      "exportedPath": "lib/media/pasted-image-20240731235516.png",
+      "dependencies": []
+    },
+    "lib/media/pasted-image-20240731235630.png": {
+      "modifiedTime": 1722814660245,
+      "sourceSize": 899202,
+      "exportedPath": "lib/media/pasted-image-20240731235630.png",
+      "dependencies": []
+    },
+    "lib/media/pasted-image-20240731235653.png": {
+      "modifiedTime": 1722814660245,
+      "sourceSize": 1270939,
+      "exportedPath": "lib/media/pasted-image-20240731235653.png",
+      "dependencies": []
+    },
+    "lib/media/pasted-image-20240801000611.png": {
+      "modifiedTime": 1722814660245,
+      "sourceSize": 1068809,
+      "exportedPath": "lib/media/pasted-image-20240801000611.png",
+      "dependencies": []
+    },
+    "lib/media/pasted-image-20240801000644.png": {
+      "modifiedTime": 1722814660245,
+      "sourceSize": 214019,
+      "exportedPath": "lib/media/pasted-image-20240801000644.png",
+      "dependencies": []
+    },
+    "lib/media/pasted-image-20240801001210.png": {
+      "modifiedTime": 1722814660245,
+      "sourceSize": 33253,
+      "exportedPath": "lib/media/pasted-image-20240801001210.png",
+      "dependencies": []
+    },
+    "lib/media/pasted-image-20240801001430.png": {
+      "modifiedTime": 1722814660245,
+      "sourceSize": 140942,
+      "exportedPath": "lib/media/pasted-image-20240801001430.png",
+      "dependencies": []
+    },
+    "lib/media/pasted-image-20240801001543.png": {
+      "modifiedTime": 1722814660245,
+      "sourceSize": 138382,
+      "exportedPath": "lib/media/pasted-image-20240801001543.png",
+      "dependencies": []
+    },
+    "lib/media/pasted-image-20240801001908.png": {
+      "modifiedTime": 1722814660245,
+      "sourceSize": 131880,
+      "exportedPath": "lib/media/pasted-image-20240801001908.png",
+      "dependencies": []
+    },
+    "lib/media/pasted-image-20240801001920.png": {
+      "modifiedTime": 1722814660245,
+      "sourceSize": 173332,
+      "exportedPath": "lib/media/pasted-image-20240801001920.png",
+      "dependencies": []
+    },
+    "lib/media/pasted-image-20240801001938.png": {
+      "modifiedTime": 1722814660245,
+      "sourceSize": 280944,
+      "exportedPath": "lib/media/pasted-image-20240801001938.png",
+      "dependencies": []
+    },
+    "lib/media/pasted-image-20240801003727.png": {
+      "modifiedTime": 1722814660245,
+      "sourceSize": 333707,
+      "exportedPath": "lib/media/pasted-image-20240801003727.png",
+      "dependencies": []
+    },
+    "lib/media/pasted-image-20240801005023.png": {
+      "modifiedTime": 1722814660245,
+      "sourceSize": 250590,
+      "exportedPath": "lib/media/pasted-image-20240801005023.png",
+      "dependencies": []
+    },
+    "lib/scripts/graph-wasm.wasm": {
+      "modifiedTime": 1722814660245,
+      "sourceSize": 23377,
+      "exportedPath": "lib/scripts/graph-wasm.wasm",
+      "dependencies": []
+    },
+    "lib/fonts/94f2f163d4b698242fef.otf": {
+      "modifiedTime": 1722814660245,
+      "sourceSize": 66800,
+      "exportedPath": "lib/fonts/94f2f163d4b698242fef.otf",
+      "dependencies": []
+    },
+    "lib/fonts/72505e6a122c6acd5471.woff2": {
+      "modifiedTime": 1722814660245,
+      "sourceSize": 104232,
+      "exportedPath": "lib/fonts/72505e6a122c6acd5471.woff2",
+      "dependencies": []
+    },
+    "lib/fonts/2d5198822ab091ce4305.woff2": {
+      "modifiedTime": 1722814660245,
+      "sourceSize": 104332,
+      "exportedPath": "lib/fonts/2d5198822ab091ce4305.woff2",
+      "dependencies": []
+    },
+    "lib/fonts/c8ba52b05a9ef10f4758.woff2": {
+      "modifiedTime": 1722814660245,
+      "sourceSize": 98868,
+      "exportedPath": "lib/fonts/c8ba52b05a9ef10f4758.woff2",
+      "dependencies": []
+    },
+    "lib/fonts/cb10ffd7684cd9836a05.woff2": {
+      "modifiedTime": 1722814660245,
+      "sourceSize": 106876,
+      "exportedPath": "lib/fonts/cb10ffd7684cd9836a05.woff2",
+      "dependencies": []
+    },
+    "lib/fonts/b5f0f109bc88052d4000.woff2": {
+      "modifiedTime": 1722814660245,
+      "sourceSize": 105804,
+      "exportedPath": "lib/fonts/b5f0f109bc88052d4000.woff2",
+      "dependencies": []
+    },
+    "lib/fonts/cbe0ae49c52c920fd563.woff2": {
+      "modifiedTime": 1722814660245,
+      "sourceSize": 106108,
+      "exportedPath": "lib/fonts/cbe0ae49c52c920fd563.woff2",
+      "dependencies": []
+    },
+    "lib/fonts/535a6cf662596b3bd6a6.woff2": {
+      "modifiedTime": 1722814660245,
+      "sourceSize": 111708,
+      "exportedPath": "lib/fonts/535a6cf662596b3bd6a6.woff2",
+      "dependencies": []
+    },
+    "lib/fonts/70cc7ff27245e82ad414.ttf": {
+      "modifiedTime": 1722814660245,
+      "sourceSize": 192740,
+      "exportedPath": "lib/fonts/70cc7ff27245e82ad414.ttf",
+      "dependencies": []
+    },
+    "lib/fonts/454577c22304619db035.ttf": {
+      "modifiedTime": 1722814660245,
+      "sourceSize": 161376,
+      "exportedPath": "lib/fonts/454577c22304619db035.ttf",
+      "dependencies": []
+    },
+    "lib/fonts/52ac8f3034507f1d9e53.ttf": {
+      "modifiedTime": 1722814660245,
+      "sourceSize": 191568,
+      "exportedPath": "lib/fonts/52ac8f3034507f1d9e53.ttf",
+      "dependencies": []
+    },
+    "lib/fonts/05b618077343fbbd92b7.ttf": {
+      "modifiedTime": 1722814660245,
+      "sourceSize": 155288,
+      "exportedPath": "lib/fonts/05b618077343fbbd92b7.ttf",
+      "dependencies": []
+    },
+    "lib/fonts/4bb6ac751d1c5478ff3a.woff2": {
+      "modifiedTime": 1722814660245,
+      "sourceSize": 7876,
+      "exportedPath": "lib/fonts/4bb6ac751d1c5478ff3a.woff2",
+      "dependencies": []
+    },
+    "lib/media/874d8b8e340f75575caa.svg": {
+      "modifiedTime": 1722814660245,
+      "sourceSize": 317,
+      "exportedPath": "lib/media/874d8b8e340f75575caa.svg",
+      "dependencies": []
+    },
+    "lib/media/3d6c1bdc4d87cde4de67.svg": {
+      "modifiedTime": 1722814660245,
+      "sourceSize": 279,
+      "exportedPath": "lib/media/3d6c1bdc4d87cde4de67.svg",
+      "dependencies": []
+    },
+    "lib/html/file-tree.html": {
+      "modifiedTime": 1722814660245,
+      "sourceSize": 17155,
+      "exportedPath": "lib/html/file-tree.html",
+      "dependencies": []
+    },
+    "lib/scripts/webpage.js": {
+      "modifiedTime": 1722814660245,
+      "sourceSize": 47290,
+      "exportedPath": "lib/scripts/webpage.js",
+      "dependencies": []
+    },
+    "lib/scripts/graph-view.js": {
+      "modifiedTime": 1722814660245,
+      "sourceSize": 15519,
+      "exportedPath": "lib/scripts/graph-view.js",
+      "dependencies": []
+    },
+    "lib/scripts/graph-wasm.js": {
+      "modifiedTime": 1722814660245,
+      "sourceSize": 14021,
+      "exportedPath": "lib/scripts/graph-wasm.js",
+      "dependencies": []
+    },
+    "lib/scripts/graph-render-worker.js": {
+      "modifiedTime": 1722814660245,
+      "sourceSize": 5179,
+      "exportedPath": "lib/scripts/graph-render-worker.js",
+      "dependencies": []
+    },
+    "lib/scripts/tinycolor.js": {
+      "modifiedTime": 1722814660245,
+      "sourceSize": 29832,
+      "exportedPath": "lib/scripts/tinycolor.js",
+      "dependencies": []
+    },
+    "lib/scripts/pixi.js": {
+      "modifiedTime": 1722814660245,
+      "sourceSize": 449509,
+      "exportedPath": "lib/scripts/pixi.js",
+      "dependencies": []
+    },
+    "lib/scripts/minisearch.js": {
+      "modifiedTime": 1722814660245,
+      "sourceSize": 29422,
+      "exportedPath": "lib/scripts/minisearch.js",
+      "dependencies": []
+    },
+    "lib/media/favicon.png": {
+      "modifiedTime": 1722814660245,
+      "sourceSize": 1105,
+      "exportedPath": "lib/media/favicon.png",
+      "dependencies": []
+    },
+    "lib/scripts/graph-data.js": {
+      "modifiedTime": 1722814660245,
+      "sourceSize": 948,
+      "exportedPath": "lib/scripts/graph-data.js",
+      "dependencies": []
+    },
+    "lib/styles/obsidian.css": {
+      "modifiedTime": 1722814660245,
+      "sourceSize": 130471,
+      "exportedPath": "lib/styles/obsidian.css",
+      "dependencies": []
+    },
+    "lib/styles/global-variable-styles.css": {
+      "modifiedTime": 1722814660245,
+      "sourceSize": 383,
+      "exportedPath": "lib/styles/global-variable-styles.css",
+      "dependencies": []
+    },
+    "lib/styles/supported-plugins.css": {
+      "modifiedTime": 1722547099332,
+      "sourceSize": 651,
+      "exportedPath": "lib/styles/supported-plugins.css",
+      "dependencies": []
+    },
+    "lib/styles/main-styles.css": {
+      "modifiedTime": 1722814660245,
+      "sourceSize": 23130,
+      "exportedPath": "lib/styles/main-styles.css",
+      "dependencies": []
+    },
+    "Marketing managment/Session 0 - Intro session/Introduction.md": {
+      "modifiedTime": 1722814660245,
+      "sourceSize": 5698,
+      "exportedPath": "marketing-managment/session-0-intro-session/introduction.html",
+      "dependencies": [
+        "lib/media/pasted-image-20240718225328.png",
+        "lib/media/pasted-image-20240718231136.png",
+        "lib/media/pasted-image-20240718231233.png"
+      ]
+    },
+    "Marketing managment/Session 0 - Intro session/Palmatier_Crecelius_AMSReview_2019.pdf": {
+      "modifiedTime": 1722814660245,
+      "sourceSize": 6323816,
+      "exportedPath": "marketing-managment/session-0-intro-session/palmatier_crecelius_amsreview_2019.pdf",
+      "dependencies": []
+    },
+    "Marketing managment/Session 0 - Intro session/Session_Intro_MM_Online.pdf": {
+      "modifiedTime": 1722814660245,
+      "sourceSize": 4596733,
+      "exportedPath": "marketing-managment/session-0-intro-session/session_intro_mm_online.pdf",
+      "dependencies": []
+    },
+    "Marketing managment/Session 1 - Environmental Analysis/ARTICLE - Consumer Behavior and the Buyer Process.pdf": {
+      "modifiedTime": 1722814660245,
+      "sourceSize": 1804375,
+      "exportedPath": "marketing-managment/session-1-environmental-analysis/article-consumer-behavior-and-the-buyer-process.pdf",
+      "dependencies": []
+    },
+    "Marketing managment/Session 1 - Environmental Analysis/ARTICLE - Marketing Analysis Toolkit Situation Analysis.pdf": {
+      "modifiedTime": 1722814660245,
+      "sourceSize": 186910,
+      "exportedPath": "marketing-managment/session-1-environmental-analysis/article-marketing-analysis-toolkit-situation-analysis.pdf",
+      "dependencies": []
+    },
+    "Marketing managment/Session 1 - Environmental Analysis/Environmental Analysis.md": {
+      "modifiedTime": 1722814660245,
+      "sourceSize": 12123,
+      "exportedPath": "marketing-managment/session-1-environmental-analysis/environmental-analysis.html",
+      "dependencies": [
+        "lib/media/pasted-image-20240719003546.png",
+        "lib/media/pasted-image-20240719004223.png",
+        "lib/media/pasted-image-20240719004639.png",
+        "lib/media/pasted-image-20240719004947.png",
+        "lib/media/pasted-image-20240719013014.png",
+        "lib/media/pasted-image-20240719013023.png",
+        "lib/media/pasted-image-20240719013039.png",
+        "lib/media/pasted-image-20240719013448.png",
+        "lib/media/pasted-image-20240719014612.png",
+        "lib/media/pasted-image-20240719014727.png",
+        "lib/media/pasted-image-20240719015031.png",
+        "lib/media/pasted-image-20240719015202.png",
+        "lib/media/pasted-image-20240719015236.png",
+        "lib/media/pasted-image-20240719015336.png",
+        "lib/media/pasted-image-20240719015949.png",
+        "lib/media/pasted-image-20240719020349.png",
+        "lib/media/pasted-image-20240719020502.png"
+      ]
+    },
+    "Marketing managment/Session 1 - Environmental Analysis/Session_1_MM_Online.pdf": {
+      "modifiedTime": 1722814660245,
+      "sourceSize": 4513286,
+      "exportedPath": "marketing-managment/session-1-environmental-analysis/session_1_mm_online.pdf",
+      "dependencies": []
+    },
+    "Marketing managment/Session 2 - Segmentation and Targeting/ARTICLE - Benefits-Sought Segmentation.pdf": {
+      "modifiedTime": 1722814660245,
+      "sourceSize": 1228295,
+      "exportedPath": "marketing-managment/session-2-segmentation-and-targeting/article-benefits-sought-segmentation.pdf",
+      "dependencies": []
+    },
+    "Marketing managment/Session 2 - Segmentation and Targeting/ARTICLE - Segmentation and Targeting.pdf": {
+      "modifiedTime": 1722814660245,
+      "sourceSize": 1501657,
+      "exportedPath": "marketing-managment/session-2-segmentation-and-targeting/article-segmentation-and-targeting.pdf",
+      "dependencies": []
+    },
+    "Marketing managment/Session 2 - Segmentation and Targeting/Segmentation Targeting.md": {
+      "modifiedTime": 1722814660245,
+      "sourceSize": 16516,
+      "exportedPath": "marketing-managment/session-2-segmentation-and-targeting/segmentation-targeting.html",
+      "dependencies": [
+        "lib/media/pasted-image-20240719232058.png",
+        "lib/media/pasted-image-20240719232107.png",
+        "lib/media/pasted-image-20240719232120.png",
+        "lib/media/pasted-image-20240719233545.png",
+        "lib/media/pasted-image-20240719233816.png",
+        "lib/media/pasted-image-20240719234213.png",
+        "lib/media/pasted-image-20240719234533.png",
+        "lib/media/pasted-image-20240719234642.png",
+        "lib/media/pasted-image-20240719234738.png",
+        "lib/media/pasted-image-20240728155842.png",
+        "lib/media/pasted-image-20240728160414.png",
+        "lib/media/pasted-image-20240730232353.png",
+        "lib/media/pasted-image-20240730232442.png",
+        "lib/media/pasted-image-20240730232521.png",
+        "lib/media/pasted-image-20240730232557.png",
+        "lib/media/pasted-image-20240730232626.png",
+        "lib/media/pasted-image-20240730232703.png",
+        "lib/media/pasted-image-20240730232818.png",
+        "lib/media/pasted-image-20240730233000.png",
+        "lib/media/pasted-image-20240730233100.png",
+        "lib/media/pasted-image-20240730233748.png",
+        "lib/media/pasted-image-20240730235013.png",
+        "lib/media/pasted-image-20240730235411.png"
+      ]
+    },
+    "Marketing managment/Session 2 - Segmentation and Targeting/Session_2_MM_Online.pdf": {
+      "modifiedTime": 1722814660245,
+      "sourceSize": 14074622,
+      "exportedPath": "marketing-managment/session-2-segmentation-and-targeting/session_2_mm_online.pdf",
+      "dependencies": []
+    },
+    "Marketing managment/Session 3 - Positioning/ARTICLE - Perceptual Mapping.pdf": {
+      "modifiedTime": 1722814660245,
+      "sourceSize": 299890,
+      "exportedPath": "marketing-managment/session-3-positioning/article-perceptual-mapping.pdf",
+      "dependencies": []
+    },
+    "Marketing managment/Session 3 - Positioning/ARTICLE - The Elements of Value.pdf": {
+      "modifiedTime": 1722814660245,
+      "sourceSize": 477330,
+      "exportedPath": "marketing-managment/session-3-positioning/article-the-elements-of-value.pdf",
+      "dependencies": []
+    },
+    "Marketing managment/Session 3 - Positioning/Session_3_MM_Online.pdf": {
+      "modifiedTime": 1722814660245,
+      "sourceSize": 11040619,
+      "exportedPath": "marketing-managment/session-3-positioning/session_3_mm_online.pdf",
+      "dependencies": []
+    },
+    "Marketing managment/Session 4 - Product/ARTICLE - Product Policy.pdf": {
+      "modifiedTime": 1722814660245,
+      "sourceSize": 4035844,
+      "exportedPath": "marketing-managment/session-4-product/article-product-policy.pdf",
+      "dependencies": []
+    },
+    "Marketing managment/Session 4 - Product/ARTICLE - The age of continuous connection.pdf": {
+      "modifiedTime": 1722814660245,
+      "sourceSize": 644936,
+      "exportedPath": "marketing-managment/session-4-product/article-the-age-of-continuous-connection.pdf",
+      "dependencies": []
+    },
+    "Marketing managment/Session 4 - Product/Product.md": {
+      "modifiedTime": 1722814660245,
+      "sourceSize": 15316,
+      "exportedPath": "marketing-managment/session-4-product/product.html",
+      "dependencies": [
+        "lib/media/pasted-image-20240801233853.png",
+        "lib/media/pasted-image-20240801235623.png",
+        "lib/media/pasted-image-20240801235923.png",
+        "lib/media/pasted-image-20240802000014.png",
+        "lib/media/pasted-image-20240802001323.png",
+        "lib/media/pasted-image-20240802001406.png",
+        "lib/media/pasted-image-20240802001725.png",
+        "lib/media/pasted-image-20240802002221.png",
+        "lib/media/pasted-image-20240802002846.png",
+        "lib/media/pasted-image-20240802004347.png",
+        "lib/media/pasted-image-20240802004740.png",
+        "lib/media/pasted-image-20240802220134.png",
+        "lib/media/pasted-image-20240802220246.png",
+        "lib/media/pasted-image-20240802220528.png",
+        "lib/media/pasted-image-20240802221724.png",
+        "lib/media/pasted-image-20240802221804.png",
+        "lib/media/pasted-image-20240802222020.png",
+        "lib/media/pasted-image-20240804190743.png",
+        "lib/media/pasted-image-20240802222233.png",
+        "lib/media/pasted-image-20240802222626.png",
+        "lib/media/pasted-image-20240802222713.png",
+        "lib/media/pasted-image-20240802223123.png",
+        "lib/media/pasted-image-20240802223211.png",
+        "lib/media/pasted-image-20240802223854.png",
+        "lib/media/pasted-image-20240802223925.png",
+        "lib/media/pasted-image-20240804190147.png"
+      ]
+    },
+    "Marketing managment/Session 4 - Product/Session_4_MM_Online.pdf": {
+      "modifiedTime": 1722814660245,
+      "sourceSize": 34217190,
+      "exportedPath": "marketing-managment/session-4-product/session_4_mm_online.pdf",
+      "dependencies": []
+    },
+    "Marketing managment/Session 5 - Place and Promotion/ARTICLE - Developing and Managing Channels of Distribution.pdf": {
+      "modifiedTime": 1722814660245,
+      "sourceSize": 2424254,
+      "exportedPath": "marketing-managment/session-5-place-and-promotion/article-developing-and-managing-channels-of-distribution.pdf",
+      "dependencies": []
+    },
+    "Marketing managment/Session 5 - Place and Promotion/ARTICLE - Marketing Communications.pdf": {
+      "modifiedTime": 1722814660245,
+      "sourceSize": 4289137,
+      "exportedPath": "marketing-managment/session-5-place-and-promotion/article-marketing-communications.pdf",
+      "dependencies": []
+    },
+    "Marketing managment/Session 5 - Place and Promotion/Place and Promotion.md": {
+      "modifiedTime": 1722814660245,
+      "sourceSize": 21713,
+      "exportedPath": "marketing-managment/session-5-place-and-promotion/place-and-promotion.html",
+      "dependencies": [
+        "lib/media/pasted-image-20240804192402.png",
+        "lib/media/pasted-image-20240804193608.png",
+        "lib/media/pasted-image-20240804193635.png",
+        "lib/media/pasted-image-20240804193704.png",
+        "lib/media/pasted-image-20240804194043.png",
+        "lib/media/pasted-image-20240804194215.png",
+        "lib/media/pasted-image-20240804194559.png",
+        "lib/media/pasted-image-20240804195114.png",
+        "lib/media/pasted-image-20240804195136.png",
+        "lib/media/pasted-image-20240804195922.png",
+        "lib/media/pasted-image-20240804200622.png",
+        "lib/media/pasted-image-20240804231942.png",
+        "lib/media/pasted-image-20240804232345.png",
+        "lib/media/pasted-image-20240804232356.png",
+        "lib/media/pasted-image-20240804232410.png",
+        "lib/media/pasted-image-20240804233930.png",
+        "lib/media/pasted-image-20240804234357.png",
+        "lib/media/pasted-image-20240804234524.png",
+        "lib/media/pasted-image-20240804234913.png",
+        "lib/media/pasted-image-20240804235046.png",
+        "lib/media/pasted-image-20240804235119.png",
+        "lib/media/pasted-image-20240804235749.png",
+        "lib/media/pasted-image-20240805002253.png",
+        "lib/media/pasted-image-20240805002403.png",
+        "lib/media/pasted-image-20240805002600.png",
+        "lib/media/pasted-image-20240805002634.png",
+        "lib/media/pasted-image-20240805003143.png",
+        "lib/media/pasted-image-20240805004716.png",
+        "lib/media/pasted-image-20240805004635.png",
+        "lib/media/pasted-image-20240805004607.png",
+        "lib/media/pasted-image-20240805005117.png",
+        "lib/media/pasted-image-20240805005413.png",
+        "lib/media/pasted-image-20240805005454.png",
+        "lib/media/pasted-image-20240805010209.png",
+        "lib/media/pasted-image-20240805010234.png",
+        "lib/media/pasted-image-20240805010301.png",
+        "lib/media/pasted-image-20240805010644.png",
+        "lib/media/pasted-image-20240805010943.png",
+        "lib/media/pasted-image-20240805011010.png",
+        "lib/media/pasted-image-20240805011022.png",
+        "lib/media/pasted-image-20240805011033.png",
+        "lib/media/pasted-image-20240805011653.png",
+        "lib/media/pasted-image-20240805011714.png",
+        "lib/media/pasted-image-20240805012016.png",
+        "lib/media/pasted-image-20240805012107.png"
+      ]
+    },
+    "Marketing managment/Session 5 - Place and Promotion/PP.md": {
+      "modifiedTime": 1722814660245,
+      "sourceSize": 7810,
+      "exportedPath": "marketing-managment/session-5-place-and-promotion/pp.html",
+      "dependencies": []
+    },
+    "Marketing managment/Session 5 - Place and Promotion/PP2.md": {
+      "modifiedTime": 1722814660245,
+      "sourceSize": 12293,
+      "exportedPath": "marketing-managment/session-5-place-and-promotion/pp2.html",
+      "dependencies": []
+    },
+    "Marketing managment/Session 5 - Place and Promotion/Session_5_MM_Online.pdf": {
+      "modifiedTime": 1722814660245,
+      "sourceSize": 30024455,
+      "exportedPath": "marketing-managment/session-5-place-and-promotion/session_5_mm_online.pdf",
+      "dependencies": []
+    },
+    "Marketing managment/Grading_Sheet_2324.pdf": {
+      "modifiedTime": 1722814660245,
+      "sourceSize": 96791,
+      "exportedPath": "marketing-managment/grading_sheet_2324.pdf",
+      "dependencies": []
+    },
+    "Marketing managment/Syllabus - Marketing Management.pdf": {
+      "modifiedTime": 1722814660245,
+      "sourceSize": 215807,
+      "exportedPath": "marketing-managment/syllabus-marketing-management.pdf",
+      "dependencies": []
+    },
+    "lib/media/pasted-image-20240718225328.png": {
+      "modifiedTime": 1722814660245,
+      "sourceSize": 87880,
+      "exportedPath": "lib/media/pasted-image-20240718225328.png",
+      "dependencies": []
+    },
+    "lib/media/pasted-image-20240718231136.png": {
+      "modifiedTime": 1722814660245,
+      "sourceSize": 140402,
+      "exportedPath": "lib/media/pasted-image-20240718231136.png",
+      "dependencies": []
+    },
+    "lib/media/pasted-image-20240718231233.png": {
+      "modifiedTime": 1722814660245,
+      "sourceSize": 109818,
+      "exportedPath": "lib/media/pasted-image-20240718231233.png",
+      "dependencies": []
+    },
+    "lib/media/pasted-image-20240719003546.png": {
+      "modifiedTime": 1722814660245,
+      "sourceSize": 206281,
+      "exportedPath": "lib/media/pasted-image-20240719003546.png",
+      "dependencies": []
+    },
+    "lib/media/pasted-image-20240719004223.png": {
+      "modifiedTime": 1722814660245,
+      "sourceSize": 167594,
+      "exportedPath": "lib/media/pasted-image-20240719004223.png",
+      "dependencies": []
+    },
+    "lib/media/pasted-image-20240719004639.png": {
+      "modifiedTime": 1722814660245,
+      "sourceSize": 326073,
+      "exportedPath": "lib/media/pasted-image-20240719004639.png",
+      "dependencies": []
+    },
+    "lib/media/pasted-image-20240719004947.png": {
+      "modifiedTime": 1722814660245,
+      "sourceSize": 206188,
+      "exportedPath": "lib/media/pasted-image-20240719004947.png",
+      "dependencies": []
+    },
+    "lib/media/pasted-image-20240719013014.png": {
+      "modifiedTime": 1722814660245,
+      "sourceSize": 127347,
+      "exportedPath": "lib/media/pasted-image-20240719013014.png",
+      "dependencies": []
+    },
+    "lib/media/pasted-image-20240719013023.png": {
+      "modifiedTime": 1722814660245,
+      "sourceSize": 161463,
+      "exportedPath": "lib/media/pasted-image-20240719013023.png",
+      "dependencies": []
+    },
+    "lib/media/pasted-image-20240719013039.png": {
+      "modifiedTime": 1722814660245,
+      "sourceSize": 251374,
+      "exportedPath": "lib/media/pasted-image-20240719013039.png",
+      "dependencies": []
+    },
+    "lib/media/pasted-image-20240719013448.png": {
+      "modifiedTime": 1722814660245,
+      "sourceSize": 206016,
+      "exportedPath": "lib/media/pasted-image-20240719013448.png",
+      "dependencies": []
+    },
+    "lib/media/pasted-image-20240719014612.png": {
+      "modifiedTime": 1722814660245,
+      "sourceSize": 71326,
+      "exportedPath": "lib/media/pasted-image-20240719014612.png",
+      "dependencies": []
+    },
+    "lib/media/pasted-image-20240719014727.png": {
+      "modifiedTime": 1722814660245,
+      "sourceSize": 54227,
+      "exportedPath": "lib/media/pasted-image-20240719014727.png",
+      "dependencies": []
+    },
+    "lib/media/pasted-image-20240719015031.png": {
+      "modifiedTime": 1722814660245,
+      "sourceSize": 300247,
+      "exportedPath": "lib/media/pasted-image-20240719015031.png",
+      "dependencies": []
+    },
+    "lib/media/pasted-image-20240719015202.png": {
+      "modifiedTime": 1722814660245,
+      "sourceSize": 188587,
+      "exportedPath": "lib/media/pasted-image-20240719015202.png",
+      "dependencies": []
+    },
+    "lib/media/pasted-image-20240719015236.png": {
+      "modifiedTime": 1722814660245,
+      "sourceSize": 207144,
+      "exportedPath": "lib/media/pasted-image-20240719015236.png",
+      "dependencies": []
+    },
+    "lib/media/pasted-image-20240719015336.png": {
+      "modifiedTime": 1722814660245,
+      "sourceSize": 167101,
+      "exportedPath": "lib/media/pasted-image-20240719015336.png",
+      "dependencies": []
+    },
+    "lib/media/pasted-image-20240719015949.png": {
+      "modifiedTime": 1722814660245,
+      "sourceSize": 199070,
+      "exportedPath": "lib/media/pasted-image-20240719015949.png",
+      "dependencies": []
+    },
+    "lib/media/pasted-image-20240719020349.png": {
+      "modifiedTime": 1722814660245,
+      "sourceSize": 121000,
+      "exportedPath": "lib/media/pasted-image-20240719020349.png",
+      "dependencies": []
+    },
+    "lib/media/pasted-image-20240719020502.png": {
+      "modifiedTime": 1722814660245,
+      "sourceSize": 247910,
+      "exportedPath": "lib/media/pasted-image-20240719020502.png",
+      "dependencies": []
+    },
+    "lib/media/pasted-image-20240719232058.png": {
+      "modifiedTime": 1722814660245,
+      "sourceSize": 88778,
+      "exportedPath": "lib/media/pasted-image-20240719232058.png",
+      "dependencies": []
+    },
+    "lib/media/pasted-image-20240719232107.png": {
+      "modifiedTime": 1722814660245,
+      "sourceSize": 264858,
+      "exportedPath": "lib/media/pasted-image-20240719232107.png",
+      "dependencies": []
+    },
+    "lib/media/pasted-image-20240719232120.png": {
+      "modifiedTime": 1722814660245,
+      "sourceSize": 304644,
+      "exportedPath": "lib/media/pasted-image-20240719232120.png",
+      "dependencies": []
+    },
+    "lib/media/pasted-image-20240719233545.png": {
+      "modifiedTime": 1722814660245,
+      "sourceSize": 177624,
+      "exportedPath": "lib/media/pasted-image-20240719233545.png",
+      "dependencies": []
+    },
+    "lib/media/pasted-image-20240719233816.png": {
+      "modifiedTime": 1722814660245,
+      "sourceSize": 178127,
+      "exportedPath": "lib/media/pasted-image-20240719233816.png",
+      "dependencies": []
+    },
+    "lib/media/pasted-image-20240719234213.png": {
+      "modifiedTime": 1722814660245,
+      "sourceSize": 78821,
+      "exportedPath": "lib/media/pasted-image-20240719234213.png",
+      "dependencies": []
+    },
+    "lib/media/pasted-image-20240719234533.png": {
+      "modifiedTime": 1722814660245,
+      "sourceSize": 83890,
+      "exportedPath": "lib/media/pasted-image-20240719234533.png",
+      "dependencies": []
+    },
+    "lib/media/pasted-image-20240719234642.png": {
+      "modifiedTime": 1722814660245,
+      "sourceSize": 101131,
+      "exportedPath": "lib/media/pasted-image-20240719234642.png",
+      "dependencies": []
+    },
+    "lib/media/pasted-image-20240719234738.png": {
+      "modifiedTime": 1722814660245,
+      "sourceSize": 776214,
+      "exportedPath": "lib/media/pasted-image-20240719234738.png",
+      "dependencies": []
+    },
+    "lib/media/pasted-image-20240728155842.png": {
+      "modifiedTime": 1722814660245,
+      "sourceSize": 303282,
+      "exportedPath": "lib/media/pasted-image-20240728155842.png",
+      "dependencies": []
+    },
+    "lib/media/pasted-image-20240728160414.png": {
+      "modifiedTime": 1722814660245,
+      "sourceSize": 251945,
+      "exportedPath": "lib/media/pasted-image-20240728160414.png",
+      "dependencies": []
+    },
+    "lib/media/pasted-image-20240730232353.png": {
+      "modifiedTime": 1722814660245,
+      "sourceSize": 147235,
+      "exportedPath": "lib/media/pasted-image-20240730232353.png",
+      "dependencies": []
+    },
+    "lib/media/pasted-image-20240730232442.png": {
+      "modifiedTime": 1722814660245,
+      "sourceSize": 141274,
+      "exportedPath": "lib/media/pasted-image-20240730232442.png",
+      "dependencies": []
+    },
+    "lib/media/pasted-image-20240730232521.png": {
+      "modifiedTime": 1722814660245,
+      "sourceSize": 249428,
+      "exportedPath": "lib/media/pasted-image-20240730232521.png",
+      "dependencies": []
+    },
+    "lib/media/pasted-image-20240730232557.png": {
+      "modifiedTime": 1722814660245,
+      "sourceSize": 387154,
+      "exportedPath": "lib/media/pasted-image-20240730232557.png",
+      "dependencies": []
+    },
+    "lib/media/pasted-image-20240730232626.png": {
+      "modifiedTime": 1722814660245,
+      "sourceSize": 606109,
+      "exportedPath": "lib/media/pasted-image-20240730232626.png",
+      "dependencies": []
+    },
+    "lib/media/pasted-image-20240730232703.png": {
+      "modifiedTime": 1722814660245,
+      "sourceSize": 180225,
+      "exportedPath": "lib/media/pasted-image-20240730232703.png",
+      "dependencies": []
+    },
+    "lib/media/pasted-image-20240730232818.png": {
+      "modifiedTime": 1722814660245,
+      "sourceSize": 144604,
+      "exportedPath": "lib/media/pasted-image-20240730232818.png",
+      "dependencies": []
+    },
+    "lib/media/pasted-image-20240730233000.png": {
+      "modifiedTime": 1722814660245,
+      "sourceSize": 100460,
+      "exportedPath": "lib/media/pasted-image-20240730233000.png",
+      "dependencies": []
+    },
+    "lib/media/pasted-image-20240730233100.png": {
+      "modifiedTime": 1722814660245,
+      "sourceSize": 104274,
+      "exportedPath": "lib/media/pasted-image-20240730233100.png",
+      "dependencies": []
+    },
+    "lib/media/pasted-image-20240730233748.png": {
+      "modifiedTime": 1722814660245,
+      "sourceSize": 360790,
+      "exportedPath": "lib/media/pasted-image-20240730233748.png",
+      "dependencies": []
+    },
+    "lib/media/pasted-image-20240730235013.png": {
+      "modifiedTime": 1722814660245,
+      "sourceSize": 84187,
+      "exportedPath": "lib/media/pasted-image-20240730235013.png",
+      "dependencies": []
+    },
+    "lib/media/pasted-image-20240730235411.png": {
+      "modifiedTime": 1722814660245,
+      "sourceSize": 365416,
+      "exportedPath": "lib/media/pasted-image-20240730235411.png",
+      "dependencies": []
+    },
+    "lib/media/pasted-image-20240801233853.png": {
+      "modifiedTime": 1722814660245,
+      "sourceSize": 169407,
+      "exportedPath": "lib/media/pasted-image-20240801233853.png",
+      "dependencies": []
+    },
+    "lib/media/pasted-image-20240801235623.png": {
+      "modifiedTime": 1722814660245,
+      "sourceSize": 223551,
+      "exportedPath": "lib/media/pasted-image-20240801235623.png",
+      "dependencies": []
+    },
+    "lib/media/pasted-image-20240801235923.png": {
+      "modifiedTime": 1722814660245,
+      "sourceSize": 395210,
+      "exportedPath": "lib/media/pasted-image-20240801235923.png",
+      "dependencies": []
+    },
+    "lib/media/pasted-image-20240802000014.png": {
+      "modifiedTime": 1722814660245,
+      "sourceSize": 914469,
+      "exportedPath": "lib/media/pasted-image-20240802000014.png",
+      "dependencies": []
+    },
+    "lib/media/pasted-image-20240802001323.png": {
+      "modifiedTime": 1722814660245,
+      "sourceSize": 777534,
+      "exportedPath": "lib/media/pasted-image-20240802001323.png",
+      "dependencies": []
+    },
+    "lib/media/pasted-image-20240802001406.png": {
+      "modifiedTime": 1722814660245,
+      "sourceSize": 532872,
+      "exportedPath": "lib/media/pasted-image-20240802001406.png",
+      "dependencies": []
+    },
+    "lib/media/pasted-image-20240802001725.png": {
+      "modifiedTime": 1722814660245,
+      "sourceSize": 55671,
+      "exportedPath": "lib/media/pasted-image-20240802001725.png",
+      "dependencies": []
+    },
+    "lib/media/pasted-image-20240802002221.png": {
+      "modifiedTime": 1722814660245,
+      "sourceSize": 353912,
+      "exportedPath": "lib/media/pasted-image-20240802002221.png",
+      "dependencies": []
+    },
+    "lib/media/pasted-image-20240802002846.png": {
+      "modifiedTime": 1722814660245,
+      "sourceSize": 278101,
+      "exportedPath": "lib/media/pasted-image-20240802002846.png",
+      "dependencies": []
+    },
+    "lib/media/pasted-image-20240802004347.png": {
+      "modifiedTime": 1722814660245,
+      "sourceSize": 37811,
+      "exportedPath": "lib/media/pasted-image-20240802004347.png",
+      "dependencies": []
+    },
+    "lib/media/pasted-image-20240802004740.png": {
+      "modifiedTime": 1722814660245,
+      "sourceSize": 192759,
+      "exportedPath": "lib/media/pasted-image-20240802004740.png",
+      "dependencies": []
+    },
+    "lib/media/pasted-image-20240802220134.png": {
+      "modifiedTime": 1722814660245,
+      "sourceSize": 23037,
+      "exportedPath": "lib/media/pasted-image-20240802220134.png",
+      "dependencies": []
+    },
+    "lib/media/pasted-image-20240802220246.png": {
+      "modifiedTime": 1722814660245,
+      "sourceSize": 177316,
+      "exportedPath": "lib/media/pasted-image-20240802220246.png",
+      "dependencies": []
+    },
+    "lib/media/pasted-image-20240802220528.png": {
+      "modifiedTime": 1722814660245,
+      "sourceSize": 133177,
+      "exportedPath": "lib/media/pasted-image-20240802220528.png",
+      "dependencies": []
+    },
+    "lib/media/pasted-image-20240802221724.png": {
+      "modifiedTime": 1722814660245,
+      "sourceSize": 224991,
+      "exportedPath": "lib/media/pasted-image-20240802221724.png",
+      "dependencies": []
+    },
+    "lib/media/pasted-image-20240802221804.png": {
+      "modifiedTime": 1722814660245,
+      "sourceSize": 457955,
+      "exportedPath": "lib/media/pasted-image-20240802221804.png",
+      "dependencies": []
+    },
+    "lib/media/pasted-image-20240802222020.png": {
+      "modifiedTime": 1722814660245,
+      "sourceSize": 983193,
+      "exportedPath": "lib/media/pasted-image-20240802222020.png",
+      "dependencies": []
+    },
+    "lib/media/pasted-image-20240804190743.png": {
+      "modifiedTime": 1722814660245,
+      "sourceSize": 231484,
+      "exportedPath": "lib/media/pasted-image-20240804190743.png",
+      "dependencies": []
+    },
+    "lib/media/pasted-image-20240802222233.png": {
+      "modifiedTime": 1722814660245,
+      "sourceSize": 77744,
+      "exportedPath": "lib/media/pasted-image-20240802222233.png",
+      "dependencies": []
+    },
+    "lib/media/pasted-image-20240802222626.png": {
+      "modifiedTime": 1722814660245,
+      "sourceSize": 62611,
+      "exportedPath": "lib/media/pasted-image-20240802222626.png",
+      "dependencies": []
+    },
+    "lib/media/pasted-image-20240802222713.png": {
+      "modifiedTime": 1722814660245,
+      "sourceSize": 66173,
+      "exportedPath": "lib/media/pasted-image-20240802222713.png",
+      "dependencies": []
+    },
+    "lib/media/pasted-image-20240802223123.png": {
+      "modifiedTime": 1722814660245,
+      "sourceSize": 62623,
+      "exportedPath": "lib/media/pasted-image-20240802223123.png",
+      "dependencies": []
+    },
+    "lib/media/pasted-image-20240802223211.png": {
+      "modifiedTime": 1722814660245,
+      "sourceSize": 87151,
+      "exportedPath": "lib/media/pasted-image-20240802223211.png",
+      "dependencies": []
+    },
+    "lib/media/pasted-image-20240802223854.png": {
+      "modifiedTime": 1722814660245,
+      "sourceSize": 55479,
+      "exportedPath": "lib/media/pasted-image-20240802223854.png",
+      "dependencies": []
+    },
+    "lib/media/pasted-image-20240802223925.png": {
+      "modifiedTime": 1722814660245,
+      "sourceSize": 149701,
+      "exportedPath": "lib/media/pasted-image-20240802223925.png",
+      "dependencies": []
+    },
+    "lib/media/pasted-image-20240804190147.png": {
+      "modifiedTime": 1722814660245,
+      "sourceSize": 520667,
+      "exportedPath": "lib/media/pasted-image-20240804190147.png",
+      "dependencies": []
+    },
+    "lib/media/pasted-image-20240804192402.png": {
+      "modifiedTime": 1722814660245,
+      "sourceSize": 182187,
+      "exportedPath": "lib/media/pasted-image-20240804192402.png",
+      "dependencies": []
+    },
+    "lib/media/pasted-image-20240804193608.png": {
+      "modifiedTime": 1722814660245,
+      "sourceSize": 95845,
+      "exportedPath": "lib/media/pasted-image-20240804193608.png",
+      "dependencies": []
+    },
+    "lib/media/pasted-image-20240804193635.png": {
+      "modifiedTime": 1722814660245,
+      "sourceSize": 91558,
+      "exportedPath": "lib/media/pasted-image-20240804193635.png",
+      "dependencies": []
+    },
+    "lib/media/pasted-image-20240804193704.png": {
+      "modifiedTime": 1722814660245,
+      "sourceSize": 179990,
+      "exportedPath": "lib/media/pasted-image-20240804193704.png",
+      "dependencies": []
+    },
+    "lib/media/pasted-image-20240804194043.png": {
+      "modifiedTime": 1722814660245,
+      "sourceSize": 112189,
+      "exportedPath": "lib/media/pasted-image-20240804194043.png",
+      "dependencies": []
+    },
+    "lib/media/pasted-image-20240804194215.png": {
+      "modifiedTime": 1722814660245,
+      "sourceSize": 176500,
+      "exportedPath": "lib/media/pasted-image-20240804194215.png",
+      "dependencies": []
+    },
+    "lib/media/pasted-image-20240804194559.png": {
+      "modifiedTime": 1722814660245,
+      "sourceSize": 77430,
+      "exportedPath": "lib/media/pasted-image-20240804194559.png",
+      "dependencies": []
+    },
+    "lib/media/pasted-image-20240804195114.png": {
+      "modifiedTime": 1722814660245,
+      "sourceSize": 108107,
+      "exportedPath": "lib/media/pasted-image-20240804195114.png",
+      "dependencies": []
+    },
+    "lib/media/pasted-image-20240804195136.png": {
+      "modifiedTime": 1722814660245,
+      "sourceSize": 114979,
+      "exportedPath": "lib/media/pasted-image-20240804195136.png",
+      "dependencies": []
+    },
+    "lib/media/pasted-image-20240804195922.png": {
+      "modifiedTime": 1722814660245,
+      "sourceSize": 130175,
+      "exportedPath": "lib/media/pasted-image-20240804195922.png",
+      "dependencies": []
+    },
+    "lib/media/pasted-image-20240804200622.png": {
+      "modifiedTime": 1722814660245,
+      "sourceSize": 294698,
+      "exportedPath": "lib/media/pasted-image-20240804200622.png",
+      "dependencies": []
+    },
+    "lib/media/pasted-image-20240804231942.png": {
+      "modifiedTime": 1722814660245,
+      "sourceSize": 929936,
+      "exportedPath": "lib/media/pasted-image-20240804231942.png",
+      "dependencies": []
+    },
+    "lib/media/pasted-image-20240804232345.png": {
+      "modifiedTime": 1722814660245,
+      "sourceSize": 943702,
+      "exportedPath": "lib/media/pasted-image-20240804232345.png",
+      "dependencies": []
+    },
+    "lib/media/pasted-image-20240804232356.png": {
+      "modifiedTime": 1722814660245,
+      "sourceSize": 1286369,
+      "exportedPath": "lib/media/pasted-image-20240804232356.png",
+      "dependencies": []
+    },
+    "lib/media/pasted-image-20240804232410.png": {
+      "modifiedTime": 1722814660245,
+      "sourceSize": 1041332,
+      "exportedPath": "lib/media/pasted-image-20240804232410.png",
+      "dependencies": []
+    },
+    "lib/media/pasted-image-20240804233930.png": {
+      "modifiedTime": 1722814660245,
+      "sourceSize": 512708,
+      "exportedPath": "lib/media/pasted-image-20240804233930.png",
+      "dependencies": []
+    },
+    "lib/media/pasted-image-20240804234357.png": {
+      "modifiedTime": 1722814660245,
+      "sourceSize": 60151,
+      "exportedPath": "lib/media/pasted-image-20240804234357.png",
+      "dependencies": []
+    },
+    "lib/media/pasted-image-20240804234524.png": {
+      "modifiedTime": 1722814660245,
+      "sourceSize": 93846,
+      "exportedPath": "lib/media/pasted-image-20240804234524.png",
+      "dependencies": []
+    },
+    "lib/media/pasted-image-20240804234913.png": {
+      "modifiedTime": 1722814660245,
+      "sourceSize": 179769,
+      "exportedPath": "lib/media/pasted-image-20240804234913.png",
+      "dependencies": []
+    },
+    "lib/media/pasted-image-20240804235046.png": {
+      "modifiedTime": 1722814660245,
+      "sourceSize": 527164,
+      "exportedPath": "lib/media/pasted-image-20240804235046.png",
+      "dependencies": []
+    },
+    "lib/media/pasted-image-20240804235119.png": {
+      "modifiedTime": 1722814660245,
+      "sourceSize": 170314,
+      "exportedPath": "lib/media/pasted-image-20240804235119.png",
+      "dependencies": []
+    },
+    "lib/media/pasted-image-20240804235749.png": {
+      "modifiedTime": 1722814660245,
+      "sourceSize": 153892,
+      "exportedPath": "lib/media/pasted-image-20240804235749.png",
+      "dependencies": []
+    },
+    "lib/media/pasted-image-20240805002253.png": {
+      "modifiedTime": 1722814660245,
+      "sourceSize": 144759,
+      "exportedPath": "lib/media/pasted-image-20240805002253.png",
+      "dependencies": []
+    },
+    "lib/media/pasted-image-20240805002403.png": {
+      "modifiedTime": 1722814660245,
+      "sourceSize": 82637,
+      "exportedPath": "lib/media/pasted-image-20240805002403.png",
+      "dependencies": []
+    },
+    "lib/media/pasted-image-20240805002600.png": {
+      "modifiedTime": 1722814660245,
+      "sourceSize": 185577,
+      "exportedPath": "lib/media/pasted-image-20240805002600.png",
+      "dependencies": []
+    },
+    "lib/media/pasted-image-20240805002634.png": {
+      "modifiedTime": 1722814660245,
+      "sourceSize": 1045027,
+      "exportedPath": "lib/media/pasted-image-20240805002634.png",
+      "dependencies": []
+    },
+    "lib/media/pasted-image-20240805003143.png": {
+      "modifiedTime": 1722814660245,
+      "sourceSize": 230229,
+      "exportedPath": "lib/media/pasted-image-20240805003143.png",
+      "dependencies": []
+    },
+    "lib/media/pasted-image-20240805004716.png": {
+      "modifiedTime": 1722814660245,
+      "sourceSize": 802616,
+      "exportedPath": "lib/media/pasted-image-20240805004716.png",
+      "dependencies": []
+    },
+    "lib/media/pasted-image-20240805004635.png": {
+      "modifiedTime": 1722814660245,
+      "sourceSize": 439965,
+      "exportedPath": "lib/media/pasted-image-20240805004635.png",
+      "dependencies": []
+    },
+    "lib/media/pasted-image-20240805004607.png": {
+      "modifiedTime": 1722814660245,
+      "sourceSize": 474458,
+      "exportedPath": "lib/media/pasted-image-20240805004607.png",
+      "dependencies": []
+    },
+    "lib/media/pasted-image-20240805005117.png": {
+      "modifiedTime": 1722814660245,
+      "sourceSize": 573631,
+      "exportedPath": "lib/media/pasted-image-20240805005117.png",
+      "dependencies": []
+    },
+    "lib/media/pasted-image-20240805005413.png": {
+      "modifiedTime": 1722814660245,
+      "sourceSize": 100757,
+      "exportedPath": "lib/media/pasted-image-20240805005413.png",
+      "dependencies": []
+    },
+    "lib/media/pasted-image-20240805005454.png": {
+      "modifiedTime": 1722814660245,
+      "sourceSize": 217346,
+      "exportedPath": "lib/media/pasted-image-20240805005454.png",
+      "dependencies": []
+    },
+    "lib/media/pasted-image-20240805010209.png": {
+      "modifiedTime": 1722814660245,
+      "sourceSize": 97829,
+      "exportedPath": "lib/media/pasted-image-20240805010209.png",
+      "dependencies": []
+    },
+    "lib/media/pasted-image-20240805010234.png": {
+      "modifiedTime": 1722814660245,
+      "sourceSize": 118675,
+      "exportedPath": "lib/media/pasted-image-20240805010234.png",
+      "dependencies": []
+    },
+    "lib/media/pasted-image-20240805010301.png": {
+      "modifiedTime": 1722814660245,
+      "sourceSize": 141498,
+      "exportedPath": "lib/media/pasted-image-20240805010301.png",
+      "dependencies": []
+    },
+    "lib/media/pasted-image-20240805010644.png": {
+      "modifiedTime": 1722814660245,
+      "sourceSize": 195089,
+      "exportedPath": "lib/media/pasted-image-20240805010644.png",
+      "dependencies": []
+    },
+    "lib/media/pasted-image-20240805010943.png": {
+      "modifiedTime": 1722814660245,
+      "sourceSize": 501108,
+      "exportedPath": "lib/media/pasted-image-20240805010943.png",
+      "dependencies": []
+    },
+    "lib/media/pasted-image-20240805011010.png": {
+      "modifiedTime": 1722814660245,
+      "sourceSize": 209693,
+      "exportedPath": "lib/media/pasted-image-20240805011010.png",
+      "dependencies": []
+    },
+    "lib/media/pasted-image-20240805011022.png": {
+      "modifiedTime": 1722814660245,
+      "sourceSize": 126154,
+      "exportedPath": "lib/media/pasted-image-20240805011022.png",
+      "dependencies": []
+    },
+    "lib/media/pasted-image-20240805011033.png": {
+      "modifiedTime": 1722814660245,
+      "sourceSize": 474913,
+      "exportedPath": "lib/media/pasted-image-20240805011033.png",
+      "dependencies": []
+    },
+    "lib/media/pasted-image-20240805011653.png": {
+      "modifiedTime": 1722814660245,
+      "sourceSize": 285068,
+      "exportedPath": "lib/media/pasted-image-20240805011653.png",
+      "dependencies": []
+    },
+    "lib/media/pasted-image-20240805011714.png": {
+      "modifiedTime": 1722814660245,
+      "sourceSize": 591948,
+      "exportedPath": "lib/media/pasted-image-20240805011714.png",
+      "dependencies": []
+    },
+    "lib/media/pasted-image-20240805012016.png": {
+      "modifiedTime": 1722814660245,
+      "sourceSize": 155264,
+      "exportedPath": "lib/media/pasted-image-20240805012016.png",
+      "dependencies": []
+    },
+    "lib/media/pasted-image-20240805012107.png": {
+      "modifiedTime": 1722814660245,
+      "sourceSize": 214230,
+      "exportedPath": "lib/media/pasted-image-20240805012107.png",
+      "dependencies": []
+    },
+    "lib/fonts/mathjax_zero.woff": {
+      "modifiedTime": 1722814660245,
+      "sourceSize": 1368,
+      "exportedPath": "lib/fonts/mathjax_zero.woff",
+      "dependencies": []
+    },
+    "lib/fonts/mathjax_main-regular.woff": {
+      "modifiedTime": 1722814660245,
+      "sourceSize": 34160,
+      "exportedPath": "lib/fonts/mathjax_main-regular.woff",
+      "dependencies": []
+    },
+    "lib/fonts/mathjax_main-bold.woff": {
+      "modifiedTime": 1722814660245,
+      "sourceSize": 34464,
+      "exportedPath": "lib/fonts/mathjax_main-bold.woff",
+      "dependencies": []
+    },
+    "lib/fonts/mathjax_math-italic.woff": {
+      "modifiedTime": 1722814660245,
+      "sourceSize": 19360,
+      "exportedPath": "lib/fonts/mathjax_math-italic.woff",
+      "dependencies": []
+    },
+    "lib/fonts/mathjax_main-italic.woff": {
+      "modifiedTime": 1722814660245,
+      "sourceSize": 20832,
+      "exportedPath": "lib/fonts/mathjax_main-italic.woff",
+      "dependencies": []
+    },
+    "lib/fonts/mathjax_math-bolditalic.woff": {
+      "modifiedTime": 1722814660245,
+      "sourceSize": 19776,
+      "exportedPath": "lib/fonts/mathjax_math-bolditalic.woff",
+      "dependencies": []
+    },
+    "lib/fonts/mathjax_size1-regular.woff": {
+      "modifiedTime": 1722814660245,
+      "sourceSize": 5792,
+      "exportedPath": "lib/fonts/mathjax_size1-regular.woff",
+      "dependencies": []
+    },
+    "lib/fonts/mathjax_size2-regular.woff": {
+      "modifiedTime": 1722814660245,
+      "sourceSize": 5464,
+      "exportedPath": "lib/fonts/mathjax_size2-regular.woff",
+      "dependencies": []
+    },
+    "lib/fonts/mathjax_size3-regular.woff": {
+      "modifiedTime": 1722814660245,
+      "sourceSize": 3244,
+      "exportedPath": "lib/fonts/mathjax_size3-regular.woff",
+      "dependencies": []
+    },
+    "lib/fonts/mathjax_size4-regular.woff": {
+      "modifiedTime": 1722814660245,
+      "sourceSize": 5148,
+      "exportedPath": "lib/fonts/mathjax_size4-regular.woff",
+      "dependencies": []
+    },
+    "lib/fonts/mathjax_ams-regular.woff": {
+      "modifiedTime": 1722814660245,
+      "sourceSize": 40808,
+      "exportedPath": "lib/fonts/mathjax_ams-regular.woff",
+      "dependencies": []
+    },
+    "lib/fonts/mathjax_calligraphic-regular.woff": {
+      "modifiedTime": 1722814660245,
+      "sourceSize": 9600,
+      "exportedPath": "lib/fonts/mathjax_calligraphic-regular.woff",
+      "dependencies": []
+    },
+    "lib/fonts/mathjax_calligraphic-bold.woff": {
+      "modifiedTime": 1722814660245,
+      "sourceSize": 9908,
+      "exportedPath": "lib/fonts/mathjax_calligraphic-bold.woff",
+      "dependencies": []
+    },
+    "lib/fonts/mathjax_fraktur-regular.woff": {
+      "modifiedTime": 1722814660245,
+      "sourceSize": 21480,
+      "exportedPath": "lib/fonts/mathjax_fraktur-regular.woff",
+      "dependencies": []
+    },
+    "lib/fonts/mathjax_fraktur-bold.woff": {
+      "modifiedTime": 1722814660245,
+      "sourceSize": 22340,
+      "exportedPath": "lib/fonts/mathjax_fraktur-bold.woff",
+      "dependencies": []
+    },
+    "lib/fonts/mathjax_sansserif-regular.woff": {
+      "modifiedTime": 1722814660245,
+      "sourceSize": 12660,
+      "exportedPath": "lib/fonts/mathjax_sansserif-regular.woff",
+      "dependencies": []
+    },
+    "lib/fonts/mathjax_sansserif-bold.woff": {
+      "modifiedTime": 1722814660245,
+      "sourceSize": 15944,
+      "exportedPath": "lib/fonts/mathjax_sansserif-bold.woff",
+      "dependencies": []
+    },
+    "lib/fonts/mathjax_sansserif-italic.woff": {
+      "modifiedTime": 1722814660245,
+      "sourceSize": 14628,
+      "exportedPath": "lib/fonts/mathjax_sansserif-italic.woff",
+      "dependencies": []
+    },
+    "lib/fonts/mathjax_script-regular.woff": {
+      "modifiedTime": 1722814660245,
+      "sourceSize": 11852,
+      "exportedPath": "lib/fonts/mathjax_script-regular.woff",
+      "dependencies": []
+    },
+    "lib/fonts/mathjax_typewriter-regular.woff": {
+      "modifiedTime": 1722814660245,
+      "sourceSize": 17604,
+      "exportedPath": "lib/fonts/mathjax_typewriter-regular.woff",
+      "dependencies": []
+    },
+    "lib/fonts/mathjax_vector-regular.woff": {
+      "modifiedTime": 1722814660245,
+      "sourceSize": 1136,
+      "exportedPath": "lib/fonts/mathjax_vector-regular.woff",
+      "dependencies": []
+    },
+    "lib/fonts/mathjax_vector-bold.woff": {
+      "modifiedTime": 1722814660245,
+      "sourceSize": 1116,
+      "exportedPath": "lib/fonts/mathjax_vector-bold.woff",
+      "dependencies": []
+    }
+  }
+}
