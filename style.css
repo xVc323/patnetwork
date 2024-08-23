@@ -103,3 +103,11 @@ button[type="submit"] {
     border-radius: 4px;
     cursor: pointer;
 }
+
+.button-group {
+    display: flex;
+    flex-direction: column;
+    gap: 20px; /* Espace entre les boutons */
+    align-items: center; /* Centre les boutons horizontalement */
+    margin-top: 20px;
+}
