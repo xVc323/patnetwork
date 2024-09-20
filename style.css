@@ -1,113 +1,179 @@
-@import url('https://fonts.googleapis.com/css2?family=VT323&display=swap');
+/* Inclusion de la police */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
 
+/* Style du canvas */
+#sandstorm {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none; /* Permet de cliquer à travers le canvas */
+    z-index: -1; /* Place le canvas derrière le contenu */
+}
+
+/* Thème clair */
 body {
     margin: 0;
     padding: 0;
-    font-family: 'VT323', monospace;
-    background: black;
-    color: #00FF00;
+    font-family: 'Poppins', sans-serif;
+    color: #333333; /* Texte gris foncé */
     display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    text-align: center;
     flex-direction: column;
+    align-items: center;
+    text-align: center;
+    overflow: hidden; /* Évite les scrollbars */
+    background-color: #ffffff; /* Fond blanc */
 }
 
 .container {
-    background: rgba(0, 0, 0, 0.8);
-    padding: 20px 40px;
-    border-radius: 8px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    max-width: 90%;
+    position: relative;
+    z-index: 1;
+    max-width: 800px;
+    width: 90%;
     box-sizing: border-box;
+    margin-top: 100px;
+}
+
+.header {
+    margin-bottom: 30px;
+}
+
+.site-title {
+    font-size: 2.5em;
+    color: #333333; /* Texte gris foncé */
+    margin: 0;
+    font-weight: 600;
 }
 
 h1 {
-    font-size: 3em;
+    font-size: 1.5em;
     margin-bottom: 20px;
-    white-space: pre-wrap;
-    word-wrap: break-word;
+    font-weight: 300;
 }
 
-@media (max-width: 768px) {
-    h1 {
-        font-size: 2em;
-    }
-
-    p {
-        font-size: 1.2em;
-    }
-
-    .container {
-        padding: 15px 30px;
-    }
-}
-
-@media (max-width: 480px) {
-    h1 {
-        font-size: 1.5em;
-    }
-
-    p {
-        font-size: 1em;
-    }
-
-    .container {
-        padding: 10px 20px;
-    }
-}
-
+/* Styles généraux des boutons */
 .btn {
     display: inline-block;
-    margin-top: 20px;
-    padding: 10px 20px;
-    font-size: 1.5em;
-    color: #00FF00;
-    background-color: black;
-    border: 2px solid #00FF00;
-    border-radius: 8px;
+    padding: 12px 24px;
+    font-size: 1em;
+    color: #333333; /* Texte noir pour le thème clair */
+    background-color: #ffffff; /* Fond blanc pour le thème clair */
+    border: 2px solid #333333; /* Bordure noire */
+    border-radius: 8px; /* Coins légèrement arrondis */
     text-decoration: none;
     transition: background-color 0.3s, color 0.3s;
 }
 
+/* Effet au survol pour le thème clair */
 .btn:hover {
-    background-color: #00FF00;
-    color: black;
+    background-color: #333333; /* Fond noir au survol */
+    color: #ffffff; /* Texte blanc au survol */
 }
 
-/* login style */
+/* Style du bouton de soumission dans le formulaire */
+button[type="submit"].btn {
+    width: 100%; /* Le bouton occupe toute la largeur du formulaire */
+    margin-top: 20px; /* Espace au-dessus du bouton */
+    font-weight: 600;
+}
+
+/* Ajustement des boutons dans la page principale */
+.button-group .btn {
+    width: auto; /* Les boutons de la page principale conservent leur largeur automatique */
+}
+
+/* Thème sombre */
+body.dark-theme {
+    color: #f5f5f5; /* Texte gris clair */
+    background-color: #1a1a1a; /* Fond noir profond */
+}
+
+body.dark-theme .site-title {
+    color: #f5f5f5; /* Texte gris clair */
+}
+
+body.dark-theme .btn {
+    color: #ffffff; /* Texte blanc */
+    background-color: #1a1a1a; /* Fond noir */
+    border: 2px solid #ffffff; /* Bordure blanche */
+}
+
+body.dark-theme .btn:hover {
+    background-color: #ffffff; /* Fond blanc au survol */
+    color: #1a1a1a; /* Texte noir au survol */
+}
+
+body.dark-theme button[type="submit"].btn {
+    background-color: #1a1a1a; /* Fond noir */
+    color: #ffffff; /* Texte blanc */
+    border: 2px solid #ffffff; /* Bordure blanche */
+}
+
+body.dark-theme button[type="submit"].btn:hover {
+    background-color: #ffffff; /* Fond blanc au survol */
+    color: #1a1a1a; /* Texte noir au survol */
+}
+
+/* Styles du formulaire */
 form {
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 15px;
 }
 
 label {
-    margin-top: 10px;
+    font-weight: 600;
+    text-align: left;
 }
 
-input[type="text"], input[type="password"] {
-    padding: 8px;
-    border: 1px solid #00FF00;
+input[type="text"],
+input[type="password"] {
+    padding: 10px;
+    border: 1px solid #cccccc;
     border-radius: 4px;
-    background-color: black;
-    color: #00FF00;
+    background-color: #ffffff;
+    color: #333333;
 }
 
-button[type="submit"] {
-    padding: 10px 20px;
-    background-color: #00FF00;
-    color: black;
+body.dark-theme input[type="text"],
+body.dark-theme input[type="password"] {
+    background-color: #2a2a2a;
+    border: 1px solid #444444;
+    color: #f5f5f5;
+}
+
+/* Bouton de changement de thème */
+#theme-toggle {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: none;
     border: none;
-    border-radius: 4px;
+    font-size: 1.5em;
     cursor: pointer;
+    z-index: 2;
 }
 
-.button-group {
-    display: flex;
-    flex-direction: column;
-    gap: 20px; /* Espace entre les boutons */
-    align-items: center; /* Centre les boutons horizontalement */
-    margin-top: 20px;
+/* Responsive Design */
+@media (max-width: 768px) {
+    .site-title {
+        font-size: 2em;
+    }
+
+    h1 {
+        font-size: 1.2em;
+    }
+
+    .button-group {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .btn {
+        width: 80%;
+        max-width: 300px;
+        padding: 12px 24px;
+        text-align: center;
+    }
 }

@@ -2,12 +2,27 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <title>Login - Pat.network</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login</title>
-    <link rel="stylesheet" href="style.css"> <link rel="icon" href="favicon.ico" type="image/x-icon">
+    <!-- Inclusion de la police -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <!-- Lien vers le fichier CSS -->
+    <link rel="stylesheet" href="style.css">
+    <!-- Icône du site -->
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
 </head>
 <body>
+    <!-- Canvas pour l'effet de fond -->
+    <canvas id="sandstorm"></canvas>
+
+    <!-- Bouton pour changer de thème -->
+    <button id="theme-toggle">🌙</button>
+
     <div class="container">
+        <!-- Titre du site -->
+        <div class="header">
+            <h2 class="site-title">Pat.network</h2>
+        </div>
         <h1>Login</h1>
         <form action="/login" method="POST">
             <label for="username">Username:</label>
@@ -16,8 +31,11 @@
             <label for="password">Password:</label>
             <input type="password" id="password" name="password" required>
 
-            <button type="submit">Login</button>
+            <button type="submit" class="btn">Login</button>
         </form>
     </div>
+
+    <!-- Script pour le changement de thème et l'effet de tempête de sable -->
+    <script src="script.js"></script>
 </body>
 </html>
