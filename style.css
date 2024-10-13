@@ -2,14 +2,29 @@
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
 
 /* Style du canvas */
-#sandstorm {
+#canvas {
     position: fixed;
     top: 0;
     left: 0;
-    width: 100%;
-    height: 100%;
+    width: 100vw; /* Utiliser la largeur de la fenêtre */
+    height: 100vh; /* Utiliser la hauteur de la fenêtre */
     pointer-events: none; /* Permet de cliquer à travers le canvas */
     z-index: -1; /* Place le canvas derrière le contenu */
+    object-fit: cover; /* Conserve les proportions du canvas */
+}
+
+/* Conteneur pour le contenu principal */
+.content-container {
+    position: relative;
+    z-index: 1;
+    max-width: 800px;
+    width: 90%;
+    box-sizing: border-box;
+    margin: 100px auto; /* Centrer le conteneur */
+    padding: 20px; /* Espacement interne */
+    background-color: rgba(255, 255, 255, 0.8); /* Fond semi-transparent pour le thème clair */
+    border-radius: 10px; /* Coins arrondis */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* Ombre pour le conteneur */
 }
 
 /* Thème clair */
@@ -176,4 +191,8 @@ body.dark-theme input[type="password"] {
         padding: 12px 24px;
         text-align: center;
     }
+}
+
+body.dark-theme .content-container {
+    background-color: rgba(0, 0, 0, 0.8); /* Fond semi-transparent noir pour le thème sombre */
 }

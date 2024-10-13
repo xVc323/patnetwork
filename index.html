@@ -28,14 +28,64 @@
     <meta name="theme-color" content="#ffffff">
 </head>
 <body>
-    <!-- Canvas pour l'effet de fond -->
-    <canvas id="sandstorm"></canvas>
+    <canvas id="canvas" width="960" height="500"></canvas>
+    <script src="//d3js.org/d3.v3.min.js"></script>
+    <script src="generate-prims.js"></script> <!-- Inclusion du script de génération -->
+    <script>
+        var canvas = document.getElementById("canvas"),
+            context = canvas.getContext("2d"),
+            width = canvas.width,
+            height = canvas.height;
 
-    <!-- Bouton pour changer de thème -->
-    <button id="theme-toggle">🌙</button>
+        var worker = new Worker("generate-prims.js");
+        worker.postMessage({width: width, height: height});
+        worker.addEventListener("message", function(event) {
+            worker.terminate();
 
-    <div class="container">
-        <!-- Titre du site -->
+            var cells = event.data,
+                distance = 0,
+                visited = new Array(width * height),
+                frontier = [(height - 1) * width],
+                image = context.createImageData(width, height);
+
+            function flood() {
+                var frontier1 = [],
+                    i0,
+                    n0 = frontier.length,
+                    i1,
+                    color = d3.hsl((distance += .5) % 360, 1, .5).rgb();
+
+                for (var i = 0; i < n0; ++i) {
+                    i0 = frontier[i] << 2;
+                    image.data[i0 + 0] = color.r;
+                    image.data[i0 + 1] = color.g;
+                    image.data[i0 + 2] = color.b;
+                    image.data[i0 + 3] = 255;
+                }
+
+                for (var i = 0; i < n0; ++i) {
+                    i0 = frontier[i];
+                    if (cells[i0] & E && !visited[i1 = i0 + 1]) visited[i1] = true, frontier1.push(i1);
+                    if (cells[i0] & W && !visited[i1 = i0 - 1]) visited[i1] = true, frontier1.push(i1);
+                    if (cells[i0] & S && !visited[i1 = i0 + width]) visited[i1] = true, frontier1.push(i1);
+                    if (cells[i0] & N && !visited[i1 = i0 - width]) visited[i1] = true, frontier1.push(i1);
+                }
+
+                frontier = frontier1;
+                return !frontier1.length;
+            }
+
+            d3.timer(function() {
+                for (var i = 0, done; i < 3 && !(done = flood()); ++i);
+                context.putImageData(image, 0, 0);
+                return done;
+            });
+        });
+    </script>
+
+    <!-- Conteneur pour le contenu principal -->
+    <div class="content-container">
+        <button id="theme-toggle">🌙</button>
         <div class="header">
             <h2 class="site-title">Pat.network</h2>
         </div>
@@ -45,7 +95,8 @@
             <a href="http://notes.pat.network" class="btn">Notes</a>
         </div>
     </div>
-    <!-- Script pour le texte qui s'écrit, le changement de thème et l'effet de tempête de sable -->
+
+    <!-- Script pour le texte qui s'écrit et le changement de thème -->
     <script src="script.js"></script>
 </body>
 </html>
