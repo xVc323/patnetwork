@@ -89,7 +89,8 @@ h1 {
 /* Style du bouton de soumission dans le formulaire */
 button[type="submit"].btn {
     width: 100%; /* Le bouton occupe toute la largeur du formulaire */
-    margin-top: 20px; /* Espace au-dessus du bouton */
+    max-width: 300px; /* Limite la largeur du bouton */
+    margin: 20px auto; /* Centre le bouton */
     font-weight: 600;
 }
 
@@ -137,11 +138,7 @@ form {
     gap: 15px;
 }
 
-label {
-    font-weight: 600;
-    text-align: left;
-}
-
+/* Ajustement des champs de saisie */
 input[type="text"],
 input[type="password"] {
     padding: 10px;
@@ -149,6 +146,8 @@ input[type="password"] {
     border-radius: 4px;
     background-color: #ffffff;
     color: #333333;
+    max-width: 300px; /* Limite la largeur des champs de saisie */
+    margin: 0 auto; /* Centre les champs de saisie */
 }
 
 body.dark-theme input[type="text"],
