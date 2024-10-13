@@ -37,8 +37,8 @@
         canvas.height = window.innerHeight;
 
         var context = canvas.getContext("2d"),
-        width = canvas.width,
-        height = canvas.height;
+            width = canvas.width,
+            height = canvas.height;
 
         var worker = new Worker("generate-prims.js");
         worker.postMessage({width: width, height: height});
@@ -50,6 +50,9 @@
                 visited = new Array(width * height),
                 frontier = [(height - 1) * width],
                 image = context.createImageData(width, height);
+
+            // Déterminez le nombre d'itérations en fonction de la largeur de l'écran
+            var iterationsPerCycle = Math.max(3, Math.floor(width / 100)); // Ajustez le facteur selon vos besoins
 
             function flood() {
                 var frontier1 = [],
@@ -79,7 +82,7 @@
             }
 
             d3.timer(function() {
-                for (var i = 0, done; i < 3 && !(done = flood()); ++i);
+                for (var i = 0, done; i < iterationsPerCycle && !(done = flood()); ++i);
                 context.putImageData(image, 0, 0);
                 return done;
             });
