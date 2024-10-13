@@ -1,3 +1,8 @@
+/* Ensure full height */
+html, body {
+    height: 100%;
+}
+
 /* Inclusion de la police */
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
 
@@ -6,6 +11,8 @@
     position: fixed;
     top: 0;
     left: 0;
+    width: 100%;
+    height: 100%;
     pointer-events: none;
     z-index: -1;
 }
@@ -36,15 +43,7 @@ body {
     text-align: center;
     overflow: hidden; /* Évite les scrollbars */
     background-color: #ffffff; /* Fond blanc */
-}
-
-.container {
-    position: relative;
-    z-index: 1;
-    max-width: 800px;
-    width: 90%;
-    box-sizing: border-box;
-    margin-top: 100px;
+    min-height: 100vh; /* Ensure full viewport height */
 }
 
 .header {
