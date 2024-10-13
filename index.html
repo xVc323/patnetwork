@@ -51,15 +51,15 @@
                 frontier = [(height - 1) * width],
                 image = context.createImageData(width, height);
 
-            // Déterminez le nombre d'itérations en fonction de la largeur de l'écran
-            var iterationsPerCycle = Math.max(3, Math.floor(width / 100)); // Ajustez le facteur selon vos besoins
+            // Determine the number of iterations based on screen width
+            var iterationsPerCycle = Math.max(3, Math.floor(width / 100));
 
             function flood() {
                 var frontier1 = [],
                     i0,
                     n0 = frontier.length,
                     i1,
-                    color = d3.hsl((distance += .5) % 360, 1, .5).rgb();
+                    color = d3.hsl((distance += 0.1) % 360, 0.8, 0.5).rgb(); // Lower saturation and higher lightness for pastel colors
 
                 for (var i = 0; i < n0; ++i) {
                     i0 = frontier[i] << 2;
