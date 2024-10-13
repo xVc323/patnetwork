@@ -6,11 +6,8 @@
     position: fixed;
     top: 0;
     left: 0;
-    width: 100vw; /* Utiliser la largeur de la fenêtre */
-    height: 100vh; /* Utiliser la hauteur de la fenêtre */
-    pointer-events: none; /* Permet de cliquer à travers le canvas */
-    z-index: -1; /* Place le canvas derrière le contenu */
-    object-fit: cover; /* Conserve les proportions du canvas */
+    pointer-events: none;
+    z-index: -1;
 }
 
 /* Conteneur pour le contenu principal */
@@ -89,8 +86,7 @@ h1 {
 /* Style du bouton de soumission dans le formulaire */
 button[type="submit"].btn {
     width: 100%; /* Le bouton occupe toute la largeur du formulaire */
-    max-width: 300px; /* Limite la largeur du bouton */
-    margin: 20px auto; /* Centre le bouton */
+    margin-top: 20px; /* Espace au-dessus du bouton */
     font-weight: 600;
 }
 
@@ -138,7 +134,11 @@ form {
     gap: 15px;
 }
 
-/* Ajustement des champs de saisie */
+label {
+    font-weight: 600;
+    text-align: left;
+}
+
 input[type="text"],
 input[type="password"] {
     padding: 10px;
@@ -146,8 +146,6 @@ input[type="password"] {
     border-radius: 4px;
     background-color: #ffffff;
     color: #333333;
-    max-width: 300px; /* Limite la largeur des champs de saisie */
-    margin: 0 auto; /* Centre les champs de saisie */
 }
 
 body.dark-theme input[type="text"],
