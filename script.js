@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
     // Effet de frappe
-    const text = "Thao est un gros puceau qui dort avec sa maman";
+    const text = "Hey, this is my website. Stay tuned for more updates :)";
     let index = 0;
     const speed = 100; // Vitesse de frappe (ms)
     const typingText = document.getElementById('typingText');
