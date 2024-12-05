@@ -13,9 +13,9 @@
     <link rel="icon" type="image/svg+xml" href="/icon/favicon.svg" />
     <link rel="shortcut icon" href="/icon/favicon.ico" />
     <link rel="apple-touch-icon" sizes="180x180" href="/icon/apple-touch-icon.png" />
-    <meta name="apple-mobile-web-app-title" content="MyWebSite" />
+    <meta name="apple-mobile-web-app-title" content="Pat.network" />
     <link rel="manifest" href="/icon/site.webmanifest" />
-    
+
     <!-- Google tag (gtag.js) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-CK6HQBQNEG"></script>
     <script>
@@ -25,13 +25,34 @@
 
     gtag('config', 'G-CK6HQBQNEG');
     </script>
-
 </head>
 <body>
-    <canvas id="canvas"></canvas> <!-- Supprimez les attributs width et height -->
+    <!-- Background Canvas for Prim's Algorithm -->
+    <canvas id="canvas"></canvas> <!-- Kept as per instruction -->
+
+    <!-- Theme Toggle Button (Fixed Position) -->
+    <button id="theme-toggle">🌙</button>
+
+    <!-- Content Container -->
+    <div class="content-container">
+        <div class="header">
+            <h2 class="site-title">Pat.network</h2>
+        </div>
+        <h1 id="typingText"></h1>
+        <div class="button-group">
+            <a href="login.html" class="btn">Login</a>
+            <a href="http://notes.pat.network" class="btn">Notes</a>
+            <a href="quiz.html" class="btn">Quiz</a> <!-- Nouveau bouton ajouté -->
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="script.js"></script>
+    <!-- Prim's Algorithm Scripts -->
     <script src="//d3js.org/d3.v3.min.js"></script>
-    <script src="generate-prims.js"></script> <!-- Inclusion du script de génération -->
+    <script src="generate-prims.js"></script>
     <script>
+        /* Prim's Algorithm Script (Unchanged) */
         var canvas = document.getElementById("canvas");
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
@@ -88,22 +109,5 @@
             });
         });
     </script>
-
-    <!-- Conteneur pour le contenu principal -->
-    <div class="content-container">
-        <button id="theme-toggle">🌙</button>
-        <div class="header">
-            <h2 class="site-title">Pat.network</h2>
-        </div>
-        <h1 id="typingText"></h1>
-        <div class="button-group">
-            <a href="login.html" class="btn">Login</a>
-            <a href="http://notes.pat.network" class="btn">Notes</a>
-            <a href="quiz.html" class="btn">Quiz</a> <!-- Nouveau bouton ajouté -->
-        </div>
-    </div>
-
-    <!-- Script pour le texte qui s'écrit et le changement de thème -->
-    <script src="script.js"></script>
 </body>
 </html>

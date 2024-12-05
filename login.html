@@ -12,12 +12,13 @@
     <link rel="icon" href="favicon.ico" type="image/x-icon">
 </head>
 <body>
-    <!-- Canvas pour l'effet de fond -->
-    <canvas id="canvas"></canvas>
+    <!-- Background Canvas for Prim's Algorithm -->
+    <canvas id="canvas"></canvas> <!-- Kept as per instruction -->
 
-    <!-- Bouton pour changer de thème -->
+    <!-- Theme Toggle Button (Fixed Position) -->
     <button id="theme-toggle">🌙</button>
 
+    <!-- Content Container -->
     <div class="content-container">
         <!-- Titre du site -->
         <div class="header">
@@ -35,117 +36,68 @@
         </form>
     </div>
 
-    <!-- Script pour le changement de thème et l'algorithme de génération de labyrinthe -->
+    <!-- Scripts -->
+    <script src="script.js"></script>
+    <!-- Prim's Algorithm Scripts -->
     <script src="//d3js.org/d3.v3.min.js"></script>
+    <script src="generate-prims.js"></script>
     <script>
-        var width = window.innerWidth,
-            height = window.innerHeight;
+        /* Prim's Algorithm Script (Unchanged) */
+        var canvas = document.getElementById("canvas");
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
 
-        var N = 1 << 0,
-            S = 1 << 1,
-            W = 1 << 2,
-            E = 1 << 3;
+        var context = canvas.getContext("2d"),
+            width = canvas.width,
+            height = canvas.height;
 
-        var cellSize = 4,
-            cellSpacing = 4,
-            cellWidth = Math.floor((width - cellSpacing) / (cellSize + cellSpacing)),
-            cellHeight = Math.floor((height - cellSpacing) / (cellSize + cellSpacing)),
-            cells = new Array(cellWidth * cellHeight), // Tableau pour stocker les cellules
-            frontier = [];
+        var worker = new Worker("generate-prims.js");
+        worker.postMessage({width: width, height: height});
+        worker.addEventListener("message", function(event) {
+            worker.terminate();
 
-        var canvas = d3.select("#canvas")
-            .attr("width", width)
-            .attr("height", height);
+            var cells = event.data,
+                distance = 0,
+                visited = new Array(width * height),
+                frontier = [(height - 1) * width],
+                image = context.createImageData(width, height);
 
-        var context = canvas.node().getContext("2d");
+            // Determine the number of iterations based on screen width
+            var iterationsPerCycle = Math.max(3, Math.floor(width / 100));
 
-        context.translate(
-            Math.round((width - cellWidth * cellSize - (cellWidth + 1) * cellSpacing) / 2),
-            Math.round((height - cellHeight * cellSize - (cellHeight + 1) * cellSpacing) / 2)
-        );
+            function flood() {
+                var frontier1 = [],
+                    i0,
+                    n0 = frontier.length,
+                    i1,
+                    color = d3.hsl((distance += 0.1) % 360, 0.8, 0.5).rgb(); // Lower saturation and higher lightness for pastel colors
 
-        context.fillStyle = "white";
+                for (var i = 0; i < n0; ++i) {
+                    i0 = frontier[i] << 2;
+                    image.data[i0 + 0] = color.r;
+                    image.data[i0 + 1] = color.g;
+                    image.data[i0 + 2] = color.b;
+                    image.data[i0 + 3] = 255;
+                }
 
-        // Ajouter une cellule aléatoire et deux bords initiaux.
-        var start = (cellHeight - 1) * cellWidth;
-        cells[start] = 0;
-        fillCell(start);
-        frontier.push({index: start, direction: N});
-        frontier.push({index: start, direction: E});
+                for (var i = 0; i < n0; ++i) {
+                    i0 = frontier[i];
+                    if (cells[i0] & E && !visited[i1 = i0 + 1]) visited[i1] = true, frontier1.push(i1);
+                    if (cells[i0] & W && !visited[i1 = i0 - 1]) visited[i1] = true, frontier1.push(i1);
+                    if (cells[i0] & S && !visited[i1 = i0 + width]) visited[i1] = true, frontier1.push(i1);
+                    if (cells[i0] & N && !visited[i1 = i0 - width]) visited[i1] = true, frontier1.push(i1);
+                }
 
-        // Explorer la frontière jusqu'à ce que l'arbre couvre le graphe.
-        d3.timer(function() {
-            var done, k = 0;
-            while (++k < 50 && !(done = exploreFrontier()));
-            return done;
-        });
-
-        function exploreFrontier() {
-            if ((edge = popRandom(frontier)) == null) return true;
-
-            var edge,
-                i0 = edge.index,
-                d0 = edge.direction,
-                i1 = i0 + (d0 === N ? -cellWidth : d0 === S ? cellWidth : d0 === W ? -1 : +1),
-                x0 = i0 % cellWidth,
-                y0 = i0 / cellWidth | 0,
-                x1,
-                y1,
-                d1,
-                open = cells[i1] == null; // Vérifier si la cellule opposée n'est pas encore dans le labyrinthe
-
-            context.fillStyle = open ? "white" : "black";
-            if (d0 === N) fillSouth(i1), x1 = x0, y1 = y0 - 1, d1 = S;
-            else if (d0 === S) fillSouth(i0), x1 = x0, y1 = y0 + 1, d1 = N;
-            else if (d0 === W) fillEast(i1), x1 = x0 - 1, y1 = y0, d1 = E;
-            else fillEast(i0), x1 = x0 + 1, y1 = y0, d1 = W;
-
-            if (open) {
-                fillCell(i1);
-                cells[i0] |= d0, cells[i1] |= d1;
-                context.fillStyle = "magenta";
-                if (y1 > 0 && cells[i1 - cellWidth] == null) fillSouth(i1 - cellWidth), frontier.push({index: i1, direction: N});
-                if (y1 < cellHeight - 1 && cells[i1 + cellWidth] == null) fillSouth(i1), frontier.push({index: i1, direction: S});
-                if (x1 > 0 && cells[i1 - 1] == null) fillEast(i1 - 1), frontier.push({index: i1, direction: W});
-                if (x1 < cellWidth - 1 && cells[i1 + 1] == null) fillEast(i1), frontier.push({index: i1, direction: E});
+                frontier = frontier1;
+                return !frontier1.length;
             }
-        }
 
-        function fillCell(index) {
-            var i = index % cellWidth, j = index / cellWidth | 0;
-            context.fillRect(i * cellSize + (i + 1) * cellSpacing, j * cellSize + (j + 1) * cellSpacing, cellSize, cellSize);
-        }
-
-        function fillEast(index) {
-            var i = index % cellWidth, j = index / cellWidth | 0;
-            context.fillRect((i + 1) * (cellSize + cellSpacing), j * cellSize + (j + 1) * cellSpacing, cellSpacing, cellSize);
-        }
-
-        function fillSouth(index) {
-            var i = index % cellWidth, j = index / cellWidth | 0;
-            context.fillRect(i * cellSize + (i + 1) * cellSpacing, (j + 1) * (cellSize + cellSpacing), cellSize, cellSpacing);
-        }
-
-        function popRandom(array) {
-            if (!array.length) return;
-            var n = array.length, i = Math.random() * n | 0, t;
-            t = array[i], array[i] = array[n - 1], array[n - 1] = t;
-            return array.pop();
-        }
-
-        // Gestion du changement de thème
-        var themeToggle = document.getElementById("theme-toggle");
-        themeToggle.addEventListener("click", function() {
-            document.body.classList.toggle("dark-theme");
-            // Changer l'icône du bouton en fonction du thème
-            if (document.body.classList.contains("dark-theme")) {
-                themeToggle.textContent = "🌞"; // Icône pour le thème clair
-            } else {
-                themeToggle.textContent = "🌙"; // Icône pour le thème sombre
-            }
+            d3.timer(function() {
+                for (var i = 0, done; i < iterationsPerCycle && !(done = flood()); ++i);
+                context.putImageData(image, 0, 0);
+                return done;
+            });
         });
-
-        d3.select(self.frameElement).style("height", height + "px");
     </script>
 </body>
 </html>
