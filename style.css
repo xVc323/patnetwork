@@ -189,6 +189,51 @@ body.dark-theme input[type="password"] {
     }
 }
 
-body.dark-theme .content-container {
+/* Styles pour quiz.html */
+.iframe-container {
+    width: 100%;
+    height: 80vh; /* Ajustez la hauteur selon vos besoins */
+    margin-top: 20px;
+}
+
+iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+    border-radius: 8px;
+}
+
+.back-button {
+    display: inline-block;
+    padding: 10px 20px;
+    margin-bottom: 20px;
+    background-color: #ffffffcc;
+    border: 2px solid #333333;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1em;
+    transition: background-color 0.3s, color 0.3s;
+    text-decoration: none;
+    color: #333333;
+}
+
+.back-button:hover {
+    background-color: #333333;
+    color: #ffffff;
+}
+
+/* Adaptation pour le thème sombre dans quiz.html */
+body.dark-theme .iframe-container {
     background-color: rgba(0, 0, 0, 0.8); /* Fond semi-transparent noir pour le thème sombre */
+}
+
+body.dark-theme .back-button {
+    background-color: #1a1a1acc;
+    border: 2px solid #ffffff;
+    color: #ffffff;
+}
+
+body.dark-theme .back-button:hover {
+    background-color: #ffffff;
+    color: #1a1a1a;
 }
