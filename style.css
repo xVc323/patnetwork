@@ -1,10 +1,11 @@
 /* Ensure full height */
 html, body {
     height: 100%;
+    margin: 0;
+    padding: 0;
+    font-family: 'Poppins', sans-serif;
+    overflow: hidden; /* Évite les scrollbars */
 }
-
-/* Inclusion de la police */
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
 
 /* Style du canvas */
 #canvas {
@@ -17,53 +18,40 @@ html, body {
     z-index: -1;
 }
 
-/* Conteneur pour le contenu principal */
-.content-container {
-    position: relative;
-    z-index: 1;
-    max-width: 800px;
-    width: 90%;
-    box-sizing: border-box;
-    margin: 100px auto; /* Centrer le conteneur */
-    padding: 20px; /* Espacement interne */
-    background-color: rgba(255, 255, 255, 0.8); /* Fond semi-transparent pour le thème clair */
-    border-radius: 10px; /* Coins arrondis */
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* Ombre pour le conteneur */
+/* Bouton de retour fixé */
+.back-button {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    padding: 10px 20px;
+    background-color: rgba(255, 255, 255, 0.8);
+    border: 2px solid #333333;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1em;
+    transition: background-color 0.3s, color 0.3s;
+    z-index: 1000; /* Assure que le bouton est au-dessus de l'iframe */
+    text-decoration: none;
+    color: #333333;
 }
 
-/* Thème clair */
-body {
-    margin: 0;
-    padding: 0;
-    font-family: 'Poppins', sans-serif;
-    color: #333333; /* Texte gris foncé */
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-    overflow: hidden; /* Évite les scrollbars */
-    background-color: #ffffff; /* Fond blanc */
-    min-height: 100vh; /* Ensure full viewport height */
+.back-button:hover {
+    background-color: #333333;
+    color: #ffffff;
 }
 
-.header {
-    margin-bottom: 30px;
+/* Iframe en plein écran */
+.fullscreen-iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border: none;
+    z-index: 0; /* Assure que l'iframe est derrière le bouton de retour */
 }
 
-.site-title {
-    font-size: 2.5em;
-    color: #333333; /* Texte gris foncé */
-    margin: 0;
-    font-weight: 600;
-}
-
-h1 {
-    font-size: 1.5em;
-    margin-bottom: 20px;
-    font-weight: 300;
-}
-
-/* Styles généraux des boutons */
+/* Styles généraux des boutons (pour index.html et autres pages) */
 .btn {
     display: inline-block;
     padding: 12px 24px;
@@ -76,22 +64,9 @@ h1 {
     transition: background-color 0.3s, color 0.3s;
 }
 
-/* Effet au survol pour le thème clair */
 .btn:hover {
     background-color: #333333; /* Fond noir au survol */
     color: #ffffff; /* Texte blanc au survol */
-}
-
-/* Style du bouton de soumission dans le formulaire */
-button[type="submit"].btn {
-    width: 100%; /* Le bouton occupe toute la largeur du formulaire */
-    margin-top: 20px; /* Espace au-dessus du bouton */
-    font-weight: 600;
-}
-
-/* Ajustement des boutons dans la page principale */
-.button-group .btn {
-    width: auto; /* Les boutons de la page principale conservent leur largeur automatique */
 }
 
 /* Thème sombre */
@@ -166,7 +141,7 @@ body.dark-theme input[type="password"] {
     z-index: 2;
 }
 
-/* Responsive Design */
+/* Responsive Design pour index.html et autres pages */
 @media (max-width: 768px) {
     .site-title {
         font-size: 2em;
@@ -189,44 +164,7 @@ body.dark-theme input[type="password"] {
     }
 }
 
-/* Styles pour quiz.html */
-.iframe-container {
-    width: 100%;
-    height: 80vh; /* Ajustez la hauteur selon vos besoins */
-    margin-top: 20px;
-}
-
-iframe {
-    width: 100%;
-    height: 100%;
-    border: none;
-    border-radius: 8px;
-}
-
-.back-button {
-    display: inline-block;
-    padding: 10px 20px;
-    margin-bottom: 20px;
-    background-color: #ffffffcc;
-    border: 2px solid #333333;
-    border-radius: 8px;
-    cursor: pointer;
-    font-size: 1em;
-    transition: background-color 0.3s, color 0.3s;
-    text-decoration: none;
-    color: #333333;
-}
-
-.back-button:hover {
-    background-color: #333333;
-    color: #ffffff;
-}
-
-/* Adaptation pour le thème sombre dans quiz.html */
-body.dark-theme .iframe-container {
-    background-color: rgba(0, 0, 0, 0.8); /* Fond semi-transparent noir pour le thème sombre */
-}
-
+/* Thème sombre pour quiz.html */
 body.dark-theme .back-button {
     background-color: #1a1a1acc;
     border: 2px solid #ffffff;
