@@ -1,3 +1,5 @@
+// script.js
+
 document.addEventListener('DOMContentLoaded', () => {
     // Effet de frappe
     const text = "Hey, this is my website. Stay tuned for more updates :)";
