@@ -1,36 +1,30 @@
-<!-- index.html -->
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <title>Pat.network</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- Inclusion de la police -->
+    <!-- Police -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
-    <!-- Lien vers le fichier CSS -->
+    <!-- CSS -->
     <link rel="stylesheet" href="style.css">
-    <!-- Icônes du site -->
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    
+    <!-- Favicons -->
+    <link rel="icon" type="image/svg+xml" href="/icon/favicon.svg">
 
-    <!-- Google tag (gtag.js) -->
+    <!-- Google tag -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-CK6HQBQNEG"></script>
     <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-
-    gtag('config', 'G-CK6HQBQNEG');
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-CK6HQBQNEG');
     </script>
 </head>
 <body>
-    <!-- Background Canvas for Prim's Algorithm -->
-    <canvas id="canvas"></canvas> <!-- Kept as per instruction -->
-
-    <!-- Theme Toggle Button (Fixed Position) -->
+    <canvas id="canvas"></canvas>
     <button id="theme-toggle">🌙</button>
 
-    <!-- Content Container -->
     <div class="content-container">
         <div class="header">
             <h2 class="site-title">Pat.network</h2>
@@ -39,17 +33,73 @@
         <div class="button-group">
             <a href="login.html" class="btn">Login</a>
             <a href="http://notes.pat.network" class="btn">Notes</a>
-            <a href="quiz.html" class="btn">Quiz</a> <!-- Nouveau bouton ajouté -->
+            <a href="quiz.html" class="btn">Quiz</a>
         </div>
     </div>
 
-    <!-- Scripts -->
-    <script src="script.js"></script>
-    <!-- Prim's Algorithm Scripts -->
+    <!-- Script pour l'effet de frappe et le thème -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Effet de frappe
+            const text = "Hey, this is my website. Stay tuned for more updates :)";
+            let index = 0;
+            const speed = 100;
+            const typingText = document.getElementById('typingText');
+
+            function typeWriter() {
+                if (typingText && index < text.length) {
+                    typingText.innerHTML += text.charAt(index);
+                    index++;
+                    setTimeout(typeWriter, speed);
+                }
+            }
+
+            typeWriter();
+
+            // Changement de thème
+            const themeToggle = document.getElementById('theme-toggle');
+            const html = document.documentElement;
+
+            function setTheme(theme) {
+                if (theme === 'dark') {
+                    html.classList.add('dark-theme');
+                    if (themeToggle) themeToggle.textContent = '☀️';
+                } else {
+                    html.classList.remove('dark-theme');
+                    if (themeToggle) themeToggle.textContent = '🌙';
+                }
+            }
+
+            let storedTheme = localStorage.getItem('theme');
+
+            function getDefaultTheme() {
+                const hour = new Date().getHours();
+                return (hour >= 6 && hour < 18) ? 'light' : 'dark';
+            }
+
+            if (storedTheme) {
+                setTheme(storedTheme);
+            } else {
+                const defaultTheme = getDefaultTheme();
+                setTheme(defaultTheme);
+                localStorage.setItem('theme', defaultTheme);
+            }
+
+            if (themeToggle) {
+                themeToggle.addEventListener('click', () => {
+                    const currentTheme = html.classList.contains('dark-theme') ? 'dark' : 'light';
+                    const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+                    setTheme(newTheme);
+                    localStorage.setItem('theme', newTheme);
+                });
+            }
+        });
+    </script>
+
+    <!-- Scripts pour Prim's Algorithm -->
     <script src="//d3js.org/d3.v3.min.js"></script>
     <script src="generate-prims.js"></script>
     <script>
-        /* Prim's Algorithm Script (Unchanged) */
         var canvas = document.getElementById("canvas");
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
@@ -69,7 +119,6 @@
                 frontier = [(height - 1) * width],
                 image = context.createImageData(width, height);
 
-            // Determine the number of iterations based on screen width
             var iterationsPerCycle = Math.max(3, Math.floor(width / 100));
 
             function flood() {
@@ -77,7 +126,7 @@
                     i0,
                     n0 = frontier.length,
                     i1,
-                    color = d3.hsl((distance += 0.1) % 360, 0.8, 0.5).rgb(); // Lower saturation and higher lightness for pastel colors
+                    color = d3.hsl((distance += 0.1) % 360, 0.8, 0.5).rgb();
 
                 for (var i = 0; i < n0; ++i) {
                     i0 = frontier[i] << 2;
