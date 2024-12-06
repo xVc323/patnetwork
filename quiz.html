@@ -1,20 +1,40 @@
-<!-- quiz.html -->
-
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Quiz - Pat.network</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- Inclusion de la police -->
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
-    <!-- Lien vers le fichier CSS -->
-    <link rel="stylesheet" href="style.css">
-    <!-- Icônes du site -->
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <title>Quiz - Pat.network</title>
+    <!-- Favicons -->
+    <link rel="icon" type="image/svg+xml" href="/icon/favicon.svg">
+    <link rel="icon" type="image/png" href="/icon/favicon-48x48.png" sizes="48x48">
+    <link rel="shortcut icon" href="/icon/favicon.ico">
+    <link rel="apple-touch-icon" sizes="180x180" href="/icon/apple-touch-icon.png">
+    <meta name="apple-mobile-web-app-title" content="Pat.network">
+    <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .fullscreen-iframe {
+            flex: 1;
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+    </style>
 </head>
 <body>
-    <!-- Iframe en plein écran -->
-    <iframe class="fullscreen-iframe" src="https://quizforge-ai.streamlit.app/?embed=true" title="Quiz App"></iframe>
+    <iframe 
+        src="https://quizforge-ai.streamlit.app/?embed=true"
+        class="fullscreen-iframe"
+        allowfullscreen="true"
+        allow="fullscreen">
+    </iframe>
 </body>
 </html>
