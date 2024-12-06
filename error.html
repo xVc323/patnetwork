@@ -105,7 +105,7 @@
             const themeToggle = document.getElementById('theme-toggle');
             const html = document.documentElement;
 
-            // Fonction pour définir le thème
+            // Function to set the theme
             function setTheme(theme) {
                 if (theme === 'dark') {
                     html.classList.add('dark-theme');
@@ -116,13 +116,13 @@
                 }
             }
 
-            // Récupérer et appliquer le thème stocké
+            // Retrieve and apply the stored theme
             let storedTheme = localStorage.getItem('theme');
             if (storedTheme) {
                 setTheme(storedTheme);
             }
 
-            // Toggle du thème
+            // Toggle the theme
             themeToggle.addEventListener('click', () => {
                 const currentTheme = html.classList.contains('dark-theme') ? 'dark' : 'light';
                 const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
@@ -130,35 +130,161 @@
                 localStorage.setItem('theme', newTheme);
             });
 
-            // Gestion du code d'erreur
+            // Manage the error code
             const urlParams = new URLSearchParams(window.location.search);
             const errorCode = urlParams.get('code') || '404';
             
             const errorMessages = {
+                // Informational Responses (100–199)
+                '100': 'Continue',
+                '101': 'Switching Protocols',
+                '102': 'Processing',
+                '103': 'Early Hints',
+
+                // Successful Responses (200–299)
+                '200': 'OK',
+                '201': 'Created',
+                '202': 'Accepted',
+                '203': 'Non-Authoritative Information',
+                '204': 'No Content',
+                '205': 'Reset Content',
+                '206': 'Partial Content',
+                '207': 'Multi-Status',
+                '208': 'Already Reported',
+                '226': 'IM Used',
+
+                // Redirection Messages (300–399)
+                '300': 'Multiple Choices',
+                '301': 'Moved Permanently',
+                '302': 'Found',
+                '303': 'See Other',
+                '304': 'Not Modified',
+                '305': 'Use Proxy',
+                '307': 'Temporary Redirect',
+                '308': 'Permanent Redirect',
+
+                // Client Error Responses (400–499)
                 '400': 'Bad Request',
                 '401': 'Unauthorized',
+                '402': 'Payment Required',
                 '403': 'Forbidden',
                 '404': 'Page Not Found',
+                '405': 'Method Not Allowed',
+                '406': 'Not Acceptable',
+                '407': 'Proxy Authentication Required',
+                '408': 'Request Timeout',
+                '409': 'Conflict',
+                '410': 'Gone',
+                '411': 'Length Required',
+                '412': 'Precondition Failed',
+                '413': 'Payload Too Large',
+                '414': 'URI Too Long',
+                '415': 'Unsupported Media Type',
+                '416': 'Range Not Satisfiable',
+                '417': 'Expectation Failed',
+                '418': "I'm a Teapot",
+                '421': 'Misdirected Request',
+                '422': 'Unprocessable Entity',
+                '423': 'Locked',
+                '424': 'Failed Dependency',
+                '425': 'Too Early',
+                '426': 'Upgrade Required',
+                '428': 'Precondition Required',
+                '429': 'Too Many Requests',
+                '431': 'Request Header Fields Too Large',
+                '451': 'Unavailable For Legal Reasons',
+
+                // Server Error Responses (500–599)
                 '500': 'Internal Server Error',
+                '501': 'Not Implemented',
                 '502': 'Bad Gateway',
                 '503': 'Service Unavailable',
-                '504': 'Gateway Timeout'
+                '504': 'Gateway Timeout',
+                '505': 'HTTP Version Not Supported',
+                '506': 'Variant Also Negotiates',
+                '507': 'Insufficient Storage',
+                '508': 'Loop Detected',
+                '510': 'Not Extended',
+                '511': 'Network Authentication Required'
             };
 
             const errorDescriptions = {
-                '400': 'The request could not be understood by the server.',
+                // Informational Responses (100–199)
+                '100': 'The server has received the request headers and the client should proceed to send the request body.',
+                '101': 'The requester has asked the server to switch protocols.',
+                '102': 'WebDAV; the server is processing the request, but no response is available yet.',
+                '103': 'Used to return some response headers before final HTTP message.',
+
+                // Successful Responses (200–299)
+                '200': 'The request has succeeded.',
+                '201': 'The request has been fulfilled and resulted in a new resource being created.',
+                '202': 'The request has been accepted for processing, but the processing has not been completed.',
+                '203': 'The server successfully processed the request, but is returning information that may be from another source.',
+                '204': 'The server successfully processed the request, but is not returning any content.',
+                '205': 'The server successfully processed the request, but is not returning any content and requires that the requester reset the document view.',
+                '206': 'The server is delivering only part of the resource due to a range header sent by the client.',
+                '207': 'WebDAV; the message body that follows is an XML message and can contain multiple separate response codes.',
+                '208': 'WebDAV; the members of a DAV binding have already been enumerated in a previous reply to this request.',
+                '226': 'The server has fulfilled a GET request for the resource, and the response is a representation of the result of one or more instance-manipulations.',
+
+                // Redirection Messages (300–399)
+                '300': 'There are multiple options for the resource that the client may follow.',
+                '301': 'The resource has been moved permanently to a new URL.',
+                '302': 'The resource has been found at a different URL temporarily.',
+                '303': 'The response to the request can be found under a different URL and should be retrieved using a GET method.',
+                '304': 'The resource has not been modified since the last request.',
+                '305': 'The requested resource must be accessed through the proxy given by the Location field.',
+                '307': 'The resource has been found at a different URL, but future requests should still use the original URL.',
+                '308': 'The resource has been moved permanently to a new URL.',
+
+                // Client Error Responses (400–499)
+                '400': 'The server could not understand the request due to invalid syntax.',
                 '401': 'Authentication is required to access this resource.',
+                '402': 'Reserved for future use. Initially intended for digital payment systems.',
                 '403': 'You don\'t have permission to access this resource.',
                 '404': 'The page you\'re looking for doesn\'t exist or has been moved.',
+                '405': 'The HTTP method used is not allowed for this resource.',
+                '406': 'The requested resource is capable of generating only content not acceptable according to the Accept headers sent in the request.',
+                '407': 'Proxy authentication is required to access this resource.',
+                '408': 'The server timed out waiting for the request.',
+                '409': 'The request could not be completed due to a conflict with the current state of the target resource.',
+                '410': 'The resource requested is no longer available and will not be available again.',
+                '411': 'The request did not specify the length of its content, which is required by the requested resource.',
+                '412': 'One or more preconditions given in the request header fields evaluated to false.',
+                '413': 'The request is larger than the server is willing or able to process.',
+                '414': 'The URI provided was too long for the server to process.',
+                '415': 'The request entity has a media type which the server or resource does not support.',
+                '416': 'The client has asked for a portion of the file, but the server cannot supply that portion.',
+                '417': 'The server could not meet the expectation given in the Expect request header.',
+                '418': 'The server refuses the attempt to brew coffee with a teapot.',
+                '421': 'The request was directed at a server that is not able to produce a response.',
+                '422': 'The request was well-formed but was unable to be followed due to semantic errors.',
+                '423': 'The resource that is being accessed is locked.',
+                '424': 'The request failed due to failure of a previous request.',
+                '425': 'The server is unwilling to risk processing a request that might be replayed.',
+                '426': 'The client should switch to a different protocol.',
+                '428': 'The origin server requires the request to be conditional.',
+                '429': 'The user has sent too many requests in a given amount of time.',
+                '431': 'The server is unwilling to process the request because its header fields are too large.',
+                '451': 'The user-agent requested a resource that cannot legally be provided, such as a web page censored by a government.',
+
+                // Server Error Responses (500–599)
                 '500': 'Something went wrong on our end. Please try again later.',
+                '501': 'The server does not recognize the request method, or it lacks the ability to fulfill the request.',
                 '502': 'The server received an invalid response from the upstream server.',
                 '503': 'The service is temporarily unavailable. Please try again later.',
-                '504': 'The server timed out waiting for another server\'s response.'
+                '504': 'The server timed out waiting for another server\'s response.',
+                '505': 'The server does not support the HTTP protocol version used in the request.',
+                '506': 'Transparent content negotiation for the request results in a circular reference.',
+                '507': 'The server is unable to store the representation needed to complete the request.',
+                '508': 'The server detected an infinite loop while processing the request.',
+                '510': 'Further extensions to the request are required for the server to fulfill it.',
+                '511': 'The client needs to authenticate to gain network access.'
             };
 
             document.getElementById('error-code').textContent = errorCode;
-            document.getElementById('error-message').textContent = errorMessages[errorCode] || 'Unknown Error';
-            document.getElementById('error-description').textContent = errorDescriptions[errorCode] || 'An unexpected error occurred.';
+            document.getElementById('error-message').textContent = errorMessages[errorCode] || 'Unknown Status';
+            document.getElementById('error-description').textContent = errorDescriptions[errorCode] || 'An unexpected status occurred.';
         });
     </script>
 </body>
