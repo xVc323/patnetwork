@@ -1,11 +1,14 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light">
 <head>
     <meta charset="UTF-8">
-    <title>Pat.network</title>
+    <title>Pat.network - Portfolio</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- Police -->
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <meta name="description" content="Professional portfolio showcasing projects and skills">
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Lora:ital,wght@0,400;0,700;1,400&family=Space+Mono&display=swap" rel="stylesheet">
+    
     <!-- CSS -->
     <link rel="stylesheet" href="style.css">
     
@@ -22,138 +25,46 @@
     </script>
 </head>
 <body>
-    <canvas id="canvas"></canvas>
-    <button id="theme-toggle">🌙</button>
+    <button id="theme-toggle" aria-label="Toggle theme">🌙</button>
 
-    <div class="content-container">
-        <div class="header">
-            <h2 class="site-title">Pat.network</h2>
-        </div>
-        <h1 id="typingText"></h1>
-        <div class="button-group">
-            <a href="login.html" class="btn">Login</a>
-            <a href="https://notes.pat.network" class="btn">Notes</a>
-            <a href="quiz.html" class="btn">Quiz</a>
-        </div>
+    <div class="container">
+        <header class="header" role="banner">
+            <h1 class="site-title">Pat.network</h1>
+            <nav class="nav" role="navigation" aria-label="Main navigation">
+                <a href="login.html" class="nav-link">Login</a>
+                <a href="https://notes.pat.network" class="nav-link">Notes</a>
+                <a href="quiz.html" class="nav-link">Quiz</a>
+            </nav>
+        </header>
+
+        <main role="main">
+            <section aria-labelledby="hero-heading">
+                <h1 id="typingText" aria-live="polite" class="main-header"></h1>
+                <h2 id="hero-heading" class="visually-hidden">Creative Developer Showcase</h2>
+                <div class="about-section">
+                    <p>I’m a curious builder exploring the intersections of creativity and technology. Passionate about problem-solving, I enjoy crafting tools and projects that blend practicality with a touch of innovation. Whether it’s simplifying workflows, experimenting with AI, or sharing what I learn, I strive to make tech accessible and fun. Always up for a challenge, my work is a reflection of my journey as a lifelong learner.</p>
+                </div>
+            </section>
+            
+            <!-- Projects Section -->
+            <section class="projects-section" aria-labelledby="projects-heading">
+                <h2 id="projects-heading">My Projects</h2>
+                <div class="projects-grid" id="projectsGrid" role="list">
+                    <div class="project-card skeleton" role="listitem">
+                        <div class="skeleton-line"></div>
+                        <div class="skeleton-line short"></div>
+                        <div class="skeleton-line short"></div>
+                    </div>
+                    <div class="project-card skeleton" role="listitem">
+                        <div class="skeleton-line"></div>
+                        <div class="skeleton-line short"></div>
+                        <div class="skeleton-line short"></div>
+                    </div>
+                </div>
+            </section>
+        </main>
     </div>
 
-    <!-- Script pour l'effet de frappe et le thème -->
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            // Effet de frappe
-            const text = "Hey, this is my website. Stay tuned for more updates :)";
-            let index = 0;
-            const speed = 100;
-            const typingText = document.getElementById('typingText');
-
-            function typeWriter() {
-                if (typingText && index < text.length) {
-                    typingText.innerHTML += text.charAt(index);
-                    index++;
-                    setTimeout(typeWriter, speed);
-                }
-            }
-
-            typeWriter();
-
-            // Changement de thème
-            const themeToggle = document.getElementById('theme-toggle');
-            const html = document.documentElement;
-
-            function setTheme(theme) {
-                if (theme === 'dark') {
-                    html.classList.add('dark-theme');
-                    if (themeToggle) themeToggle.textContent = '☀️';
-                } else {
-                    html.classList.remove('dark-theme');
-                    if (themeToggle) themeToggle.textContent = '🌙';
-                }
-            }
-
-            let storedTheme = localStorage.getItem('theme');
-
-            function getDefaultTheme() {
-                const hour = new Date().getHours();
-                return (hour >= 6 && hour < 18) ? 'light' : 'dark';
-            }
-
-            if (storedTheme) {
-                setTheme(storedTheme);
-            } else {
-                const defaultTheme = getDefaultTheme();
-                setTheme(defaultTheme);
-                localStorage.setItem('theme', defaultTheme);
-            }
-
-            if (themeToggle) {
-                themeToggle.addEventListener('click', () => {
-                    const currentTheme = html.classList.contains('dark-theme') ? 'dark' : 'light';
-                    const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-                    setTheme(newTheme);
-                    localStorage.setItem('theme', newTheme);
-                });
-            }
-        });
-    </script>
-
-    <!-- Scripts pour Prim's Algorithm -->
-    <script src="//d3js.org/d3.v3.min.js"></script>
-    <script src="generate-prims.js"></script>
-    <script>
-        var canvas = document.getElementById("canvas");
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
-
-        var context = canvas.getContext("2d"),
-            width = canvas.width,
-            height = canvas.height;
-
-        var worker = new Worker("generate-prims.js");
-        worker.postMessage({width: width, height: height});
-        worker.addEventListener("message", function(event) {
-            worker.terminate();
-
-            var cells = event.data,
-                distance = 0,
-                visited = new Array(width * height),
-                frontier = [(height - 1) * width],
-                image = context.createImageData(width, height);
-
-            var iterationsPerCycle = Math.max(3, Math.floor(width / 100));
-
-            function flood() {
-                var frontier1 = [],
-                    i0,
-                    n0 = frontier.length,
-                    i1,
-                    color = d3.hsl((distance += 0.1) % 360, 0.8, 0.5).rgb();
-
-                for (var i = 0; i < n0; ++i) {
-                    i0 = frontier[i] << 2;
-                    image.data[i0 + 0] = color.r;
-                    image.data[i0 + 1] = color.g;
-                    image.data[i0 + 2] = color.b;
-                    image.data[i0 + 3] = 255;
-                }
-
-                for (var i = 0; i < n0; ++i) {
-                    i0 = frontier[i];
-                    if (cells[i0] & E && !visited[i1 = i0 + 1]) visited[i1] = true, frontier1.push(i1);
-                    if (cells[i0] & W && !visited[i1 = i0 - 1]) visited[i1] = true, frontier1.push(i1);
-                    if (cells[i0] & S && !visited[i1 = i0 + width]) visited[i1] = true, frontier1.push(i1);
-                    if (cells[i0] & N && !visited[i1 = i0 - width]) visited[i1] = true, frontier1.push(i1);
-                }
-
-                frontier = frontier1;
-                return !frontier1.length;
-            }
-
-            d3.timer(function() {
-                for (var i = 0, done; i < iterationsPerCycle && !(done = flood()); ++i);
-                context.putImageData(image, 0, 0);
-                return done;
-            });
-        });
-    </script>
+    <script src="script.js"></script>
 </body>
 </html>
