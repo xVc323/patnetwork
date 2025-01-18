@@ -2,17 +2,51 @@
 const themeToggle = document.getElementById('theme-toggle');
 const htmlElement = document.documentElement;
 
-// Check for saved theme preference
-const savedTheme = localStorage.getItem('theme') || 'light';
-htmlElement.setAttribute('data-theme', savedTheme);
+// Function to get system color scheme preference
+const getSystemTheme = () => window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+
+// Function to update theme
+const updateTheme = (theme) => {
+  if (theme) {
+    htmlElement.setAttribute('data-theme', theme);
+    localStorage.setItem('theme', theme);
+  } else {
+    // If no theme specified, remove the attribute to follow system preference
+    htmlElement.removeAttribute('data-theme');
+    localStorage.removeItem('theme');
+  }
+};
+
+// Initialize theme
+const savedTheme = localStorage.getItem('theme');
+if (savedTheme) {
+  // Use saved theme if it exists
+  updateTheme(savedTheme);
+} else {
+  // Otherwise, follow system preference
+  htmlElement.removeAttribute('data-theme');
+}
+
+// Listen for system theme changes
+window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+  if (!localStorage.getItem('theme')) {
+    // Only update if user hasn't manually set a theme
+    htmlElement.removeAttribute('data-theme');
+  }
+});
 
 // Theme toggle handler
 themeToggle.addEventListener('click', () => {
   const currentTheme = htmlElement.getAttribute('data-theme');
-  const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+  const systemTheme = getSystemTheme();
   
-  htmlElement.setAttribute('data-theme', newTheme);
-  localStorage.setItem('theme', newTheme);
+  if (!currentTheme) {
+    // If following system preference, override with opposite of system theme
+    updateTheme(systemTheme === 'dark' ? 'light' : 'dark');
+  } else {
+    // If manually set, toggle between light and dark
+    updateTheme(currentTheme === 'dark' ? 'light' : 'dark');
+  }
 });
 
 // Typing Animation

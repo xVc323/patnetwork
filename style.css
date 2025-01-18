@@ -1,3 +1,4 @@
+/* Light theme by default */
 :root {
   /* Terminal-inspired Color Scheme */
   --color-background: #F5F5F5; /* Light gray like terminal background */
@@ -37,17 +38,32 @@
   --transition-timing: cubic-bezier(0.4, 0, 0.2, 1);
 }
 
+/* Auto dark mode based on system preference */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --color-background: #1E1E1E;
+    --color-surface: #2D2D2D;
+    --color-primary: #CCCCCC;
+    --color-secondary: #999999;
+    --color-text: #CCCCCC;
+    --color-accent: #666666;
+    --color-border: #404040;
+    --color-gradient-start: #CCCCCC;
+    --color-gradient-end: #999999;
+  }
+}
+
+/* Manual dark theme override */
 [data-theme="dark"] {
-  /* Dark mode - For those late-night coding sessions */
-  --color-background: #1E1E1E; /* Dark gray like VS Code */
-  --color-surface: #2D2D2D; /* Slightly lighter dark gray */
-  --color-primary: #CCCCCC; /* Light gray for text */
-  --color-secondary: #999999; /* Medium gray */
-  --color-text: #CCCCCC; /* Light gray text */
-  --color-accent: #666666; /* Darker gray accent */
-  --color-border: #404040; /* Dark border */
-  --color-gradient-start: #CCCCCC; /* Light gray gradient */
-  --color-gradient-end: #999999; /* Medium gray gradient */
+  --color-background: #1E1E1E;
+  --color-surface: #2D2D2D;
+  --color-primary: #CCCCCC;
+  --color-secondary: #999999;
+  --color-text: #CCCCCC;
+  --color-accent: #666666;
+  --color-border: #404040;
+  --color-gradient-start: #CCCCCC;
+  --color-gradient-end: #999999;
 }
 
 /* Base Styles - The foundation of our digital existence */
@@ -148,7 +164,7 @@ a:hover {
   font-size: 2.5rem;
   font-weight: 600;
   margin-bottom: var(--space-xs);
-  height: 8rem; /* Fixed height to accommodate multiple lines */
+  height: 8rem;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -162,8 +178,8 @@ a:hover {
   background-clip: text;
   -webkit-text-fill-color: transparent;
   padding: 0 var(--space-md);
-  overflow: hidden; /* Prevent text overflow from shifting layout */
-  white-space: pre-wrap; /* Maintain line breaks */
+  overflow: hidden;
+  white-space: pre-wrap;
 }
 
 .about-section {
@@ -181,14 +197,10 @@ a:hover {
 
 .projects-section {
   margin: calc(var(--space-xxl) * 2) 0 var(--space-xxl);
-  padding-top: var(--space-xl); /* Additional padding to prevent jump */
+  padding-top: var(--space-xl);
 }
 
 /* Projects Section - Showcasing our digital creations */
-.projects-section {
-  margin: calc(var(--space-xxl) * 2) 0 var(--space-xxl);
-}
-
 .projects-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -260,7 +272,7 @@ a:hover {
   bottom: var(--space-xl);
   right: var(--space-xl);
   background: var(--color-surface);
-  z-index: 1000; /* Ensure button stays above other elements */
+  z-index: 1000;
   border: 1px solid var(--color-border);
   border-radius: 50%;
   width: 48px;
@@ -328,12 +340,12 @@ a:hover {
   }
   
   #typingText {
-    font-size: 1.5rem; /* Smaller font size for mobile */
-    line-height: 1.3; /* Tighter line spacing */
-    height: 6rem; /* Reduced height to match smaller text */
-    position: relative; /* Enable positioning */
-    top: -1rem; /* Move up without affecting other elements */
-    margin-top: 0; /* Remove margin */
+    font-size: 1.5rem;
+    line-height: 1.3;
+    height: 6rem;
+    position: relative;
+    top: -1rem;
+    margin-top: 0;
   }
   
   .main-header {
