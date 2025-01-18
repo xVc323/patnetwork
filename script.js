@@ -5,7 +5,6 @@ const htmlElement = document.documentElement;
 // Check for saved theme preference
 const savedTheme = localStorage.getItem('theme') || 'light';
 htmlElement.setAttribute('data-theme', savedTheme);
-themeToggle.textContent = savedTheme === 'dark' ? '☀️' : '🌙';
 
 // Theme toggle handler
 themeToggle.addEventListener('click', () => {
@@ -14,7 +13,6 @@ themeToggle.addEventListener('click', () => {
   
   htmlElement.setAttribute('data-theme', newTheme);
   localStorage.setItem('theme', newTheme);
-  themeToggle.textContent = newTheme === 'dark' ? '☀️' : '🌙';
 });
 
 // Typing Animation
