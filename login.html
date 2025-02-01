@@ -1,104 +1,93 @@
-<!-- login.html -->
-
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light">
 <head>
     <meta charset="UTF-8">
-    <title>Login - Pat.network</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- Inclusion de la police -->
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
-    <!-- Lien vers le fichier CSS -->
+    <title>Login Page</title>
     <link rel="stylesheet" href="style.css">
-    <!-- Icône du site -->
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .login-container {
+            background-color: var(--color-surface);
+            padding: var(--space-xl);
+            border-radius: 8px;
+            box-shadow: var(--shadow-md);
+            text-align: center;
+        }
+        .login-container h2 {
+            margin-bottom: var(--space-lg);
+            color: var(--color-primary);
+        }
+        .login-form {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-md);
+        }
+        .login-form input {
+            padding: var(--space-sm);
+            border: 1px solid var(--color-border);
+            border-radius: 4px;
+            font-family: var(--font-mono);
+        }
+        .login-form button {
+            padding: var(--space-sm) var(--space-md);
+            border: none;
+            border-radius: 4px;
+            background-color: var(--color-primary);
+            color: var(--color-surface);
+            cursor: pointer;
+            font-family: var(--font-primary);
+            transition: background-color var(--transition-duration) var(--transition-timing);
+        }
+        .login-form button:hover {
+            background-color: var(--color-accent);
+        }
+        .back-link {
+            position: absolute;
+            top: var(--space-md);
+            left: var(--space-md); /* Changed to left */
+            font-size: 1.2rem; /* Slightly smaller font size */
+            color: var(--color-primary);
+            display: flex;
+            align-items: center;
+        }
+        .back-link:hover {
+            color: var(--color-accent);
+        }
+        .back-link i {
+            margin-right: var(--space-xs); /* Spacing between arrow and text */
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 </head>
 <body>
-    <!-- Background Canvas for Prim's Algorithm -->
-    <canvas id="canvas"></canvas> <!-- Kept as per instruction -->
-
-    <!-- Theme Toggle Button (Fixed Position) -->
-    <button id="theme-toggle">🌙</button>
-
-    <!-- Content Container -->
-    <div class="content-container">
-        <!-- Titre du site -->
-        <div class="header">
-            <h2 class="site-title">Pat.network</h2>
-        </div>
-        <h1>Login</h1>
-        <form action="/login" method="POST">
-            <label for="username">Username:</label>
-            <input type="text" id="username" name="username" required>
-
-            <label for="password">Password:</label>
-            <input type="password" id="password" name="password" required>
-
-            <button type="submit" class="btn">Login</button>
+    <a href="index.html" class="back-link" aria-label="Return to homepage">
+        <- return 
+    </a>
+    <button id="theme-toggle" aria-label="Toggle theme">
+        <i class="fas fa-moon"></i>
+        <i class="fas fa-sun"></i>
+    </button>
+    <div class="login-container">
+        <h2>Login</h2>
+        <form id="loginForm" class="login-form">
+            <input type="text" id="username" placeholder="Username" required>
+            <input type="password" id="password" placeholder="Password" required>
+            <button type="submit">Login</button>
         </form>
     </div>
 
-    <!-- Scripts -->
     <script src="script.js"></script>
-    <!-- Prim's Algorithm Scripts -->
-    <script src="//d3js.org/d3.v3.min.js"></script>
-    <script src="generate-prims.js"></script>
     <script>
-        /* Prim's Algorithm Script (Unchanged) */
-        var canvas = document.getElementById("canvas");
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
-
-        var context = canvas.getContext("2d"),
-            width = canvas.width,
-            height = canvas.height;
-
-        var worker = new Worker("generate-prims.js");
-        worker.postMessage({width: width, height: height});
-        worker.addEventListener("message", function(event) {
-            worker.terminate();
-
-            var cells = event.data,
-                distance = 0,
-                visited = new Array(width * height),
-                frontier = [(height - 1) * width],
-                image = context.createImageData(width, height);
-
-            // Determine the number of iterations based on screen width
-            var iterationsPerCycle = Math.max(3, Math.floor(width / 100));
-
-            function flood() {
-                var frontier1 = [],
-                    i0,
-                    n0 = frontier.length,
-                    i1,
-                    color = d3.hsl((distance += 0.1) % 360, 0.8, 0.5).rgb(); // Lower saturation and higher lightness for pastel colors
-
-                for (var i = 0; i < n0; ++i) {
-                    i0 = frontier[i] << 2;
-                    image.data[i0 + 0] = color.r;
-                    image.data[i0 + 1] = color.g;
-                    image.data[i0 + 2] = color.b;
-                    image.data[i0 + 3] = 255;
-                }
-
-                for (var i = 0; i < n0; ++i) {
-                    i0 = frontier[i];
-                    if (cells[i0] & E && !visited[i1 = i0 + 1]) visited[i1] = true, frontier1.push(i1);
-                    if (cells[i0] & W && !visited[i1 = i0 - 1]) visited[i1] = true, frontier1.push(i1);
-                    if (cells[i0] & S && !visited[i1 = i0 + width]) visited[i1] = true, frontier1.push(i1);
-                    if (cells[i0] & N && !visited[i1 = i0 - width]) visited[i1] = true, frontier1.push(i1);
-                }
-
-                frontier = frontier1;
-                return !frontier1.length;
-            }
-
-            d3.timer(function() {
-                for (var i = 0, done; i < iterationsPerCycle && !(done = flood()); ++i);
-                context.putImageData(image, 0, 0);
-                return done;
-            });
+        document.getElementById('loginForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            alert('Login not implemented yet!');
         });
     </script>
 </body>
