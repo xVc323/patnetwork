@@ -209,12 +209,14 @@ a:hover {
 
 .project-card {
   background: var(--color-surface);
-  padding: var(--space-xl);
-  border-radius: 12px;
+  padding: var(--space-md);
+  border-radius: 8px;
   border: 1px solid var(--color-border);
   transition: all var(--transition-duration) var(--transition-timing);
   position: relative;
   overflow: hidden;
+  display: flex;
+  flex-direction: column;
 }
 
 .project-card::before {
@@ -223,7 +225,7 @@ a:hover {
   top: 0;
   left: 0;
   width: 100%;
-  height: 4px;
+  height: 2px;
   background: linear-gradient(
     90deg,
     var(--color-gradient-start),
@@ -235,8 +237,8 @@ a:hover {
 }
 
 .project-card:hover {
-  transform: translateY(-8px);
-  box-shadow: var(--shadow-lg);
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-md);
 }
 
 .project-card:hover::before {
@@ -252,7 +254,8 @@ a:hover {
   display: flex;
   gap: var(--space-sm);
   align-items: center;
-  margin-top: var(--space-md);
+  margin-top: auto;
+  padding-top: var(--space-md);
 }
 
 .project-meta span {
