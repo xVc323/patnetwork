@@ -37,22 +37,47 @@
         <header class="header" role="banner">
             <h1 class="site-title">Pat.network</h1>
             <nav class="nav" role="navigation" aria-label="Main navigation">
-                <a href="login.html" class="nav-link">Login</a>
-                <a href="https://notes.pat.network" class="nav-link">Notes</a>
+                <a href="index.html" class="nav-link active">Home</a>
+                <a href="skills.html" class="nav-link">Skills</a>
+                <a href="projects.html" class="nav-link">Projects</a>
+                <a href="blog.html" class="nav-link">Blog</a>
                 <a href="quiz.html" class="nav-link">Quiz</a>
+                <a href="https://notes.pat.network" class="nav-link">Notes</a>
             </nav>
         </header>
 
         <main role="main">
             <section aria-labelledby="hero-heading">
                 <h1 id="typingText" aria-live="polite" class="main-header"></h1>
-                <h2 id="hero-heading" class="visually-hidden">Creative Developer Showcase</h2>
+                <h2 id="hero-heading" class="visually-hidden">Data Analytics & Artificial Intelligence Candidate</h2>
                 <div class="about-section">
-                    <p>I’m a curious builder exploring the intersections of creativity and technology. Passionate about problem-solving, I enjoy crafting tools and projects that blend practicality with a touch of innovation. Whether it’s simplifying workflows, experimenting with AI, or sharing what I learn, I strive to make tech accessible and fun. Always up for a challenge, my work is a reflection of my journey as a lifelong learner.</p>
+                    <p>Passionate about technology and data science, I enjoy combining AI with business strategy to create innovative solutions. I love coding fun, real-world projects that make an impact and continuously explore new ways to bridge the gap between data and decision-making.</p>
                 </div>
             </section>
             
-            <!-- Projects Section -->
+            <!-- Featured Section -->
+            <section class="featured-section" aria-labelledby="featured-heading">
+                <h2 id="featured-heading">Explore</h2>
+                <div class="featured-grid">
+                    <a href="skills.html" class="featured-card">
+                        <div class="featured-icon"><i class="fas fa-code"></i></div>
+                        <h3>Skills & Expertise</h3>
+                        <p>Discover my technical skills in Python, data analysis, machine learning, and more.</p>
+                    </a>
+                    <a href="projects.html" class="featured-card">
+                        <div class="featured-icon"><i class="fas fa-project-diagram"></i></div>
+                        <h3>Project Showcase</h3>
+                        <p>Explore my projects in data analytics, fintech, and business intelligence.</p>
+                    </a>
+                    <a href="blog.html" class="featured-card">
+                        <div class="featured-icon"><i class="fas fa-pen-fancy"></i></div>
+                        <h3>Blog & Ideas</h3>
+                        <p>Read articles and insights on data science, AI, and business analytics.</p>
+                    </a>
+                </div>
+            </section>
+            
+            <!-- GitHub Projects Section -->
             <section class="projects-section" aria-labelledby="projects-heading">
                 <h2 id="projects-heading">My Projects</h2>
                 <div class="projects-grid" id="projectsGrid" role="list">
@@ -66,6 +91,14 @@
                         <div class="skeleton-line short"></div>
                         <div class="skeleton-line short"></div>
                     </div>
+                    <div class="project-card skeleton" role="listitem">
+                        <div class="skeleton-line"></div>
+                        <div class="skeleton-line short"></div>
+                        <div class="skeleton-line short"></div>
+                    </div>
+                </div>
+                <div class="view-all-container">
+                    <a href="projects.html" class="view-all-btn">View More Projects <i class="fas fa-arrow-right"></i></a>
                 </div>
             </section>
         </main>

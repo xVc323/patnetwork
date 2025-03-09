@@ -52,52 +52,53 @@ themeToggle.addEventListener('click', () => {
 // Typing Animation
 const typingText = document.getElementById('typingText');
 // Ensure the typing animation works with h1 element
-typingText.style.display = 'block';
-const messages = [
-  "Turning ideas into reality",
-  "Exploring the synergy between data and innovation",
-  "Exploring creative solutions",
-  "Transforming data into actionable insights",
-  "Building meaningful projects",
-  "Designing solutions at the intersection of AI and strategy",
-  "Simplifying complex problems",
-  "Simplifying the complex with data-driven approaches",
-  "Experimenting with new technologies",
-  "Turning raw information into meaningful narratives",
-  "Sharing knowledge and insights",
-  "Experimenting with AI to solve real-world problems",
-  "Blending analytics and creativity for impactful results",
-  "Crafting intuitive tools for modern challenges",
-  "Unlocking potential through technology and data",
-  "Sharing the journey of discovery and growth"
-];
-let messageIndex = 0;
-let charIndex = 0;
-let isDeleting = false;
+if (typingText) {
+  typingText.style.display = 'block';
+  const messages = [
+    "Data Analytics & Artificial Intelligence",
+    "Bridging data and decision-making",
+    "Exploring the intersection of AI and business",
+    "Transforming data into actionable insights",
+    "Passionate about data science",
+    "Building innovative AI solutions",
+    "Combining Python with business strategy",
+    "Leveraging statistical models for insights",
+    "Turning information into knowledge",
+    "Creating data-driven solutions"
+  ];
+  let messageIndex = 0;
+  let charIndex = 0;
+  let isDeleting = false;
 
-function type() {
-  const currentMessage = messages[messageIndex];
-  
-  if (!isDeleting && charIndex < currentMessage.length) {
-    typingText.textContent = currentMessage.substring(0, charIndex + 1);
-    charIndex++;
-    setTimeout(type, 100);
-  } else if (isDeleting && charIndex > 0) {
-    typingText.textContent = currentMessage.substring(0, charIndex - 1);
-    charIndex--;
-    setTimeout(type, 50);
-  } else {
-    isDeleting = !isDeleting;
-    if (!isDeleting) {
-      messageIndex = (messageIndex + 1) % messages.length;
+  function type() {
+    const currentMessage = messages[messageIndex];
+    
+    if (!isDeleting && charIndex < currentMessage.length) {
+      typingText.textContent = currentMessage.substring(0, charIndex + 1);
+      charIndex++;
+      setTimeout(type, 100);
+    } else if (isDeleting && charIndex > 0) {
+      typingText.textContent = currentMessage.substring(0, charIndex - 1);
+      charIndex--;
+      setTimeout(type, 50);
+    } else {
+      isDeleting = !isDeleting;
+      if (!isDeleting) {
+        messageIndex = (messageIndex + 1) % messages.length;
+      }
+      setTimeout(type, isDeleting ? 1500 : 500);
     }
-    setTimeout(type, isDeleting ? 1500 : 500);
   }
+
+  // Start typing animation
+  type();
 }
 
-// GitHub Projects Fetching
-async function fetchGitHubProjects() {
-  const projectsGrid = document.getElementById('projectsGrid');
+// GitHub Projects Fetching for Home and Projects pages
+async function fetchGitHubProjects(containerId, limit = null) {
+  const projectsGrid = document.getElementById(containerId);
+  
+  if (!projectsGrid) return;
   
   try {
     const response = await fetch('https://api.github.com/users/xVc323/repos?sort=updated&direction=desc');
@@ -108,22 +109,29 @@ async function fetchGitHubProjects() {
     // Clear skeleton loading
     projectsGrid.innerHTML = '';
     
+    // Process and display projects
+    let displayCount = 0;
     projects.forEach(project => {
       if (!project.fork && !project.archived) {
+        // Apply limit if specified
+        if (limit !== null && displayCount >= limit) return;
+        
         const projectCard = document.createElement('div');
         projectCard.className = 'project-card';
         projectCard.setAttribute('role', 'listitem');
         
+        // Create project card content with proper structure
         projectCard.innerHTML = `
           <h3>${project.name}</h3>
-          ${project.description ? `<p>${project.description}</p>` : ''}
+          ${project.description ? `<p>${project.description}</p>` : '<p>No description provided</p>'}
           <div class="project-meta">
-            ${project.language ? `<span>${project.language}</span>` : ''}
+            ${project.language ? `<span>${project.language}</span>` : '<span>Other</span>'}
             <a href="${project.html_url}" target="_blank" rel="noopener noreferrer">View on GitHub</a>
           </div>
         `;
         
         projectsGrid.appendChild(projectCard);
+        displayCount++;
       }
     });
     
@@ -138,9 +146,28 @@ async function fetchGitHubProjects() {
 
 // Initialize everything
 document.addEventListener('DOMContentLoaded', () => {
-  // Fetch GitHub projects
-  fetchGitHubProjects();
+  // Fetch GitHub projects for the homepage (limit to 3)
+  if (document.getElementById('projectsGrid')) {
+    fetchGitHubProjects('projectsGrid', 3);
+  }
   
-  // Start typing animation
-  type();
+  // Fetch GitHub projects for the projects page (no limit)
+  if (document.getElementById('githubProjectsGrid')) {
+    fetchGitHubProjects('githubProjectsGrid');
+  }
+  
+  // Add animation to experience items
+  const experienceItems = document.querySelectorAll('.experience-item');
+  if (experienceItems.length > 0) {
+    experienceItems.forEach((item, index) => {
+      item.style.opacity = '0';
+      item.style.transform = 'translateY(20px)';
+      
+      setTimeout(() => {
+        item.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+        item.style.opacity = '1';
+        item.style.transform = 'translateY(0)';
+      }, 300 + (index * 200));
+    });
+  }
 });

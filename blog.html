@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <title>Blog - Pat.network</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Articles and insights on technology and innovation">
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Lora:ital,wght@0,400;0,700;1,400&family=Space+Mono&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <!-- CSS -->
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="blog.css">
+    
+    <!-- Favicons -->
+    <link rel="icon" type="image/svg+xml" href="/icon/favicon.svg">
+
+    <!-- Google tag -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-CK6HQBQNEG"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-CK6HQBQNEG');
+    </script>
+</head>
+<body>
+    <button id="theme-toggle" aria-label="Toggle theme">
+        <i class="fas fa-moon"></i>
+        <i class="fas fa-sun"></i>
+    </button>
+
+    <div class="container">
+        <header class="header" role="banner">
+            <h1 class="site-title">Pat.network</h1>
+            <nav class="nav" role="navigation" aria-label="Main navigation">
+                <a href="index.html" class="nav-link">Home</a>
+                <a href="skills.html" class="nav-link">Skills</a>
+                <a href="blog.html" class="nav-link active">Blog</a>
+                <a href="projects.html" class="nav-link">Projects</a>
+                <a href="quiz.html" class="nav-link">Quiz</a>
+            </nav>
+        </header>
+
+        <main role="main">
+            <section class="blog-header">
+                <h1 class="main-header">Blog & Ideas (WIP 🚧)</h1>
+                <p class="blog-intro">Thoughts on data analytics, AI, fintech, and marketing. Sharing insights and learnings from my educational and professional journey.</p>
+
+                <div class="blog-filter">
+                    <div class="filter-label">Filter by topic:</div>
+                    <div class="filter-chips">
+                        <button class="filter-chip active" data-category="all">All</button>
+                        <button class="filter-chip" data-category="ai">AI</button>
+                        <button class="filter-chip" data-category="data">Data</button>
+                        <button class="filter-chip" data-category="finance">Finance</button>
+                        <button class="filter-chip" data-category="marketing">Marketing</button>
+                    </div>
+                </div>
+            </section>
+
+            <section class="featured-post">
+                <div class="featured-post-image">
+                    <img src="https://images.unsplash.com/photo-1620712943543-bcc4688e7485?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1024&q=80" alt="Data Visualization concept">
+                </div>
+                <div class="featured-post-content">
+                    <div class="post-category" data-category="data">Data</div>
+                    <h2>The Power of Data Visualization in Business Decision Making</h2>
+                    <p class="post-date">Coming Soon</p>
+                    <p class="post-excerpt">Exploring how effective data visualization techniques can transform complex datasets into actionable insights for business leaders. A look at Power BI and other tools that drive data-informed decision making.</p>
+                    <a href="#" class="read-more">Read article <i class="fas fa-arrow-right"></i></a>
+                </div>
+            </section>
+
+            <section class="blog-posts-grid">
+                <article class="blog-card" data-category="ai">
+                    <div class="post-category">AI</div>
+                    <h3>Ethical Considerations in AI Development</h3>
+                    <p class="post-date">Coming Soon</p>
+                    <p class="post-excerpt">Examining the ethical challenges that arise when developing and deploying artificial intelligence solutions, with a focus on bias, transparency, and privacy.</p>
+                    <a href="#" class="read-more">Read article <i class="fas fa-arrow-right"></i></a>
+                </article>
+
+                <article class="blog-card" data-category="data">
+                    <div class="post-category">Data</div>
+                    <h3>Statistical Models: From Theory to Application</h3>
+                    <p class="post-date">Coming Soon</p>
+                    <p class="post-excerpt">A practical guide to implementing statistical models for data analysis, with real-world applications and Python code examples.</p>
+                    <a href="#" class="read-more">Read article <i class="fas fa-arrow-right"></i></a>
+                </article>
+
+                <article class="blog-card" data-category="finance">
+                    <div class="post-category">Finance</div>
+                    <h3>Fintech Innovations Reshaping Financial Services</h3>
+                    <p class="post-date">Coming Soon</p>
+                    <p class="post-excerpt">An overview of how technology is transforming traditional financial services, from mobile payments to algorithmic trading and blockchain applications.</p>
+                    <a href="#" class="read-more">Read article <i class="fas fa-arrow-right"></i></a>
+                </article>
+
+                <article class="blog-card" data-category="marketing">
+                    <div class="post-category">Marketing</div>
+                    <h3>Data-Driven Marketing Strategies for 2023</h3>
+                    <p class="post-date">Coming Soon</p>
+                    <p class="post-excerpt">How marketing professionals can leverage data analytics to optimize campaigns, understand customer behavior, and measure ROI effectively.</p>
+                    <a href="#" class="read-more">Read article <i class="fas fa-arrow-right"></i></a>
+                </article>
+
+                <article class="blog-card" data-category="data">
+                    <div class="post-category">Data</div>
+                    <h3>Python for Data Analysis: Essential Libraries</h3>
+                    <p class="post-date">Coming Soon</p>
+                    <p class="post-excerpt">A comprehensive look at the Python ecosystem for data analysis, including pandas, NumPy, and visualization libraries for effective data manipulation.</p>
+                    <a href="#" class="read-more">Read article <i class="fas fa-arrow-right"></i></a>
+                </article>
+
+                <article class="blog-card" data-category="finance">
+                    <div class="post-category">Finance</div>
+                    <h3>Investment Analysis with Python</h3>
+                    <p class="post-date">Coming Soon</p>
+                    <p class="post-excerpt">Exploring quantitative approaches to investment analysis, portfolio optimization, and risk management using Python programming.</p>
+                    <a href="#" class="read-more">Read article <i class="fas fa-arrow-right"></i></a>
+                </article>
+            </section>
+
+            <div class="newsletter-signup">
+                <h2>Stay Updated</h2>
+                <p>Subscribe to receive notifications when new articles are published.</p>
+                <form class="newsletter-form">
+                    <input type="email" placeholder="Your email address" required>
+                    <button type="submit">Subscribe</button>
+                </form>
+            </div>
+        </main>
+    </div>
+
+    <script src="script.js"></script>
+    <script src="blog.js"></script>
+</body>
+</html> 

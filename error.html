@@ -5,13 +5,32 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Error - Pat.network</title>
     <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        html {
-            background-color: white;
+        :root {
+            --color-background: white;
+            --color-text: #333;
+            --color-text-secondary: #666;
+            --color-primary: #3498db;
+            --color-surface: rgba(255, 255, 255, 0.9);
+            --color-border: rgba(0, 0, 0, 0.1);
+            --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --transition-duration: 0.3s;
+            --transition-timing: ease;
         }
 
-        html.dark-theme {
-            background-color: black;
+        [data-theme="dark"] {
+            --color-background: black;
+            --color-text: #f5f5f5;
+            --color-text-secondary: #999;
+            --color-primary: #3498db;
+            --color-surface: rgba(30, 30, 30, 0.9);
+            --color-border: rgba(255, 255, 255, 0.1);
+            --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        html {
+            background-color: var(--color-background);
         }
 
         body {
@@ -22,11 +41,7 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            color: #333;
-        }
-
-        html.dark-theme body {
-            color: #f5f5f5;
+            color: var(--color-text);
         }
 
         .error-container {
@@ -47,12 +62,8 @@
         }
 
         .error-description {
-            color: #666;
+            color: var(--color-text-secondary);
             margin-bottom: 2rem;
-        }
-
-        html.dark-theme .error-description {
-            color: #999;
         }
 
         .home-link {
@@ -66,32 +77,64 @@
         }
 
         .home-link:hover {
-            background-color: currentColor;
-            color: var(--bg-color);
-        }
-
-        html:not(.dark-theme) .home-link:hover {
-            --bg-color: white;
-        }
-
-        html.dark-theme .home-link:hover {
-            --bg-color: black;
+            background-color: var(--color-text);
+            color: var(--color-background);
         }
 
         #theme-toggle {
             position: fixed;
-            top: 20px;
+            bottom: 20px;
             right: 20px;
-            background: none;
-            border: none;
-            font-size: 1.5em;
+            background: var(--color-surface);
+            z-index: 1000;
+            border: 1px solid var(--color-border);
+            border-radius: 50%;
+            width: 48px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             cursor: pointer;
-            padding: 10px;
+            transition: all var(--transition-duration) var(--transition-timing);
+            box-shadow: var(--shadow-md);
+            color: var(--color-primary);
+            padding: 0;
+            overflow: hidden;
+        }
+
+        #theme-toggle:hover {
+            background: var(--color-primary);
+            color: var(--color-background);
+            transform: scale(1.1);
+        }
+
+        #theme-toggle i {
+            font-size: 1.25rem;
+            transition: transform var(--transition-duration) var(--transition-timing);
+        }
+
+        #theme-toggle .fa-sun {
+            display: none;
+        }
+
+        [data-theme="dark"] #theme-toggle .fa-sun {
+            display: block;
+        }
+
+        [data-theme="dark"] #theme-toggle .fa-moon {
+            display: none;
+        }
+
+        #theme-toggle:hover i {
+            transform: rotate(360deg);
         }
     </style>
 </head>
 <body>
-    <button id="theme-toggle">🌙</button>
+    <button id="theme-toggle" aria-label="Toggle theme">
+        <i class="fas fa-moon"></i>
+        <i class="fas fa-sun"></i>
+    </button>
 
     <div class="error-container">
         <h1 class="error-code" id="error-code">404</h1>
@@ -108,12 +151,11 @@
             // Function to set the theme
             function setTheme(theme) {
                 if (theme === 'dark') {
-                    html.classList.add('dark-theme');
-                    themeToggle.textContent = '☀️';
+                    html.setAttribute('data-theme', 'dark');
                 } else {
-                    html.classList.remove('dark-theme');
-                    themeToggle.textContent = '🌙';
+                    html.removeAttribute('data-theme');
                 }
+                localStorage.setItem('theme', theme);
             }
 
             // Retrieve and apply the stored theme
@@ -124,10 +166,9 @@
 
             // Toggle the theme
             themeToggle.addEventListener('click', () => {
-                const currentTheme = html.classList.contains('dark-theme') ? 'dark' : 'light';
+                const currentTheme = html.getAttribute('data-theme') === 'dark' ? 'dark' : 'light';
                 const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
                 setTheme(newTheme);
-                localStorage.setItem('theme', newTheme);
             });
 
             // Manage the error code
@@ -182,7 +223,7 @@
                 '415': 'Unsupported Media Type',
                 '416': 'Range Not Satisfiable',
                 '417': 'Expectation Failed',
-                '418': "I'm a Teapot",
+                '418': "I'm a teapot, not a coffee pot. Don't ask me to brew coffee, that's not my job!",
                 '421': 'Misdirected Request',
                 '422': 'Unprocessable Entity',
                 '423': 'Locked',
@@ -210,81 +251,81 @@
 
             const errorDescriptions = {
                 // Informational Responses (100–199)
-                '100': 'The server has received the request headers and the client should proceed to send the request body.',
-                '101': 'The requester has asked the server to switch protocols.',
-                '102': 'WebDAV; the server is processing the request, but no response is available yet.',
-                '103': 'Used to return some response headers before final HTTP message.',
+                '100': 'The server says "Keep going, I\'m listening!" - like that friend who nods while you\'re telling a long story.',
+                '101': 'Switching gears faster than your indecisive friend choosing a restaurant.',
+                '102': 'Please hold, your request is being processed. The server is doing its best impression of the DMV.',
+                '103': 'Here\'s a sneak peek while we prepare the full response. Like movie trailers, but for data!',
 
                 // Successful Responses (200–299)
-                '200': 'The request has succeeded.',
-                '201': 'The request has been fulfilled and resulted in a new resource being created.',
-                '202': 'The request has been accepted for processing, but the processing has not been completed.',
-                '203': 'The server successfully processed the request, but is returning information that may be from another source.',
-                '204': 'The server successfully processed the request, but is not returning any content.',
-                '205': 'The server successfully processed the request, but is not returning any content and requires that the requester reset the document view.',
-                '206': 'The server is delivering only part of the resource due to a range header sent by the client.',
-                '207': 'WebDAV; the message body that follows is an XML message and can contain multiple separate response codes.',
-                '208': 'WebDAV; the members of a DAV binding have already been enumerated in a previous reply to this request.',
-                '226': 'The server has fulfilled a GET request for the resource, and the response is a representation of the result of one or more instance-manipulations.',
+                '200': 'Mission accomplished! If HTTP responses were Olympic events, this would be the gold medal.',
+                '201': 'Congratulations! You\'ve successfully created something. Your digital baby has been born!',
+                '202': 'Your request has been accepted and is being processed. Like when the barista takes your order but hasn\'t made your coffee yet.',
+                '203': 'The information seems legit, but we got it from our friend\'s cousin, so take it with a grain of salt.',
+                '204': 'Success! But also... nothing to see here. It\'s like opening an empty fridge when you\'re hungry.',
+                '205': 'Please refresh your perspective. Like when someone tells you to "turn it off and on again."',
+                '206': 'Here\'s part of what you asked for. The rest is coming - like Netflix releasing only half a season.',
+                '207': 'Multiple status reports bundled together, like getting all your receipts in one email.',
+                '208': 'We\'ve already told you this before. Are you even listening to us?',
+                '226': 'We\'ve done some magic behind the scenes to save bandwidth. You\'re welcome!',
 
                 // Redirection Messages (300–399)
-                '300': 'There are multiple options for the resource that the client may follow.',
-                '301': 'The resource has been moved permanently to a new URL.',
-                '302': 'The resource has been found at a different URL temporarily.',
-                '303': 'The response to the request can be found under a different URL and should be retrieved using a GET method.',
-                '304': 'The resource has not been modified since the last request.',
-                '305': 'The requested resource must be accessed through the proxy given by the Location field.',
-                '307': 'The resource has been found at a different URL, but future requests should still use the original URL.',
-                '308': 'The resource has been moved permanently to a new URL.',
+                '300': 'You have options! It\'s like being at an ice cream shop with too many flavors.',
+                '301': 'This resource has moved permanently. It got tired of the old neighborhood and bought a house elsewhere.',
+                '302': 'This page is temporarily hanging out somewhere else, like your friend who\'s always couch-surfing.',
+                '303': 'Look over there! Classic misdirection, like a magician making you watch the wrong hand.',
+                '304': 'Nothing\'s changed since your last visit. Like visiting your grandparents\' house after 10 years.',
+                '305': 'You need to use a proxy, which is like having to call your mom to talk to your dad.',
+                '307': 'Temporarily relocated, like your favorite store during mall renovations.',
+                '308': 'Permanently moved, forwarding address filed. This resource has upgraded to a better neighborhood.',
 
                 // Client Error Responses (400–499)
-                '400': 'The server could not understand the request due to invalid syntax.',
-                '401': 'Authentication is required to access this resource.',
-                '402': 'Reserved for future use. Initially intended for digital payment systems.',
-                '403': 'You don\'t have permission to access this resource.',
-                '404': 'The page you\'re looking for doesn\'t exist or has been moved.',
-                '405': 'The HTTP method used is not allowed for this resource.',
-                '406': 'The requested resource is capable of generating only content not acceptable according to the Accept headers sent in the request.',
-                '407': 'Proxy authentication is required to access this resource.',
-                '408': 'The server timed out waiting for the request.',
-                '409': 'The request could not be completed due to a conflict with the current state of the target resource.',
-                '410': 'The resource requested is no longer available and will not be available again.',
-                '411': 'The request did not specify the length of its content, which is required by the requested resource.',
-                '412': 'One or more preconditions given in the request header fields evaluated to false.',
-                '413': 'The request is larger than the server is willing or able to process.',
-                '414': 'The URI provided was too long for the server to process.',
-                '415': 'The request entity has a media type which the server or resource does not support.',
-                '416': 'The client has asked for a portion of the file, but the server cannot supply that portion.',
-                '417': 'The server could not meet the expectation given in the Expect request header.',
-                '418': 'The server refuses the attempt to brew coffee with a teapot.',
-                '421': 'The request was directed at a server that is not able to produce a response.',
-                '422': 'The request was well-formed but was unable to be followed due to semantic errors.',
-                '423': 'The resource that is being accessed is locked.',
-                '424': 'The request failed due to failure of a previous request.',
-                '425': 'The server is unwilling to risk processing a request that might be replayed.',
-                '426': 'The client should switch to a different protocol.',
-                '428': 'The origin server requires the request to be conditional.',
-                '429': 'The user has sent too many requests in a given amount of time.',
-                '431': 'The server is unwilling to process the request because its header fields are too large.',
-                '451': 'The user-agent requested a resource that cannot legally be provided, such as a web page censored by a government.',
+                '400': 'Your request makes no sense. It\'s like you\'re speaking Klingon to a Vulcan.',
+                '401': 'Nice try! But you need a backstage pass to access this content.',
+                '402': 'Show me the money! This resource requires payment, like that friend who never forgets when you owe them $5.',
+                '403': 'Access denied! This is the digital equivalent of "Sorry, you\'re not on the list."',
+                '404': 'Page not found - it\'s playing hide and seek, and it\'s winning.',
+                '405': 'That method is not allowed. It\'s like trying to exit through the entrance door at the supermarket.',
+                '406': 'The server can\'t satisfy your preferences. You\'re too picky, like someone ordering a no-foam, half-caf, triple-shot latte with exactly 3.5 ice cubes.',
+                '407': 'The proxy server needs authentication. It\'s the bouncer of the internet club.',
+                '408': 'Request timeout - your request fell asleep waiting for a response. Zzz...',
+                '409': 'There\'s a conflict here, like scheduling two meetings in the same conference room.',
+                '410': 'This resource is gone forever, like that sock that disappeared in the dryer.',
+                '411': 'Length required - the server needs to know how big this request is, like airline baggage requirements.',
+                '412': 'Precondition failed - your "if" statement returned false. The server is very literal that way.',
+                '413': 'Your request is too large. It\'s like trying to fit a grand piano through a cat door.',
+                '414': 'Your URL is way too long. Even the server has a TL;DR policy.',
+                '415': 'Unsupported media type. The server only likes mainstream formats, it\'s kind of a media snob.',
+                '416': 'Range not satisfiable - you\'re asking for a piece of pie that doesn\'t exist.',
+                '417': 'Expectation failed - like when you order a unicorn and get a horse with an ice cream cone on its head.',
+                '418': "I'm a teapot, not a coffee pot. Don't ask me to brew coffee, that's not my job!",
+                '421': 'Request misdirected - your message ended up in the wrong inbox.',
+                '422': 'Your request makes technical sense but has semantic errors, like using "their" instead of "they\'re".',
+                '423': 'This resource is locked. Someone else has the key and they\'re not sharing.',
+                '424': 'This request failed because another request it depends on failed. It\'s like a domino effect of failure.',
+                '425': 'You\'re too early to the party. The server isn\'t ready for you yet.',
+                '426': 'You need to upgrade your protocol. Your current one is like showing up to a formal event in pajamas.',
+                '428': 'Precondition required - the server needs more information before proceeding, like a paranoid detective.',
+                '429': 'Too many requests - you\'re like an overexcited puppy. Please calm down and try again later.',
+                '431': 'Your request headers are too large. The server has a headache from trying to process them.',
+                '451': 'This content has been removed for legal reasons. Someone called the digital police!',
 
                 // Server Error Responses (500–599)
-                '500': 'Something went wrong on our end. Please try again later.',
-                '501': 'The server does not recognize the request method, or it lacks the ability to fulfill the request.',
-                '502': 'The server received an invalid response from the upstream server.',
-                '503': 'The service is temporarily unavailable. Please try again later.',
-                '504': 'The server timed out waiting for another server\'s response.',
-                '505': 'The server does not support the HTTP protocol version used in the request.',
-                '506': 'Transparent content negotiation for the request results in a circular reference.',
-                '507': 'The server is unable to store the representation needed to complete the request.',
-                '508': 'The server detected an infinite loop while processing the request.',
-                '510': 'Further extensions to the request are required for the server to fulfill it.',
-                '511': 'The client needs to authenticate to gain network access.'
+                '500': 'Internal server error - our code is having an existential crisis right now.',
+                '501': 'Not implemented - the server doesn\'t know how to do that yet. It\'s still learning!',
+                '502': 'Bad gateway - the server upstream sent back garbage. It\'s not our fault, we promise!',
+                '503': 'Service unavailable - our servers are taking a coffee break. They\'ll be back soon!',
+                '504': 'Gateway timeout - the upstream server is ghosting us, just like your Tinder date.',
+                '505': 'HTTP version not supported - your protocol is either too vintage or too avant-garde for us.',
+                '506': 'Variant also negotiates - there\'s a circular reference in content negotiation. It\'s like a dog chasing its tail.',
+                '507': 'Insufficient storage - our server is full, like trying to fit another slice of pizza into an already full stomach.',
+                '508': 'Loop detected - we\'re caught in an infinite loop, like being stuck in a revolving door.',
+                '510': 'Not extended - the server needs an extension to fulfill this request, like needing a ladder to reach the top shelf.',
+                '511': 'Network authentication required - you need to sign into the Wi-Fi before proceeding.'
             };
 
             document.getElementById('error-code').textContent = errorCode;
             document.getElementById('error-message').textContent = errorMessages[errorCode] || 'Unknown Status';
-            document.getElementById('error-description').textContent = errorDescriptions[errorCode] || 'An unexpected status occurred.';
+            document.getElementById('error-description').textContent = errorDescriptions[errorCode] || 'An unexpected status occurred, and even we don\'t know what happened.';
         });
     </script>
 </body>

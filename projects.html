@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <title>Projects - Pat.network</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Showcase of personal and professional projects">
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Lora:ital,wght@0,400;0,700;1,400&family=Space+Mono&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <!-- CSS -->
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="projects.css">
+    
+    <!-- Favicons -->
+    <link rel="icon" type="image/svg+xml" href="/icon/favicon.svg">
+
+    <!-- Google tag -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-CK6HQBQNEG"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-CK6HQBQNEG');
+    </script>
+</head>
+<body>
+    <button id="theme-toggle" aria-label="Toggle theme">
+        <i class="fas fa-moon"></i>
+        <i class="fas fa-sun"></i>
+    </button>
+
+    <div class="container">
+        <header class="header" role="banner">
+            <h1 class="site-title">Pat.network</h1>
+            <nav class="nav" role="navigation" aria-label="Main navigation">
+                <a href="index.html" class="nav-link">Home</a>
+                <a href="skills.html" class="nav-link">Skills</a>
+                <a href="blog.html" class="nav-link">Blog</a>
+                <a href="projects.html" class="nav-link active">Projects</a>
+                <a href="quiz.html" class="nav-link">Quiz</a>
+            </nav>
+        </header>
+
+        <main role="main">
+            <section class="projects-intro">
+                <h1 class="main-header">Projects Showcase</h1>
+                <p class="projects-intro-text">Here you'll find a collection of my personal projects in data analytics, AI, and related fields. I'm continuously exploring new technologies and building interesting applications.</p>
+                
+                <div class="project-filters">
+                    <div class="filter-label">View by:</div>
+                    <div class="view-toggle">
+                        <button class="view-btn active" data-view="timeline">
+                            <i class="fas fa-stream"></i> Timeline
+                        </button>
+                        <button class="view-btn" data-view="grid">
+                            <i class="fas fa-th-large"></i> Grid
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Timeline View -->
+            <section id="timeline-view" class="project-timeline">
+                <div class="timeline-track"></div>
+                
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-date">2025</div>
+                    <div class="timeline-content">
+                        <div class="project-card featured">
+                            <div class="project-image">
+                                <img src="https://cdn.pixabay.com/photo/2022/05/11/10/02/presentation-7188988_1280.jpg" alt="AI PowerPoint Generator">
+                            </div>
+                            <div class="project-details">
+                                <h3>AI PowerPoint Generator</h3>
+                                <div class="project-tags">
+                                    <span class="project-tag">Python</span>
+                                    <span class="project-tag">AI</span>
+                                    <span class="project-tag">Presentation Design</span>
+                                </div>
+                                <p class="project-description">Personal project focused on creating visually appealing PowerPoint presentations using AI. The tool automatically generates professional slides with appropriate layouts, color schemes, and visualizations based on content input. (In Development)</p>
+                                <div class="project-links">
+                                    <a href="#" class="project-link"><i class="fas fa-file-alt"></i> Project Details</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-date">2025</div>
+                    <div class="timeline-content">
+                        <div class="project-card">
+                            <div class="project-image">
+                                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTABypQKWCGitxa88E8-EKXFh_r8Tkli9zv8w&s" alt="Gemini Plays Pokemon">
+                            </div>
+                            <div class="project-details">
+                                <h3>Gemini Plays Pokemon Red</h3>
+                                <div class="project-tags">
+                                    <span class="project-tag">Python</span>
+                                    <span class="project-tag">Google Gemini API</span>
+                                    <span class="project-tag">Game AI</span>
+                                </div>
+                                <p class="project-description">Personal project exploring how Google's Gemini AI model can play and complete Pokemon Red. The system uses computer vision to interpret the game state and makes decisions about optimal moves and strategies. (In Development)</p>
+                                <div class="project-links">
+                                    <a href="#" class="project-link"><i class="fas fa-file-alt"></i> Project Details</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Grid View (Hidden by default) -->
+            <section id="grid-view" class="projects-grid" style="display: none;">
+                <!-- Grid items will be dynamically populated with the same content as the timeline -->
+            </section>
+            
+            <!-- GitHub Projects Section -->
+            <section class="github-projects-section">
+                <h2>My GitHub Projects</h2>
+                <div class="projects-grid" id="githubProjectsGrid">
+                    <!-- GitHub projects will be loaded via JavaScript -->
+                    <div class="project-card skeleton">
+                        <div class="skeleton-line"></div>
+                        <div class="skeleton-line short"></div>
+                        <div class="skeleton-line short"></div>
+                    </div>
+                    <div class="project-card skeleton">
+                        <div class="skeleton-line"></div>
+                        <div class="skeleton-line short"></div>
+                        <div class="skeleton-line short"></div>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Call to Action -->
+            <section class="project-cta">
+                <h2>Interested in collaborating?</h2>
+                <p>I'm always open to discussing new projects and learning opportunities.</p>
+                <a href="mailto:hello@pat.network" class="cta-button">Get in Touch</a>
+            </section>
+        </main>
+    </div>
+
+    <script src="script.js"></script>
+    <script src="projects.js"></script>
+</body>
+</html> 
