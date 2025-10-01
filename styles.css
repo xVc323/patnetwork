@@ -423,6 +423,36 @@ h1, h2, h3, h4, h5, h6 {
     animation-delay: 1.5s;
 }
 
+.floating-element.sap {
+    top: 5%;
+    right: 35%;
+    animation-delay: 2s;
+}
+
+.floating-element.linkedin {
+    bottom: 5%;
+    right: 5%;
+    animation-delay: 2.5s;
+}
+
+.floating-element.fastapi {
+    top: 40%;
+    right: 5%;
+    animation-delay: 3s;
+}
+
+.floating-element.power-automate {
+    top: 5%;
+    left: 5%;
+    animation-delay: 3.5s;
+}
+
+.floating-element.copilot {
+    bottom: 30%;
+    right: 35%;
+    animation-delay: 4s;
+}
+
 @keyframes float {
     0%, 100% { transform: translateY(0px); }
     50% { transform: translateY(-20px); }
