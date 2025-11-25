@@ -15,7 +15,6 @@
         
         html, body {
             width: 100%;
-            min-height: 100vh;
         }
         
         body {
@@ -26,7 +25,7 @@
             margin: 0;
             padding: 0;
             overflow-x: hidden;
-            min-height: 100vh;
+            height: fit-content;
         }
         
         .page-wrapper {
@@ -35,6 +34,7 @@
             justify-content: center;
             align-items: flex-start;
             padding: 20px 0;
+            min-height: auto;
         }
         
         .scale-content {
@@ -43,6 +43,7 @@
             transform-origin: center top;
             transition: transform 0.2s ease;
             margin: 0 auto;
+            display: block;
         }
         
         .container {
@@ -602,7 +603,8 @@
         // Fonction pour scaler la page en mode desktop
         function scalePageToFit() {
             var content = document.querySelector('.scale-content');
-            if (!content) return;
+            var wrapper = document.querySelector('.page-wrapper');
+            if (!content || !wrapper) return;
             
             var viewportWidth = window.innerWidth;
             var maxContentWidth = 1600;
@@ -611,9 +613,10 @@
             // Calculer la largeur cible (95% de l'écran, entre min et max)
             var targetWidth = Math.min(Math.max(viewportWidth * 0.95, minContentWidth), maxContentWidth);
             
+            var scale = 1;
             // Si l'écran est plus petit que la largeur cible, scaler
             if (viewportWidth < targetWidth) {
-                var scale = viewportWidth / targetWidth;
+                scale = viewportWidth / targetWidth;
                 content.style.width = targetWidth + 'px';
                 content.style.transform = 'scale(' + scale + ')';
             } else {
@@ -624,10 +627,10 @@
             
             content.style.transformOrigin = 'center top';
             
-            // Ajuster la hauteur du body
-            var scaleValue = parseFloat(content.style.transform.match(/scale\((.*)\)/)[1]) || 1;
-            var scaledHeight = content.offsetHeight * scaleValue;
-            document.body.style.minHeight = scaledHeight + 60 + 'px';
+            // Ajuster la hauteur du wrapper pour correspondre à la hauteur scalée
+            var contentHeight = content.offsetHeight;
+            var scaledHeight = contentHeight * scale;
+            wrapper.style.height = scaledHeight + 40 + 'px'; // +40 pour le padding
         }
         
         // Appliquer au chargement et au resize
