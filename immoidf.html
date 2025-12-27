@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="fr" class="h-full">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Immo Paris</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+    .dark ::-webkit-scrollbar-thumb { background: #475569; }
+    .score-badge {
+      min-width: 2.5rem; height: 2.5rem;
+      display: inline-flex; align-items: center; justify-content: center;
+      border-radius: 0.5rem; font-weight: 700; font-size: 0.875rem;
+    }
+    .custom-cluster {
+      background: transparent !important;
+    }
+    .custom-cluster > div {
+      width: 40px; height: 40px;
+    }
+    .card-img { aspect-ratio: 4/3; object-fit: cover; }
+    .carousel { aspect-ratio: 4/3; }
+    .carousel-img { transition: opacity 0.2s; }
+    @media (max-width: 640px) {
+      .card-img, .carousel { aspect-ratio: 16/9; }
+    }
+    /* Leaflet popup image */
+    .leaflet-popup-content img { margin: 0 !important; }
+  </style>
+</head>
+<body class="h-full bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-slate-100 font-sans">
+
+  <!-- Header -->
+  <header class="sticky top-0 z-50 bg-white/95 dark:bg-slate-800/95 backdrop-blur border-b border-slate-200 dark:border-slate-700">
+    <div class="max-w-7xl mx-auto px-4 py-3">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <h1 class="text-lg font-bold tracking-tight">🏠 Immo Paris</h1>
+          <span id="countBadge" class="hidden sm:inline bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 px-2.5 py-0.5 rounded-full text-xs font-semibold"></span>
+        </div>
+        
+        <div class="flex items-center gap-2">
+          <!-- Mobile: Toggle Map/List -->
+          <button id="toggleView" class="lg:hidden p-2 rounded-lg bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 transition">
+            <svg id="iconMap" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"/>
+            </svg>
+            <svg id="iconList" class="w-5 h-5 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"/>
+            </svg>
+          </button>
+          
+          <!-- Filters Toggle -->
+          <button id="toggleFilters" class="p-2 rounded-lg bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 transition">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"/>
+            </svg>
+          </button>
+          
+          <!-- Dark Mode -->
+          <button id="toggleDark" class="p-2 rounded-lg bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 transition">
+            <svg id="iconSun" class="w-5 h-5 hidden dark:block" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/>
+            </svg>
+            <svg id="iconMoon" class="w-5 h-5 dark:hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+      
+      <!-- Collapsible Filters -->
+      <div id="filtersPanel" class="hidden mt-3 pt-3 border-t border-slate-200 dark:border-slate-700">
+        <div class="flex flex-wrap gap-3 items-end">
+          <div class="flex flex-col gap-1">
+            <label class="text-xs text-slate-500 dark:text-slate-400">Trier par</label>
+            <select id="sortSelect" class="text-sm px-3 py-1.5 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+              <option value="score">Score ↓</option>
+              <option value="price_asc">Prix ↑</option>
+              <option value="price_desc">Prix ↓</option>
+              <option value="surface_desc">Surface ↓</option>
+              <option value="commute_asc">Trajet ↑</option>
+              <option value="delta_asc">Δ% ↑ (bonnes affaires)</option>
+            </select>
+          </div>
+          
+          <div class="flex flex-col gap-1">
+            <label class="text-xs text-slate-500 dark:text-slate-400">Affichage Δ</label>
+            <div class="flex rounded-lg border border-slate-300 dark:border-slate-600 overflow-hidden">
+              <button id="btnModePrice" class="px-3 py-1.5 text-sm bg-slate-800 text-white dark:bg-slate-200 dark:text-slate-900">€/m²</button>
+              <button id="btnModeDelta" class="px-3 py-1.5 text-sm bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700">%</button>
+            </div>
+          </div>
+          
+          <div class="flex flex-col gap-1">
+            <label class="text-xs text-slate-500 dark:text-slate-400">Surface min</label>
+            <input type="number" id="filterSurface" value="30" class="w-20 text-sm px-3 py-1.5 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800">
+          </div>
+          
+          <div class="flex flex-col gap-1">
+            <label class="text-xs text-slate-500 dark:text-slate-400">Arrondissement</label>
+            <select id="filterArr" class="text-sm px-3 py-1.5 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800">
+              <option value="">Tous</option>
+            </select>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="flex-1 flex flex-col lg:flex-row" style="height: calc(100vh - 60px); min-height: 400px;">
+    
+    <!-- Cards List -->
+    <div id="listPanel" class="flex-1 overflow-y-auto p-4 lg:w-1/2 xl:w-5/12 h-full">
+      <div id="cardsGrid" class="grid gap-3 sm:gap-4"></div>
+      <div id="emptyState" class="hidden text-center py-12 text-slate-500">
+        Aucun bien ne correspond aux filtres.
+      </div>
+    </div>
+
+    <!-- Map -->
+    <div id="mapPanel" class="hidden lg:flex lg:flex-1 h-full">
+      <div id="map" class="w-full h-full"></div>
+    </div>
+  </main>
+
+  <script>
+    // Data
+    const items = [{"building": {"floor": null, "is_ground_floor": null}, "commute": {"computed_from": "address", "minutes_total": 48, "minutes_transit_only": 48, "mode": "transit", "notes": null}, "derived": {"arrondissement": "75017", "price_per_m2": 12647.06, "quartier": "Ternes"}, "description": null, "dvf_bonus": {"delta_vs_ref_pct": 26.47, "price_m2_ref": 10000.0, "ref_level": "arrondissement"}, "energy": {"dpe_letter": null}, "geo": {"confidence": 0.0, "lat": 48.8850543, "lon": 2.2978528, "precision": "address"}, "images": [], "listing_url": "https://www.seloger.com/annonces/achat/appartement/paris-17eme-75/pereire-malesherbes/255156133.htm", "location_hint": {"address_text": "Pereire-Malesherbes, Paris 17\u00e8me, 75017", "arrondissement_text": "Pereire-Malesherbes", "confidence": 0.0, "poi_or_station": null, "quartier_text": null, "walk_minutes_to_poi": null}, "photos": ["https://mms.seloger.com/b/d/7/4/bd74e2b1-d0ab-410a-b570-8498e15b9541.jpg?ci_seal=7e6e598608383d60d23b2abb89be25db5d5a804e\u0026w=1024\u0026h=576", "https://mms.seloger.com/d/2/2/d/d22d502f-0b94-4861-a18f-8b26fae5fbeb.jpg?ci_seal=7311a0fab94ed93556ffe2952f838befb434fc14\u0026w=1024\u0026h=576", "https://mms.seloger.com/a/2/7/f/a27f1931-fae8-4865-b2a7-a561d1cb6745.jpg?ci_seal=1ffdcdfe29839a35fa62f63604fd92c38f0e41c3\u0026w=1024\u0026h=576"], "price_eur": 430000, "property_condition": {"is_new": null, "is_old": null, "year_built": null}, "raw_text": null, "rooms": 2.0, "source": "seloger", "surface_m2": 34.0, "title": "Paris XVII/ Wagram-Pereire - 2 pi\u00e8ces Enti\u00e8rement r\u00e9nov\u00e9 et m"}, {"building": {"floor": null, "is_ground_floor": null}, "commute": {"computed_from": "address", "minutes_total": 64, "minutes_transit_only": 64, "mode": "transit", "notes": null}, "derived": {"arrondissement": "75011", "price_per_m2": 9603.34, "quartier": "Folie-Mericourt"}, "description": null, "dvf_bonus": {"delta_vs_ref_pct": -2.41, "price_m2_ref": 9840.0, "ref_level": "arrondissement"}, "energy": {"dpe_letter": null}, "geo": {"confidence": 0.0, "lat": 48.8728179, "lon": 2.389461, "precision": "address"}, "images": [], "listing_url": "https://www.seloger.com/annonces/achat/appartement/paris-11eme-75/belleville-saint-maur/254618631.htm", "location_hint": {"address_text": "Belleville-Saint Maur, Paris 11\u00e8me, 75011", "arrondissement_text": "Belleville-Saint Maur", "confidence": 0.0, "poi_or_station": null, "quartier_text": null, "walk_minutes_to_poi": null}, "photos": ["https://mms.seloger.com/e/8/8/e/e88eb025-9993-4d0d-979b-b58396ff3cb2.jpg?ci_seal=ec4a6e134d8188a4624ff43e88e040a0682ee4a8\u0026w=1024\u0026h=576", "https://mms.seloger.com/f/9/3/f/f93fb8d3-dd98-40ee-abe6-7758a1d68522.jpg?ci_seal=0e61010ca8261a5a0405a6c1706b7255c02fe625\u0026w=1024\u0026h=576", "https://mms.seloger.com/7/e/b/7/7eb7fb66-dc39-4593-8129-3facf84b3e31.jpg?ci_seal=304be522eabca5bd1000a90ecd011c7fc45beda3\u0026w=1024\u0026h=576"], "price_eur": 460000, "property_condition": {"is_new": null, "is_old": null, "year_built": null}, "raw_text": null, "rooms": 2.0, "source": "seloger", "surface_m2": 47.9, "title": "Paris 11e - BELLEVILLE / OBERKAMPF - Loft \u00e0 vendre - 2 pi\u00e8ces -"}, {"building": {"floor": null, "is_ground_floor": null}, "commute": {"computed_from": "address", "minutes_total": 34, "minutes_transit_only": 34, "mode": "transit", "notes": null}, "derived": {"arrondissement": "75010", "price_per_m2": 10483.87, "quartier": "Saint-Vincent-de-Paul"}, "description": null, "dvf_bonus": {"delta_vs_ref_pct": 14.82, "price_m2_ref": 9131.0, "ref_level": "arrondissement"}, "energy": {"dpe_letter": null}, "geo": {"confidence": 0.0, "lat": 48.8698004, "lon": 2.352704, "precision": "address"}, "images": [], "listing_url": "https://www.seloger.com/annonces/achat/appartement/paris-10eme-75/porte-saint-denis-paradis/254074285.htm", "location_hint": {"address_text": "Porte Saint Denis-Paradis, Paris 10\u00e8me, 75010", "arrondissement_text": "Porte Saint Denis-Paradis", "confidence": 0.0, "poi_or_station": null, "quartier_text": null, "walk_minutes_to_poi": null}, "photos": ["https://mms.seloger.com/6/d/6/5/6d65220d-d3e0-494d-89df-38e4fcf4fcec.jpg?ci_seal=2715774261adc33b8ad4f22b5101c67906d05400\u0026w=1024\u0026h=576", "https://mms.seloger.com/c/6/0/3/c603016a-e5f2-46e2-bfd9-85539e42c7e3.jpg?ci_seal=7de14db95680c73cbdfcc65982bb664ee0cd7863\u0026w=1024\u0026h=576", "https://mms.seloger.com/6/3/e/7/63e78fab-2cae-4f0a-a3a8-38b4d6781779.jpg?ci_seal=c072845602a0beb433582e4f9dad5e74e10a45ce\u0026w=1024\u0026h=576", "https://mms.seloger.com/d/a/6/8/da68ccde-77b9-499d-87ca-0649d77a423e.jpg?ci_seal=971607f54621bb29b62f06eae59e2194167f4b01\u0026w=768\u0026h=560"], "price_eur": 390000, "property_condition": {"is_new": null, "is_old": null, "year_built": null}, "raw_text": null, "rooms": 2.0, "source": "seloger", "surface_m2": 37.2, "title": "Paris 10e - RUE DE PARADIS  - Appartement \u00e0 vendre - 1 pi\u00e8ce - 3"}, {"building": {"floor": null, "is_ground_floor": null}, "commute": {"computed_from": "address", "minutes_total": 50, "minutes_transit_only": 50, "mode": "transit", "notes": null}, "derived": {"arrondissement": "75011", "price_per_m2": 9952.61, "quartier": "Folie-Mericourt"}, "description": null, "dvf_bonus": {"delta_vs_ref_pct": 1.14, "price_m2_ref": 9840.0, "ref_level": "arrondissement"}, "energy": {"dpe_letter": null}, "geo": {"confidence": 0.0, "lat": 48.8596266, "lon": 2.3867017, "precision": "address"}, "images": [], "listing_url": "https://www.seloger.com/annonces/achat/appartement/paris-11eme-75/leon-blum-folie-regnault/256924993.htm", "location_hint": {"address_text": "L\u00e9on-Blum Folie-Regnault, Paris 11\u00e8me, 75011", "arrondissement_text": "L\u00e9on-Blum Folie-Regnault", "confidence": 0.0, "poi_or_station": null, "quartier_text": null, "walk_minutes_to_poi": null}, "photos": ["https://mms.seloger.com/8/d/2/b/8d2b9648-42f6-44e3-9e87-d6573a2a59f6.jpg?ci_seal=181ab70aa3027bf7f936f85241104b094fedad5b\u0026w=1024\u0026h=576", "https://mms.seloger.com/4/8/c/7/48c79c4e-e378-4569-b00a-221d5ee3f675.jpg?ci_seal=8d82c01cf160fc23933ef92b698cee82acd8cc6e\u0026w=1024\u0026h=576", "https://mms.seloger.com/3/c/0/8/3c083d52-2b24-4c49-98da-6a1faa06fdc6.jpg?ci_seal=037551b95969e58cbd71a5c22ca228204357990a\u0026w=1024\u0026h=576"], "price_eur": 420000, "property_condition": {"is_new": null, "is_old": null, "year_built": null}, "raw_text": null, "rooms": 2.0, "source": "seloger", "surface_m2": 42.2, "title": "Appartement 2 pi\u00e8ces"}, {"building": {"floor": null, "is_ground_floor": null}, "commute": {"computed_from": "address", "minutes_total": 45, "minutes_transit_only": 45, "mode": "transit", "notes": null}, "derived": {"arrondissement": "75018", "price_per_m2": 12467.5, "quartier": "Grandes-Carrieres"}, "description": null, "dvf_bonus": {"delta_vs_ref_pct": 44.8, "price_m2_ref": 8610.0, "ref_level": "arrondissement"}, "energy": {"dpe_letter": null}, "geo": {"confidence": 0.0, "lat": 48.8867148, "lon": 2.3388895, "precision": "address"}, "images": [], "listing_url": "https://www.seloger.com/annonces/achat/appartement/paris-18eme-75/montmartre/256077399.htm", "location_hint": {"address_text": "Montmartre, Paris 18\u00e8me, 75018", "arrondissement_text": "Montmartre", "confidence": 0.0, "poi_or_station": null, "quartier_text": null, "walk_minutes_to_poi": null}, "photos": ["https://mms.seloger.com/8/d/f/9/8df9ab29-72e3-4d3f-98e4-be5af50c071e.jpg?ci_seal=4e7f5e3e277522320133289f8d221ecac5e5cb9d\u0026w=1024\u0026h=576", "https://mms.seloger.com/a/c/2/a/ac2a1daf-491a-451b-9114-be9f7f2ed9f2.jpg?ci_seal=05e64573d000284b0bef8761f034746be92af7b2\u0026w=1024\u0026h=576", "https://mms.seloger.com/4/8/d/5/48d56682-541b-47a7-84c8-cff6223d6510.jpg?ci_seal=79bbcfc63a6bdcc710fcd8d79af83ac925c41127\u0026w=1024\u0026h=576"], "price_eur": 498700, "property_condition": {"is_new": null, "is_old": null, "year_built": null}, "raw_text": null, "rooms": 2.0, "source": "seloger", "surface_m2": 40.0, "title": "Appartement atypique au pied de Montmartre"}];
+    
+    // Config
+    const weights = { prix: 4, surface: 6, pieces: 1, trajet: 3, deltaMarche: 5, arrondissement: 9 };
+    const districtScores = {
+      "75001": 10, "75002": 10, "75003": 10, "75004": 8, "75005": 5,
+      "75006": 5, "75007": 5, "75008": 6, "75009": 6, "75010": 4,
+      "75011": 8, "75012": 2, "75013": 2, "75014": 2, "75015": 6,
+      "75016": 7, "75017": 5, "75018": 1, "75019": 1, "75020": 0
+    };
+    
+    let deltaMode = 'price';
+    let currentSort = 'score';
+    let mobileView = 'list'; // 'list' or 'map'
+    let map = null;
+    let mapInitialized = false;
+    let markers = {};
+    let markerCluster = null;
+
+    // Score Calculation
+    function calculateScores() {
+      const minMax = arr => {
+        const vals = arr.filter(v => v != null && !isNaN(v));
+        if (!vals.length) return { min: 0, max: 1, span: 1 };
+        const min = Math.min(...vals), max = Math.max(...vals);
+        return { min, max, span: max - min || 1 };
+      };
+
+      const mm = {
+        price: minMax(items.map(i => i.derived?.price_per_m2)),
+        commute: minMax(items.map(i => i.commute?.minutes_total)),
+        surface: minMax(items.map(i => i.surface_m2)),
+        rooms: minMax(items.map(i => i.rooms)),
+        delta: minMax(items.map(i => i.dvf_bonus?.delta_vs_ref_pct))
+      };
+
+      const sumW = Object.values(weights).reduce((a, b) => a + b, 0);
+
+      items.forEach(item => {
+        const v = {
+          price: item.derived?.price_per_m2 || 0,
+          commute: item.commute?.minutes_total || 60,
+          surface: item.surface_m2 || 0,
+          rooms: item.rooms || 0,
+          delta: item.dvf_bonus?.delta_vs_ref_pct || 0
+        };
+
+        let arr = item.derived?.arrondissement || '';
+        if (!arr && item.location_hint?.address_text) {
+          const m = item.location_hint.address_text.match(/(75\d{3})/);
+          if (m) arr = m[1];
+        }
+        item._arr = arr;
+        const distScore = (districtScores[arr] ?? 0) / 10;
+
+        const norm = key => (v[key] - mm[key].min) / mm[key].span;
+        const nPrice = 1 - norm('price');
+        const nCommute = 1 - norm('commute');
+        const nSurface = norm('surface');
+        const nRooms = norm('rooms');
+        const nDelta = 1 - norm('delta');
+
+        item._score = Math.max(0, Math.min(10, (
+          weights.prix * nPrice +
+          weights.surface * nSurface +
+          weights.pieces * nRooms +
+          weights.trajet * nCommute +
+          weights.deltaMarche * nDelta +
+          weights.arrondissement * distScore
+        ) / sumW * 10));
+      });
+    }
+
+    // Get filtered & sorted items
+    function getFilteredItems() {
+      const surfaceMin = parseInt(document.getElementById('filterSurface').value) || 0;
+      const arrFilter = document.getElementById('filterArr').value;
+
+      return items
+        .filter(i => (i.surface_m2 || 0) >= surfaceMin)
+        .filter(i => !arrFilter || i._arr === arrFilter)
+        .sort((a, b) => {
+          switch(currentSort) {
+            case 'score': return b._score - a._score;
+            case 'price_asc': return (a.price_eur||0) - (b.price_eur||0);
+            case 'price_desc': return (b.price_eur||0) - (a.price_eur||0);
+            case 'surface_desc': return (b.surface_m2||0) - (a.surface_m2||0);
+            case 'commute_asc': return (a.commute?.minutes_total||999) - (b.commute?.minutes_total||999);
+            case 'delta_asc': return (a.dvf_bonus?.delta_vs_ref_pct||0) - (b.dvf_bonus?.delta_vs_ref_pct||0);
+            default: return 0;
+          }
+        });
+    }
+
+    // Score color
+    function scoreColor(s) {
+      if (s >= 7) return { bg: 'bg-emerald-500', text: 'text-white' };
+      if (s >= 5) return { bg: 'bg-amber-400', text: 'text-slate-900' };
+      if (s >= 3) return { bg: 'bg-orange-500', text: 'text-white' };
+      return { bg: 'bg-red-500', text: 'text-white' };
+    }
+
+    // Delta display
+    function deltaHtml(item) {
+      const d = item.dvf_bonus?.delta_vs_ref_pct;
+      if (d == null) return '<span class="text-slate-400">-</span>';
+      
+      const pct = (d > 0 ? '+' : '') + d.toFixed(1) + '%';
+      const color = d < -5 ? 'text-emerald-600 dark:text-emerald-400' : 
+                    d > 5 ? 'text-red-600 dark:text-red-400' : 'text-slate-500';
+      
+      if (deltaMode === 'delta') {
+        return `<span class="${color} font-semibold">${pct}</span>`;
+      }
+      const ppm = item.derived?.price_per_m2 ? Math.round(item.derived.price_per_m2).toLocaleString('fr-FR') : '?';
+      return `<span class="font-semibold">${ppm} €/m²</span> <span class="${color} text-xs">(${pct})</span>`;
+    }
+
+    // Render Cards with carousel
+    function renderCards() {
+      const container = document.getElementById('cardsGrid');
+      const filtered = getFilteredItems();
+      
+      document.getElementById('countBadge').textContent = filtered.length + ' biens';
+      document.getElementById('emptyState').classList.toggle('hidden', filtered.length > 0);
+      
+      container.innerHTML = filtered.map((item, idx) => {
+        const sc = scoreColor(item._score);
+        const photos = item.photos || [];
+        const hasMultiple = photos.length > 1;
+        
+        const carouselHtml = photos.length > 0 
+          ? `<div class="carousel relative w-full sm:w-36 shrink-0" data-idx="${idx}">
+               <img src="${photos[0]}" alt="" class="carousel-img card-img w-full h-full object-cover rounded-t-xl sm:rounded-l-xl sm:rounded-tr-none" data-photos='${JSON.stringify(photos)}' data-current="0">
+               ${hasMultiple ? `
+                 <button class="carousel-prev absolute left-1 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs">&lt;</button>
+                 <button class="carousel-next absolute right-1 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs">&gt;</button>
+                 <div class="absolute bottom-1 left-1/2 -translate-x-1/2 bg-black/50 text-white text-xs px-2 py-0.5 rounded-full carousel-counter">1/${photos.length}</div>
+               ` : ''}
+             </div>`
+          : `<div class="w-full sm:w-36 shrink-0 bg-slate-200 dark:bg-slate-700 flex items-center justify-center rounded-t-xl sm:rounded-l-xl sm:rounded-tr-none" style="aspect-ratio:4/3">
+               <span class="text-slate-400 text-xs">Pas de photo</span>
+             </div>`;
+        
+        return `
+          <article class="bg-white dark:bg-slate-800 rounded-xl shadow-sm hover:shadow-md transition-shadow border border-slate-200 dark:border-slate-700 flex flex-col sm:flex-row overflow-hidden group" data-url="${item.listing_url}">
+            ${carouselHtml}
+            <div class="flex-1 p-3 sm:p-4 flex flex-col min-w-0">
+              <div class="flex items-start justify-between gap-2 mb-1">
+                <h3 class="font-semibold text-sm sm:text-base truncate flex-1" title="${item.title || ''}">${item.title || 'Sans titre'}</h3>
+                <div class="${sc.bg} ${sc.text} score-badge shrink-0">${item._score.toFixed(1)}</div>
+              </div>
+              
+              <p class="text-xs text-slate-500 dark:text-slate-400 truncate mb-2">${item._arr || 'Paris'}</p>
+              
+              <div class="flex flex-wrap gap-1.5 mb-3">
+                <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300">${item.surface_m2 || '?'} m²</span>
+                <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300">${item.rooms || '?'} pièces</span>
+                <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300">${item.commute?.minutes_total || '?'} min</span>
+              </div>
+              
+              <div class="mt-auto flex items-end justify-between">
+                <div>
+                  <div class="text-lg font-bold">${(item.price_eur || 0).toLocaleString('fr-FR')} €</div>
+                  <div class="text-xs">${deltaHtml(item)}</div>
+                </div>
+                <a href="${item.listing_url}" target="_blank" rel="noopener" class="text-sm text-blue-600 dark:text-blue-400 hover:underline font-medium">
+                  Voir →
+                </a>
+              </div>
+            </div>
+          </article>
+        `;
+      }).join('');
+      
+      // Carousel controls
+      container.querySelectorAll('.carousel-prev').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const carousel = btn.closest('.carousel');
+          const img = carousel.querySelector('.carousel-img');
+          const photos = JSON.parse(img.dataset.photos);
+          let current = parseInt(img.dataset.current);
+          current = (current - 1 + photos.length) % photos.length;
+          img.src = photos[current];
+          img.dataset.current = current;
+          carousel.querySelector('.carousel-counter').textContent = `${current + 1}/${photos.length}`;
+        });
+      });
+      
+      container.querySelectorAll('.carousel-next').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const carousel = btn.closest('.carousel');
+          const img = carousel.querySelector('.carousel-img');
+          const photos = JSON.parse(img.dataset.photos);
+          let current = parseInt(img.dataset.current);
+          current = (current + 1) % photos.length;
+          img.src = photos[current];
+          img.dataset.current = current;
+          carousel.querySelector('.carousel-counter').textContent = `${current + 1}/${photos.length}`;
+        });
+      });
+
+      // Hover events for map
+      container.querySelectorAll('article').forEach(card => {
+        card.addEventListener('mouseenter', () => highlightMarker(card.dataset.url, true));
+        card.addEventListener('mouseleave', () => highlightMarker(card.dataset.url, false));
+      });
+    }
+
+    // Map
+    function initMap(force = false) {
+      if (mapInitialized) return;
+      
+      const el = document.getElementById('map');
+      const panel = document.getElementById('mapPanel');
+      if (!el || !panel) return;
+      
+      // On mobile, only init when panel is visible
+      const isVisible = !panel.classList.contains('hidden') || window.innerWidth >= 1024;
+      if (!isVisible && !force) return;
+      
+      mapInitialized = true;
+      map = L.map('map', { zoomControl: false }).setView([48.86, 2.35], 12);
+      L.control.zoom({ position: 'topright' }).addTo(map);
+      
+      L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+        attribution: '© OpenStreetMap © CARTO',
+        maxZoom: 19
+      }).addTo(map);
+
+      updateMapMarkers();
+    }
+
+    function updateMapMarkers() {
+      if (!map) return;
+      
+      // Clear existing cluster and markers
+      if (markerCluster) {
+        map.removeLayer(markerCluster);
+      }
+      markers = {};
+      
+      // Create new cluster group with custom styling
+      markerCluster = L.markerClusterGroup({
+        maxClusterRadius: 50,
+        spiderfyOnMaxZoom: true,
+        showCoverageOnHover: false,
+        zoomToBoundsOnClick: true,
+        iconCreateFunction: function(cluster) {
+          const count = cluster.getChildCount();
+          let size = 'small';
+          let className = 'bg-blue-500';
+          if (count >= 10) { size = 'large'; className = 'bg-blue-700'; }
+          else if (count >= 5) { size = 'medium'; className = 'bg-blue-600'; }
+          
+          return L.divIcon({
+            html: `<div class="flex items-center justify-center w-full h-full rounded-full ${className} text-white font-bold shadow-lg border-2 border-white">${count}</div>`,
+            className: 'custom-cluster',
+            iconSize: L.point(40, 40)
+          });
+        }
+      });
+
+      const filtered = getFilteredItems();
+      const bounds = L.latLngBounds();
+
+      filtered.forEach(item => {
+        if (!item.geo?.lat || !item.geo?.lon) return;
+        
+        const lat = item.geo.lat;
+        const lon = item.geo.lon;
+        
+        const color = item._score >= 7 ? '#10b981' : item._score >= 5 ? '#f59e0b' : item._score >= 3 ? '#f97316' : '#ef4444';
+        
+        const marker = L.circleMarker([lat, lon], {
+          radius: 10,
+          fillColor: color,
+          color: '#fff',
+          weight: 2,
+          opacity: 1,
+          fillOpacity: 0.9
+        });
+
+        const photo = item.photos?.[0];
+        const photoHtml = photo 
+          ? `<img src="${photo}" alt="" style="width:100%;height:80px;object-fit:cover;border-radius:4px;margin-bottom:8px">`
+          : '';
+        
+        marker.bindPopup(`
+          <div class="text-sm" style="min-width:200px;max-width:240px">
+            ${photoHtml}
+            <strong style="display:block;margin-bottom:4px">${item.title || 'Bien'}</strong>
+            <span style="color:#64748b">${(item.price_eur||0).toLocaleString()} € • ${item.surface_m2||'?'} m²</span><br>
+            <strong>Score: ${item._score.toFixed(1)}/10</strong><br>
+            <a href="${item.listing_url}" target="_blank" rel="noopener" style="color:#2563eb;text-decoration:none;font-weight:500">Voir l'annonce →</a>
+          </div>
+        `, { maxWidth: 260 });
+
+        markerCluster.addLayer(marker);
+        markers[item.listing_url] = marker;
+        bounds.extend([lat, lon]);
+      });
+
+      map.addLayer(markerCluster);
+
+      if (bounds.isValid()) {
+        map.fitBounds(bounds, { padding: [40, 40], maxZoom: 15 });
+      }
+    }
+
+    function highlightMarker(url, active) {
+      const m = markers[url];
+      if (!m) return;
+      if (active) {
+        m.setStyle({ radius: 14, weight: 3, color: '#3b82f6' });
+        m.openPopup();
+      } else {
+        m.setStyle({ radius: 10, weight: 2, color: '#fff' });
+        m.closePopup();
+      }
+    }
+
+    // Populate arrondissement filter
+    function populateArrFilter() {
+      const arrs = [...new Set(items.map(i => i._arr).filter(Boolean))].sort();
+      const select = document.getElementById('filterArr');
+      arrs.forEach(arr => {
+        const opt = document.createElement('option');
+        opt.value = arr;
+        opt.textContent = arr;
+        select.appendChild(opt);
+      });
+    }
+
+    // Init
+    document.addEventListener('DOMContentLoaded', () => {
+      // Dark mode
+      if (localStorage.theme === 'dark' || (!localStorage.theme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+        document.documentElement.classList.add('dark');
+      }
+
+      calculateScores();
+      populateArrFilter();
+      renderCards();
+      initMap();
+
+      // Event handlers
+      document.getElementById('toggleDark').addEventListener('click', () => {
+        document.documentElement.classList.toggle('dark');
+        localStorage.theme = document.documentElement.classList.contains('dark') ? 'dark' : 'light';
+      });
+
+      document.getElementById('toggleFilters').addEventListener('click', () => {
+        document.getElementById('filtersPanel').classList.toggle('hidden');
+      });
+
+      document.getElementById('toggleView').addEventListener('click', () => {
+        mobileView = mobileView === 'list' ? 'map' : 'list';
+        const listPanel = document.getElementById('listPanel');
+        const mapPanel = document.getElementById('mapPanel');
+        
+        if (mobileView === 'map') {
+          listPanel.classList.add('hidden');
+          mapPanel.classList.remove('hidden');
+          mapPanel.classList.add('flex');
+        } else {
+          listPanel.classList.remove('hidden');
+          mapPanel.classList.add('hidden');
+          mapPanel.classList.remove('flex');
+        }
+        
+        document.getElementById('iconMap').classList.toggle('hidden', mobileView === 'map');
+        document.getElementById('iconList').classList.toggle('hidden', mobileView === 'list');
+        
+        if (mobileView === 'map') {
+          setTimeout(() => {
+            // Lazy init map on first mobile reveal
+            if (!mapInitialized) {
+              initMap(true);
+            } else if (map) {
+              map.invalidateSize();
+              // Fit bounds to markers
+              const bounds = L.latLngBounds();
+              Object.values(markers).forEach(m => bounds.extend(m.getLatLng()));
+              if (bounds.isValid()) map.fitBounds(bounds, { padding: [40, 40], maxZoom: 15 });
+            }
+          }, 150);
+        }
+      });
+
+      document.getElementById('sortSelect').addEventListener('change', e => {
+        currentSort = e.target.value;
+        renderCards();
+        updateMapMarkers();
+      });
+
+      document.getElementById('btnModePrice').addEventListener('click', () => {
+        deltaMode = 'price';
+        document.getElementById('btnModePrice').className = 'px-3 py-1.5 text-sm bg-slate-800 text-white dark:bg-slate-200 dark:text-slate-900';
+        document.getElementById('btnModeDelta').className = 'px-3 py-1.5 text-sm bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700';
+        renderCards();
+      });
+
+      document.getElementById('btnModeDelta').addEventListener('click', () => {
+        deltaMode = 'delta';
+        document.getElementById('btnModeDelta').className = 'px-3 py-1.5 text-sm bg-slate-800 text-white dark:bg-slate-200 dark:text-slate-900';
+        document.getElementById('btnModePrice').className = 'px-3 py-1.5 text-sm bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700';
+        renderCards();
+      });
+
+      document.getElementById('filterSurface').addEventListener('change', () => {
+        renderCards();
+        updateMapMarkers();
+      });
+
+      document.getElementById('filterArr').addEventListener('change', () => {
+        renderCards();
+        updateMapMarkers();
+      });
+    });
+  </script>
+</body>
+</html>
