@@ -383,6 +383,17 @@
       return `<span class="font-semibold">${ppm} €/m²</span> <span class="${color} text-xs">(${pct})</span>`;
     }
 
+    function faviconUrl(listingUrl) {
+      if (!listingUrl) return null;
+      try {
+        const host = new URL(listingUrl).hostname;
+        if (!host) return null;
+        return `https://www.google.com/s2/favicons?domain=${host}&sz=64`;
+      } catch (err) {
+        return null;
+      }
+    }
+
     function daysSince(dateStr) {
       if (!dateStr) return null;
       const ts = Date.parse(dateStr);
@@ -454,6 +465,10 @@
         const photos = item.photos || [];
         const hasMultiple = photos.length > 1;
         const infoItems = extraInfoItems(item);
+        const favicon = faviconUrl(item.listing_url);
+        const faviconHtml = favicon
+          ? `<img src="${favicon}" alt="" class="w-4 h-4 rounded-sm" loading="lazy" referrerpolicy="no-referrer" onerror="this.style.display='none'">`
+          : '';
         const infoHtml = infoItems.length
           ? `<div class="flex flex-wrap gap-1.5 mb-2 text-[11px] text-slate-600 dark:text-slate-300">
                ${infoItems.map(label => `
@@ -508,7 +523,10 @@
                   <div class="text-xs">${deltaHtml(item)}</div>
                 </div>
                 <a href="${item.listing_url}" target="_blank" rel="noopener" class="text-sm text-blue-600 dark:text-blue-400 hover:underline font-medium">
-                  Voir →
+                  <span class="inline-flex items-center gap-1.5">
+                    ${faviconHtml}
+                    Voir →
+                  </span>
                 </a>
               </div>
             </div>
