@@ -132,9 +132,28 @@
           
           <div class="flex flex-col gap-1">
             <label class="text-xs text-slate-500 dark:text-slate-400">Arrondissement</label>
-            <select id="filterArr" class="text-sm px-3 py-1.5 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800">
-              <option value="">Tous</option>
-            </select>
+            <div class="relative">
+              <button id="arrondissementToggle" class="text-sm px-3 py-1.5 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 w-full text-left flex items-center justify-between">
+                <span id="arrondissementLabel">Tous</span>
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                </svg>
+              </button>
+              <div id="arrondissementDropdown" class="hidden absolute z-50 mt-1 w-64 max-h-80 overflow-y-auto bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded-lg shadow-lg">
+                <div class="p-3 space-y-2">
+                  <label class="flex items-center gap-2 cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-700 p-2 rounded">
+                    <input type="checkbox" class="arrondissement-checkbox" value="" checked>
+                    <span class="text-sm">Tous</span>
+                  </label>
+                  <div id="arrondissementCheckboxes" class="space-y-1"></div>
+                  <div class="pt-2 border-t border-slate-200 dark:border-slate-700">
+                    <button id="applyArrondissement" class="w-full px-3 py-2 text-sm bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition">
+                      Appliquer
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -338,14 +357,16 @@
       const roomsMin = parseInt(profile.rooms_min || 0);
       const priceMin = parseInt(profile.price_min || defaultPriceMin || 0);
       const priceMax = parseInt(profile.price_max || defaultPriceMax || 0);
-      const arrFilter = document.getElementById('filterArr').value;
+      
+      // Get selected arrondissements
+      const selectedArrs = getSelectedArrondissements();
 
       return items
         .filter(i => (i.surface_m2 || 0) >= surfaceMin)
         .filter(i => (i.rooms || 0) >= roomsMin)
         .filter(i => priceMin === 0 || (i.price_eur || 0) >= priceMin)
         .filter(i => priceMax === 0 || (i.price_eur || 0) <= priceMax)
-        .filter(i => !arrFilter || i._arr === arrFilter)
+        .filter(i => selectedArrs.length === 0 || selectedArrs.includes(i._arr))
         .sort((a, b) => {
           switch(currentSort) {
             case 'score': return b._score - a._score;
@@ -730,16 +751,43 @@
       }
     }
 
+    // Get selected arrondissements
+    function getSelectedArrondissements() {
+      const checkboxes = document.querySelectorAll('.arrondissement-checkbox:checked');
+      const selected = Array.from(checkboxes).map(cb => cb.value).filter(v => v !== '');
+      return selected;
+    }
+
     // Populate arrondissement filter
     function populateArrFilter() {
       const arrs = [...new Set(items.map(i => i._arr).filter(Boolean))].sort();
-      const select = document.getElementById('filterArr');
-      arrs.forEach(arr => {
-        const opt = document.createElement('option');
-        opt.value = arr;
-        opt.textContent = arr;
-        select.appendChild(opt);
-      });
+      const container = document.getElementById('arrondissementCheckboxes');
+      if (!container) return;
+      
+      container.innerHTML = arrs.map(arr => `
+        <label class="flex items-center gap-2 cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-700 p-2 rounded">
+          <input type="checkbox" class="arrondissement-checkbox" value="${arr}">
+          <span class="text-sm">${arr}</span>
+        </label>
+      `).join('');
+      
+      updateArrondissementLabel();
+    }
+    
+    // Update label based on selection
+    function updateArrondissementLabel() {
+      const selected = getSelectedArrondissements();
+      const allChecked = document.querySelector('.arrondissement-checkbox[value=""]')?.checked;
+      const label = document.getElementById('arrondissementLabel');
+      if (!label) return;
+      
+      if (allChecked || selected.length === 0) {
+        label.textContent = 'Tous';
+      } else if (selected.length === 1) {
+        label.textContent = selected[0];
+      } else {
+        label.textContent = `${selected.length} arrondissements`;
+      }
     }
 
     function setupProfileButtons() {
@@ -885,10 +933,49 @@
         renderCards();
       });
 
-      document.getElementById('filterArr').addEventListener('change', () => {
-        renderCards();
-        updateMapMarkers();
-      });
+      // Arrondissement dropdown toggle
+      const arrToggle = document.getElementById('arrondissementToggle');
+      const arrDropdown = document.getElementById('arrondissementDropdown');
+      if (arrToggle && arrDropdown) {
+        arrToggle.addEventListener('click', (e) => {
+          e.stopPropagation();
+          arrDropdown.classList.toggle('hidden');
+        });
+        
+        // Close dropdown when clicking outside
+        document.addEventListener('click', (e) => {
+          if (!arrToggle.contains(e.target) && !arrDropdown.contains(e.target)) {
+            arrDropdown.classList.add('hidden');
+          }
+        });
+        
+        // Handle "Tous" checkbox - uncheck others when checked
+        document.addEventListener('change', (e) => {
+          if (e.target.classList.contains('arrondissement-checkbox')) {
+            if (e.target.value === '' && e.target.checked) {
+              // Uncheck all other checkboxes
+              document.querySelectorAll('.arrondissement-checkbox:not([value=""])').forEach(cb => {
+                cb.checked = false;
+              });
+            } else if (e.target.value !== '' && e.target.checked) {
+              // Uncheck "Tous" when a specific arrondissement is checked
+              const tousCheckbox = document.querySelector('.arrondissement-checkbox[value=""]');
+              if (tousCheckbox) tousCheckbox.checked = false;
+            }
+            updateArrondissementLabel();
+          }
+        });
+        
+        // Apply button
+        const applyBtn = document.getElementById('applyArrondissement');
+        if (applyBtn) {
+          applyBtn.addEventListener('click', () => {
+            renderCards();
+            updateMapMarkers();
+            arrDropdown.classList.add('hidden');
+          });
+        }
+      }
     });
   </script>
 </body>
