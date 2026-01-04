@@ -110,6 +110,7 @@
               <option value="price_desc">Prix ↓</option>
               <option value="surface_desc">Surface ↓</option>
               <option value="commute_asc">Trajet ↑</option>
+              <option value="recent_desc">Récent ↓</option>
               <option value="delta_asc">Δ% ↑ (bonnes affaires)</option>
             </select>
           </div>
@@ -398,6 +399,13 @@
             case 'price_desc': return (b.price_eur||0) - (a.price_eur||0);
             case 'surface_desc': return (b.surface_m2||0) - (a.surface_m2||0);
             case 'commute_asc': return (a.commute?.minutes_total||999) - (b.commute?.minutes_total||999);
+            case 'recent_desc': {
+              const aDays = daysSince(a.first_seen_at);
+              const bDays = daysSince(b.first_seen_at);
+              const aVal = aDays == null ? Number.POSITIVE_INFINITY : aDays;
+              const bVal = bDays == null ? Number.POSITIVE_INFINITY : bDays;
+              return aVal - bVal;
+            }
             case 'delta_asc': return (a.dvf_bonus?.delta_vs_ref_pct||0) - (b.dvf_bonus?.delta_vs_ref_pct||0);
             default: return 0;
           }
