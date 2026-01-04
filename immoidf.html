@@ -114,6 +114,17 @@
               <option value="delta_asc">Δ% ↑ (bonnes affaires)</option>
             </select>
           </div>
+
+          <div class="flex flex-col gap-1">
+            <label class="text-xs text-slate-500 dark:text-slate-400">Récent</label>
+            <select id="recentSelect" class="text-sm px-3 py-1.5 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+              <option value="0">Tous</option>
+              <option value="3">≤ 3 jours</option>
+              <option value="7">≤ 7 jours</option>
+              <option value="14">≤ 14 jours</option>
+              <option value="30">≤ 30 jours</option>
+            </select>
+          </div>
           
           <div class="flex flex-col gap-1">
             <label class="text-xs text-slate-500 dark:text-slate-400">Affichage Δ</label>
@@ -385,6 +396,7 @@
       
       // Get selected arrondissements
       const selectedArrs = getSelectedArrondissements();
+      const recentDaysLimit = getRecentDaysLimit();
 
       return items
         .filter(i => (i.surface_m2 || 0) >= surfaceMin)
@@ -392,6 +404,12 @@
         .filter(i => priceMin === 0 || (i.price_eur || 0) >= priceMin)
         .filter(i => priceMax === 0 || (i.price_eur || 0) <= priceMax)
         .filter(i => selectedArrs.length === 0 || selectedArrs.includes(i._arr))
+        .filter(i => {
+          if (!recentDaysLimit) return true;
+          const days = daysSince(i.first_seen_at);
+          if (days == null) return false;
+          return days <= recentDaysLimit;
+        })
         .sort((a, b) => {
           switch(currentSort) {
             case 'score': return b._score - a._score;
@@ -457,12 +475,21 @@
       return days < 0 ? 0 : days;
     }
 
+    function formatHour(dateStr) {
+      if (!dateStr) return null;
+      const ts = Date.parse(dateStr);
+      if (Number.isNaN(ts)) return null;
+      return new Date(ts).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+    }
+
     function publishedLabel(item) {
-      const days = daysSince(item.first_seen_at || item.last_seen_at);
+      const dateStr = item.first_seen_at || item.last_seen_at;
+      const days = daysSince(dateStr);
+      const hour = formatHour(dateStr);
       if (days == null) return null;
-      if (days === 0) return "Publié aujourd'hui";
-      if (days === 1) return "Publié hier";
-      return `Publié il y a ${days} j`;
+      if (days === 0) return hour ? `Publié aujourd'hui à ${hour}` : "Publié aujourd'hui";
+      if (days === 1) return hour ? `Publié hier à ${hour}` : "Publié hier";
+      return hour ? `Publié il y a ${days} j à ${hour}` : `Publié il y a ${days} j`;
     }
 
     function parseAmount(text, regex) {
@@ -1515,6 +1542,13 @@
       return selected;
     }
 
+    function getRecentDaysLimit() {
+      const select = document.getElementById('recentSelect');
+      if (!select) return 0;
+      const value = parseInt(select.value, 10);
+      return Number.isNaN(value) ? 0 : value;
+    }
+
     // Populate arrondissement filter
     function populateArrFilter() {
       const arrs = [...new Set(items.map(i => i._arr).filter(Boolean))].sort();
@@ -1675,6 +1709,14 @@
         renderCards();
         updateMapMarkers();
       });
+
+      const recentSelect = document.getElementById('recentSelect');
+      if (recentSelect) {
+        recentSelect.addEventListener('change', () => {
+          renderCards();
+          updateMapMarkers();
+        });
+      }
 
       document.getElementById('btnModePrice').addEventListener('click', () => {
         deltaMode = 'price';
