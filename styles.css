@@ -379,20 +379,20 @@ h1, h2, h3, h4, h5, h6 {
 
 .floating-elements {
     position: relative;
-    width: 300px;
-    height: 300px;
+    width: 360px;
+    height: 360px;
 }
 
 .floating-element {
     position: absolute;
-    width: 60px;
-    height: 60px;
+    width: 84px;
+    height: 84px;
     background: rgba(102, 126, 234, 0.2);
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.5rem;
+    font-size: 2rem;
     color: #667eea;
     backdrop-filter: blur(10px);
     border: 1px solid rgba(102, 126, 234, 0.3);
@@ -400,57 +400,81 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .floating-element.python {
-    top: 20%;
-    left: 20%;
+    top: 10%;
+    left: 15%;
     animation-delay: 0s;
 }
 
 .floating-element.ai {
-    top: 20%;
-    right: 20%;
+    top: 12%;
+    right: 12%;
     animation-delay: 0.5s;
 }
 
 .floating-element.code {
-    bottom: 20%;
-    left: 20%;
+    bottom: 12%;
+    left: 12%;
     animation-delay: 1s;
 }
 
 .floating-element.robot {
-    bottom: 20%;
-    right: 20%;
+    bottom: 12%;
+    right: 12%;
     animation-delay: 1.5s;
 }
 
 .floating-element.sap {
-    top: 5%;
-    right: 35%;
+    top: 2%;
+    right: 40%;
     animation-delay: 2s;
 }
 
 .floating-element.linkedin {
-    bottom: 5%;
-    right: 5%;
+    bottom: 2%;
+    right: 2%;
     animation-delay: 2.5s;
 }
 
 .floating-element.fastapi {
-    top: 40%;
-    right: 5%;
+    top: 45%;
+    right: 0%;
     animation-delay: 3s;
 }
 
 .floating-element.power-automate {
-    top: 5%;
-    left: 5%;
+    top: 2%;
+    left: 2%;
     animation-delay: 3.5s;
 }
 
 .floating-element.copilot {
-    bottom: 30%;
-    right: 35%;
+    bottom: 40%;
+    right: 38%;
     animation-delay: 4s;
+}
+
+.floating-element.jira {
+    top: 55%;
+    left: 0%;
+    animation-delay: 4.5s;
+}
+
+.floating-element.servicenow {
+    top: 8%;
+    left: 55%;
+    animation-delay: 5s;
+}
+
+.floating-element.github {
+    bottom: 5%;
+    left: 45%;
+    animation-delay: 5.5s;
+}
+
+.floating-element.salesforce {
+    top: 55%;
+    right: 2%;
+    animation-delay: 6s;
 }
 
 @keyframes float {
@@ -1063,15 +1087,29 @@ h1, h2, h3, h4, h5, h6 {
     }
 
     .floating-elements {
-        width: 200px;
-        height: 200px;
+        width: 320px;
+        height: 220px;
     }
 
     .floating-element {
-        width: 40px;
-        height: 40px;
-        font-size: 1rem;
+        width: 58px;
+        height: 58px;
+        font-size: 1.35rem;
     }
+
+    .floating-element.python { top: 4%; left: 4%; }
+    .floating-element.ai { top: 4%; right: 4%; }
+    .floating-element.sap { top: 2%; right: 45%; }
+    .floating-element.power-automate { top: 28%; left: 0%; }
+    .floating-element.servicenow { top: 28%; right: 0%; }
+    .floating-element.code { bottom: 12%; left: 6%; }
+    .floating-element.robot { bottom: 12%; right: 6%; }
+    .floating-element.copilot { bottom: 40%; right: 44%; }
+    .floating-element.fastapi { top: 50%; right: 24%; }
+    .floating-element.jira { top: 50%; left: 24%; }
+    .floating-element.github { bottom: 4%; left: 45%; }
+    .floating-element.linkedin { bottom: 4%; right: 0%; }
+    .floating-element.salesforce { top: 60%; right: 50%; }
 }
 
 /* Animations */
