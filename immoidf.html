@@ -16,22 +16,82 @@
       theme: {
         extend: {
           fontFamily: {
-            sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
+            sans: ['"Manrope"', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'monospace'],
           }
         }
       }
     }
   </script>
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap');
+    :root {
+      --accent: #334155;
+      --accent-2: #0ea5e9;
+      --page-bg: #f7f7f5;
+      --page-bg-2: #ecefed;
+      --surface: #ffffff;
+      --surface-2: #f3f4f6;
+      --ink: #0f172a;
+      --line: #e2e8f0;
+      --muted: #64748b;
+    }
+    .dark {
+      --page-bg: #0b0f14;
+      --page-bg-2: #111827;
+      --surface: #0f172a;
+      --surface-2: #111827;
+      --ink: #e5e7eb;
+      --line: #1f2937;
+      --muted: #94a3b8;
+    }
+    body {
+      background-color: var(--page-bg);
+      background-image:
+        radial-gradient(circle at 12% 12%, rgba(51, 65, 85, 0.08), transparent 45%),
+        radial-gradient(circle at 90% 8%, rgba(14, 165, 233, 0.08), transparent 35%),
+        linear-gradient(180deg, var(--page-bg), var(--page-bg-2));
+    }
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background: linear-gradient(120deg, rgba(255, 255, 255, 0.4), transparent 45%);
+      mix-blend-mode: screen;
+      z-index: -1;
+    }
     ::-webkit-scrollbar { width: 6px; height: 6px; }
     ::-webkit-scrollbar-track { background: transparent; }
     ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
-    .dark ::-webkit-scrollbar-thumb { background: #475569; }
+    .dark ::-webkit-scrollbar-thumb { background: #334155; }
+    .app-header {
+      background: rgba(255, 255, 255, 0.85);
+      border-bottom: 1px solid var(--line);
+      backdrop-filter: blur(10px);
+    }
+    .dark .app-header { background: rgba(15, 23, 42, 0.9); }
+    .title-mono {
+      font-family: "JetBrains Mono", monospace;
+      letter-spacing: 0.12em;
+      font-size: 0.65rem;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+    .btn-ghost {
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.9);
+      color: var(--ink);
+      transition: transform 0.15s ease;
+    }
+    .dark .btn-ghost { background: rgba(15, 23, 42, 0.9); }
+    .btn-ghost:hover { transform: translateY(-1px); }
     .score-badge {
       min-width: 2.5rem; height: 2.5rem;
       display: inline-flex; align-items: center; justify-content: center;
-      border-radius: 0.5rem; font-weight: 700; font-size: 0.875rem;
+      border-radius: 0.75rem; font-weight: 700; font-size: 0.875rem;
+      font-family: "JetBrains Mono", monospace;
+      border: 1px solid var(--line);
     }
     .custom-cluster {
       background: transparent !important;
@@ -47,9 +107,68 @@
     /* Ensure lightbox stays above Leaflet panes/controls */
     #lightbox { z-index: 2000; }
     .leaflet-pane, .leaflet-control { z-index: 10; }
+    .surface-card {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      box-shadow: 0 12px 30px rgba(15, 23, 42, 0.08);
+    }
+    .dark .surface-card {
+      border-color: rgba(30, 41, 59, 0.9);
+      box-shadow: 0 12px 30px rgba(2, 6, 23, 0.45);
+    }
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25rem;
+      padding: 0.2rem 0.55rem;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      background: var(--surface-2);
+      color: var(--ink);
+      border: 1px solid var(--line);
+    }
+    .dark .chip { background: rgba(15, 23, 42, 0.9); color: var(--ink); }
+    .chip-commute { background: rgba(51, 65, 85, 0.16); color: #334155; }
+    .dark .chip-commute { background: rgba(51, 65, 85, 0.35); color: #cbd5f5; }
+    .btn-accent {
+      background: linear-gradient(135deg, #334155, #475569);
+      color: #f8fafc;
+      border: 1px solid rgba(51, 65, 85, 0.6);
+      box-shadow: 0 10px 20px rgba(51, 65, 85, 0.22);
+    }
+    .dark .btn-accent { color: #f8fafc; }
+    .btn-accent:hover { filter: brightness(1.05); }
+    .card-reveal { animation: cardIn 0.36s ease both; }
+    .route-panel {
+      backdrop-filter: blur(10px);
+      background: rgba(255, 255, 255, 0.9);
+    }
+    .dark .route-panel { background: rgba(15, 23, 42, 0.92); }
+    .route-step-dot {
+      width: 8px; height: 8px; border-radius: 999px; display: inline-block;
+    }
+    .route-step-line {
+      width: 2px; flex: 1; background: rgba(148, 163, 184, 0.4);
+    }
+    .route-step-label {
+      background: rgba(15, 23, 42, 0.9);
+      color: #fff;
+      border: 1px solid rgba(15, 23, 42, 0.9);
+      border-radius: 999px;
+      padding: 2px 8px;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+      box-shadow: 0 6px 14px rgba(15, 23, 42, 0.2);
+    }
     @keyframes lightboxIn {
       from { opacity: 0; transform: scale(0.98); }
       to { opacity: 1; transform: scale(1); }
+    }
+    @keyframes cardIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
     }
     @media (max-width: 640px) {
       .card-img, .carousel { aspect-ratio: 16/9; }
@@ -58,20 +177,24 @@
     .leaflet-popup-content img { margin: 0 !important; }
   </style>
 </head>
-<body class="h-full bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-slate-100 font-sans">
+<body class="h-full text-slate-900 dark:text-slate-100 font-sans">
 
   <!-- Header -->
-  <header class="sticky top-0 z-50 bg-white/95 dark:bg-slate-800/95 backdrop-blur border-b border-slate-200 dark:border-slate-700">
+  <header class="sticky top-0 z-50 app-header">
     <div class="max-w-7xl mx-auto px-4 py-3">
       <div class="flex items-center justify-between">
         <div class="flex items-center gap-3">
-          <h1 class="text-lg font-bold tracking-tight">🏠 Immo Paris</h1>
-          <span id="countBadge" class="hidden sm:inline bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 px-2.5 py-0.5 rounded-full text-xs font-semibold"></span>
+          <div class="flex flex-col">
+            <h1 class="text-lg sm:text-xl font-semibold tracking-tight">Immo Paris</h1>
+            <span class="title-mono">Radar quotidien</span>
+          </div>
+          <span id="countBadge" class="hidden sm:inline chip"></span>
+          <span id="updateBadge" class="hidden sm:inline text-xs text-slate-500 dark:text-slate-400"></span>
         </div>
         
         <div class="flex items-center gap-2">
           <!-- Mobile: Toggle Map/List -->
-          <button id="toggleView" class="lg:hidden p-2 rounded-lg bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 transition">
+          <button id="toggleView" class="lg:hidden p-2 rounded-lg btn-ghost">
             <svg id="iconMap" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"/>
             </svg>
@@ -81,14 +204,14 @@
           </button>
           
           <!-- Filters Toggle -->
-          <button id="toggleFilters" class="p-2 rounded-lg bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 transition">
+          <button id="toggleFilters" class="p-2 rounded-lg btn-ghost">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"/>
             </svg>
           </button>
           
           <!-- Dark Mode -->
-          <button id="toggleDark" class="p-2 rounded-lg bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 transition">
+          <button id="toggleDark" class="p-2 rounded-lg btn-ghost">
             <svg id="iconSun" class="w-5 h-5 hidden dark:block" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/>
             </svg>
@@ -104,7 +227,7 @@
         <div class="flex flex-wrap gap-3 items-end">
           <div class="flex flex-col gap-1">
             <label class="text-xs text-slate-500 dark:text-slate-400">Trier par</label>
-            <select id="sortSelect" class="text-sm px-3 py-1.5 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+            <select id="sortSelect" class="text-sm px-3 py-1.5 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 focus:ring-2 focus:ring-slate-400 focus:border-transparent">
               <option value="score">Score ↓</option>
               <option value="price_asc">Prix ↑</option>
               <option value="price_desc">Prix ↓</option>
@@ -117,7 +240,7 @@
 
           <div class="flex flex-col gap-1">
             <label class="text-xs text-slate-500 dark:text-slate-400">Récent</label>
-            <select id="recentSelect" class="text-sm px-3 py-1.5 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+            <select id="recentSelect" class="text-sm px-3 py-1.5 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 focus:ring-2 focus:ring-slate-400 focus:border-transparent">
               <option value="0">Tous</option>
               <option value="3">≤ 3 jours</option>
               <option value="7">≤ 7 jours</option>
@@ -159,7 +282,7 @@
                   </label>
                   <div id="arrondissementCheckboxes" class="space-y-1"></div>
                   <div class="pt-2 border-t border-slate-200 dark:border-slate-700">
-                    <button id="applyArrondissement" class="w-full px-3 py-2 text-sm bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition">
+                    <button id="applyArrondissement" class="w-full px-3 py-2 text-sm bg-slate-700 hover:bg-slate-800 text-white rounded-lg font-medium transition">
                       Appliquer
                     </button>
                   </div>
@@ -176,7 +299,7 @@
   <main class="flex-1 flex flex-col lg:flex-row" style="height: calc(100vh - 60px); min-height: 400px;">
     
     <!-- Cards List -->
-    <div id="listPanel" class="flex-1 overflow-y-auto p-4 lg:w-1/2 xl:w-5/12 h-full">
+    <div id="listPanel" class="flex-1 overflow-y-auto p-4 lg:w-1/2 xl:w-5/12 h-full bg-white/60 dark:bg-slate-900/40 backdrop-blur">
       <div id="cardsGrid" class="grid gap-3 sm:gap-4"></div>
       <div id="loadMoreWrap" class="hidden mt-4 flex justify-center">
         <button id="loadMoreBtn" class="px-4 py-2 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 text-sm font-semibold text-slate-700 dark:text-slate-200">
@@ -189,8 +312,11 @@
     </div>
 
     <!-- Map -->
-    <div id="mapPanel" class="hidden lg:flex lg:flex-1 h-full">
+    <div id="mapPanel" class="hidden lg:flex lg:flex-1 h-full border-l border-slate-200/70 dark:border-slate-800/70 relative">
       <div id="map" class="w-full h-full"></div>
+      <div id="routePanel" class="hidden route-panel surface-card rounded-2xl p-4 absolute bottom-4 left-4 right-4 lg:right-auto lg:w-[360px] text-slate-900 dark:text-slate-100">
+        <!-- Filled by JS -->
+      </div>
     </div>
   </main>
 
@@ -282,6 +408,8 @@
     let markerCluster = null;
     let routePolylines = {}; // Store route polylines by listing URL
     let routeMarkers = {}; // Store route markers (workplace, etc.) by listing URL
+    let activeRouteUrl = null;
+    let markersHidden = false;
     let metroStations = [];
     let metroStationsByName = new Map();
     let metroLayerGroup = null;
@@ -295,7 +423,7 @@
     let isSettingRoute = false;
     const METRO_STATION_MIN_ZOOM = 13;
     const METRO_LINE_OPACITY = 0.6;
-    const METRO_LINE_OPACITY_MUTED = 0.08;
+    const METRO_LINE_OPACITY_MUTED = 0.04;
     const lightbox = {
       el: document.getElementById('lightbox'),
       img: document.getElementById('lightboxImg'),
@@ -477,7 +605,7 @@
       if (d == null) return '<span class="text-slate-400">-</span>';
       
       const pct = (d > 0 ? '+' : '') + d.toFixed(1) + '%';
-      const color = d < -5 ? 'text-emerald-600 dark:text-emerald-400' : 
+      const color = d < -5 ? 'text-slate-700 dark:text-slate-300' : 
                     d > 5 ? 'text-red-600 dark:text-red-400' : 'text-slate-500';
       
       if (deltaMode === 'delta') {
@@ -513,6 +641,18 @@
       const ts = Date.parse(dateStr);
       if (Number.isNaN(ts)) return null;
       return new Date(ts).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+    }
+
+    function latestUpdateLabel(list) {
+      const dates = (list || [])
+        .map(i => i.last_seen_at || i.first_seen_at)
+        .map(s => Date.parse(s))
+        .filter(ts => !Number.isNaN(ts));
+      if (!dates.length) return null;
+      const dt = new Date(Math.max(...dates));
+      const day = dt.toLocaleDateString('fr-FR', { day: '2-digit', month: 'short' });
+      const time = dt.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+      return `Maj ${day} · ${time}`;
     }
 
     function publishedLabel(item) {
@@ -576,6 +716,10 @@
       const hasMore = filtered.length > visible.length;
       
       document.getElementById('countBadge').textContent = filtered.length + ' biens';
+      const updateBadge = document.getElementById('updateBadge');
+      if (updateBadge) {
+        updateBadge.textContent = latestUpdateLabel(items) || '';
+      }
       document.getElementById('emptyState').classList.toggle('hidden', filtered.length > 0);
       const loadMoreWrap = document.getElementById('loadMoreWrap');
       const loadMoreBtn = document.getElementById('loadMoreBtn');
@@ -633,7 +777,7 @@
              </div>`;
         
         return `
-          <article class="bg-white dark:bg-slate-800 rounded-xl shadow-sm hover:shadow-md transition-shadow border border-slate-200 dark:border-slate-700 flex flex-col overflow-hidden group" data-url="${item.listing_url}">
+          <article class="surface-card rounded-xl hover:shadow-md transition-shadow flex flex-col overflow-hidden group card-reveal" data-url="${item.listing_url}" style="animation-delay:${Math.min(idx * 28, 240)}ms">
             ${carouselHtml}
             <div class="flex-1 p-3 sm:p-4 flex flex-col min-w-0">
               <div class="flex items-start justify-between gap-2 mb-1">
@@ -644,9 +788,9 @@
               <p class="text-xs text-slate-500 dark:text-slate-400 truncate mb-2" title="${addressText}">${addressText}</p>
               
               <div class="flex flex-wrap gap-1.5 mb-3">
-                <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300">${item.surface_m2 || '?'} m²</span>
-                <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300">${item.rooms || '?'} pièces</span>
-                <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300">${item.commute?.minutes_total || '?'} min</span>
+                <span class="chip">${item.surface_m2 || '?'} m²</span>
+                <span class="chip">${item.rooms || '?'} pièces</span>
+                <span class="chip chip-commute">${item.commute?.minutes_total || '?'} min</span>
               </div>
 
               ${routeSummary ? `<div class="text-[11px] text-slate-500 dark:text-slate-300 leading-snug mb-3">${routeSummary}</div>` : ''}
@@ -658,7 +802,7 @@
                   <div class="text-lg font-bold">${(item.price_eur || 0).toLocaleString('fr-FR')} €</div>
                   <div class="text-xs">${deltaHtml(item)}</div>
                 </div>
-                <a href="${item.listing_url}" target="_blank" rel="noopener" class="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold shadow-sm border border-blue-600/70 dark:border-blue-400/30 transition focus:outline-none focus:ring-2 focus:ring-blue-400/50">
+                <a href="${item.listing_url}" target="_blank" rel="noopener" class="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg btn-accent text-sm font-semibold transition focus:outline-none focus:ring-2 focus:ring-slate-400/60">
                   <span class="inline-flex items-center gap-2">
                     ${faviconHtml}
                     Voir →
@@ -840,6 +984,15 @@
       updateMapMarkers();
       setMetroDisplayAll();
       map.on('zoomend', updateMetroStationsVisibility);
+      const routePanel = document.getElementById('routePanel');
+      if (routePanel) {
+        L.DomEvent.disableClickPropagation(routePanel);
+      }
+      map.on('click', () => {
+        if (activeRouteUrl) {
+          window.clearActiveRoute();
+        }
+      });
     }
 
     function updateMapMarkers() {
@@ -861,9 +1014,9 @@
         iconCreateFunction: function(cluster) {
           const count = cluster.getChildCount();
           let size = 'small';
-          let className = 'bg-blue-500';
-          if (count >= 10) { size = 'large'; className = 'bg-blue-700'; }
-          else if (count >= 5) { size = 'medium'; className = 'bg-blue-600'; }
+          let className = 'bg-slate-500';
+          if (count >= 10) { size = 'large'; className = 'bg-slate-700'; }
+          else if (count >= 5) { size = 'medium'; className = 'bg-slate-600'; }
           
           return L.divIcon({
             html: `<div class="flex items-center justify-center w-full h-full rounded-full ${className} text-white font-bold shadow-lg border-2 border-white">${count}</div>`,
@@ -899,29 +1052,7 @@
           ? `<img src="${photo}" alt="" style="width:100%;height:80px;object-fit:cover;border-radius:4px;margin-bottom:8px">`
           : '';
         
-        const routeDetails = item.commute?.route_details;
-        const hasRoute = routeDetails && routeDetails.polyline;
-        const routeSummary = hasRoute ? formatRouteSummary(routeDetails) : null;
-        const isRouteVisible = routePolylines[item.listing_url] !== undefined;
-        const routeButtonHtml = hasRoute
-          ? `<button onclick="window.showRouteForListing('${item.listing_url}')" class="mt-2 px-3 py-1.5 w-full text-xs font-medium ${isRouteVisible ? 'bg-red-600 hover:bg-red-700' : 'bg-blue-600 hover:bg-blue-700'} text-white rounded-lg transition" style="cursor:pointer">
-               ${isRouteVisible ? '❌ Masquer le trajet' : '🚇 Afficher le trajet'}
-             </button>
-             ${routeSummary ? `<div class="mt-1 text-xs text-slate-500" style="font-size:10px;line-height:1.3">${routeSummary}</div>` : ''}`
-          : '';
-        
-        marker.bindPopup(`
-          <div class="text-sm" style="min-width:200px;max-width:240px">
-            ${photoHtml}
-            <strong style="display:block;margin-bottom:4px">${item.title || 'Bien'}</strong>
-            <span style="color:#64748b">${addressText}</span><br>
-            <span style="color:#64748b">${(item.price_eur||0).toLocaleString()} € • ${item.surface_m2||'?'} m²</span><br>
-            <strong>Score: ${item._score.toFixed(1)}/10</strong><br>
-            <span style="color:#64748b">Trajet: ${item.commute?.minutes_total || '?'} min</span><br>
-            ${routeButtonHtml}
-            <a href="${item.listing_url}" target="_blank" rel="noopener" style="color:#2563eb;text-decoration:none;font-weight:500;display:block;margin-top:8px">Voir l'annonce →</a>
-          </div>
-        `, { maxWidth: 260 });
+        marker.bindPopup(buildMarkerPopup(item), { maxWidth: 260 });
 
         markerCluster.addLayer(marker);
         markers[item.listing_url] = marker;
@@ -929,6 +1060,7 @@
       });
 
       map.addLayer(markerCluster);
+      markersHidden = false;
 
       if (bounds.isValid()) {
         map.fitBounds(bounds, { padding: [40, 40], maxZoom: 15 });
@@ -944,6 +1076,46 @@
       } else {
         m.setStyle({ radius: 10, weight: 2, color: '#fff' });
         m.closePopup();
+      }
+    }
+
+    function buildMarkerPopup(item) {
+      const photo = item.photos?.[0];
+      const addressText = item.location_hint?.address_text || item.location_hint?.arrondissement_text || item._arr || 'Paris';
+      const photoHtml = photo
+        ? `<img src="${photo}" alt="" style="width:100%;height:80px;object-fit:cover;border-radius:4px;margin-bottom:8px">`
+        : '';
+      const routeDetails = item.commute?.route_details;
+      const hasRoute = routeDetails && routeDetails.polyline;
+      const routeSummary = hasRoute ? formatRouteSummary(routeDetails) : null;
+      const isRouteVisible = routePolylines[item.listing_url] !== undefined;
+      const routeButtonHtml = hasRoute
+        ? `<button onclick="window.showRouteForListing('${item.listing_url}')" class="mt-2 px-3 py-1.5 w-full text-xs font-medium ${isRouteVisible ? 'bg-red-600 hover:bg-red-700' : 'bg-slate-700 hover:bg-slate-800'} text-white rounded-lg transition" style="cursor:pointer">
+             ${isRouteVisible ? '❌ Masquer le trajet' : '🚇 Afficher le trajet'}
+           </button>
+           ${routeSummary ? `<div class="mt-1 text-xs text-slate-500" style="font-size:10px;line-height:1.3">${routeSummary}</div>` : ''}`
+        : '';
+      return `
+        <div class="text-sm" style="min-width:200px;max-width:240px">
+          ${photoHtml}
+          <strong style="display:block;margin-bottom:4px">${item.title || 'Bien'}</strong>
+          <span style="color:#64748b">${addressText}</span><br>
+          <span style="color:#64748b">${(item.price_eur||0).toLocaleString()} € • ${item.surface_m2||'?'} m²</span><br>
+          <strong>Score: ${item._score.toFixed(1)}/10</strong><br>
+          <span style="color:#64748b">Trajet: ${item.commute?.minutes_total || '?'} min</span><br>
+          ${routeButtonHtml}
+          <a href="${item.listing_url}" target="_blank" rel="noopener" style="color:#334155;text-decoration:none;font-weight:500;display:block;margin-top:8px">Voir l'annonce →</a>
+        </div>
+      `;
+    }
+
+    function refreshMarkerPopup(listingUrl) {
+      const marker = markers[listingUrl];
+      if (!marker) return;
+      const item = items.find(i => i.listing_url === listingUrl);
+      if (!item) return;
+      if (marker.getPopup && marker.getPopup()) {
+        marker.getPopup().setContent(buildMarkerPopup(item));
       }
     }
 
@@ -1428,7 +1600,7 @@
     function getStepStyle(step) {
       const style = {
         color: getStepColor(step),
-        weight: 5,
+        weight: 6,
         opacity: 0.85,
         smoothFactor: 1
       };
@@ -1436,6 +1608,31 @@
         style.dashArray = '6,6';
       }
       return style;
+    }
+
+    function getStepOutlineStyle(step) {
+      const style = {
+        color: '#0b1220',
+        weight: 10,
+        opacity: 0.35,
+        smoothFactor: 1
+      };
+      if (step.travel_mode === 'WALKING' || step.travel_mode === 'WALK') {
+        style.dashArray = '10,8';
+      }
+      return style;
+    }
+
+    function stepLabel(step) {
+      const minutes = getStepMinutes(step);
+      if (!minutes) return null;
+      if (step.travel_mode === 'WALKING' || step.travel_mode === 'WALK') {
+        return `Marche ${minutes} min`;
+      }
+      if (step.travel_mode === 'TRANSIT') {
+        return `${formatTransitLabel(step)} · ${minutes} min`;
+      }
+      return null;
     }
 
     // Format route summary HTML
@@ -1470,6 +1667,92 @@
       return parts.length ? parts.join(' → ') : null;
     }
 
+    function buildRouteSteps(routeDetails) {
+      if (!routeDetails || !routeDetails.steps) return [];
+      const steps = routeDetails.steps || [];
+      const segments = [];
+      let walkingBucket = 0;
+      const flushWalking = () => {
+        if (walkingBucket > 0) {
+          segments.push({ type: 'walk', minutes: walkingBucket });
+          walkingBucket = 0;
+        }
+      };
+      steps.forEach(step => {
+        const duration = getStepMinutes(step);
+        if (!duration) return;
+        if (step.travel_mode === 'WALKING' || step.travel_mode === 'WALK') {
+          walkingBucket += duration;
+          return;
+        }
+        flushWalking();
+        if (step.travel_mode === 'TRANSIT') {
+          segments.push({
+            type: 'transit',
+            label: formatTransitLabel(step),
+            color: getStepColor(step),
+            minutes: duration,
+            stops: step.transit_details?.num_stops
+          });
+        }
+      });
+      flushWalking();
+      return segments;
+    }
+
+    function renderRoutePanel(item) {
+      const panel = document.getElementById('routePanel');
+      if (!panel || !item) return;
+      const routeDetails = item.commute?.route_details;
+      if (!routeDetails) return;
+      const steps = buildRouteSteps(routeDetails);
+      const title = item.title || 'Trajet sélectionné';
+      const minutes = item.commute?.minutes_total || '?';
+      const content = steps.map((step, idx) => {
+        const isTransit = step.type === 'transit';
+        const color = isTransit ? step.color : '#94A3B8';
+        const label = isTransit ? step.label : 'Marche';
+        const stops = isTransit && step.stops ? ` · ${step.stops} arrêts` : '';
+        return `
+          <div class="flex items-start gap-3">
+            <div class="flex flex-col items-center mt-1">
+              <span class="route-step-dot" style="background:${color}"></span>
+              ${idx < steps.length - 1 ? '<span class="route-step-line"></span>' : ''}
+            </div>
+            <div class="flex-1 text-xs text-slate-600 dark:text-slate-300">
+              <div class="font-semibold" style="color:${color}">${label}</div>
+              <div>${step.minutes} min${stops}</div>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      panel.innerHTML = `
+        <div class="flex items-start justify-between gap-3">
+          <div>
+            <div class="text-xs uppercase tracking-[0.2em] text-slate-400">Trajet</div>
+            <div class="font-semibold">${title}</div>
+          </div>
+          <button class="text-xs px-2.5 py-1 rounded-full border border-slate-200/70 dark:border-slate-700/70 text-slate-500 hover:text-slate-900 dark:hover:text-slate-100" onclick="window.clearActiveRoute()">
+            Fermer
+          </button>
+        </div>
+        <div class="mt-2 flex items-center gap-2 text-sm">
+          <span class="chip chip-commute">${minutes} min</span>
+          <span class="text-xs text-slate-500">Cliquez sur la carte pour fermer</span>
+        </div>
+        <div class="mt-3 space-y-2">${content || '<div class="text-xs text-slate-500">Détails indisponibles.</div>'}</div>
+      `;
+      panel.classList.remove('hidden');
+    }
+
+    function hideRoutePanel() {
+      const panel = document.getElementById('routePanel');
+      if (!panel) return;
+      panel.classList.add('hidden');
+      panel.innerHTML = '';
+    }
+
     // Show route on map
     function showRouteOnMap(listingUrl, item) {
       if (!map || !item) return;
@@ -1496,13 +1779,46 @@
         let bounds = L.latLngBounds();
         
         const steps = routeDetails.steps || [];
-        const stepSegments = steps
-          .map(step => ({ step, coords: decodePolyline(step.polyline || '') }))
-          .filter(seg => seg.coords && seg.coords.length);
+        const stepSegments = [];
+        let walkBuffer = null;
+        const flushWalk = () => {
+          if (!walkBuffer) return;
+          stepSegments.push(walkBuffer);
+          walkBuffer = null;
+        };
+        steps.forEach(step => {
+          const coords = decodePolyline(step.polyline || '');
+          if (!coords || !coords.length) return;
+          const isWalk = step.travel_mode === 'WALKING' || step.travel_mode === 'WALK';
+          if (isWalk) {
+            if (!walkBuffer) {
+              walkBuffer = { step: { ...step }, coords: coords.slice() };
+            } else {
+              walkBuffer.coords = walkBuffer.coords.concat(coords);
+              const extra = getStepMinutes(step);
+              if (extra) {
+                walkBuffer.step.duration_seconds = (walkBuffer.step.duration_seconds || 0) + (extra * 60);
+              }
+            }
+            return;
+          }
+          flushWalk();
+          stepSegments.push({ step, coords });
+        });
+        flushWalk();
         
         if (stepSegments.length) {
           stepSegments.forEach(seg => {
+            const outline = L.polyline(seg.coords, getStepOutlineStyle(seg.step)).addTo(layerGroup);
             const stepLine = L.polyline(seg.coords, getStepStyle(seg.step)).addTo(layerGroup);
+            const label = stepLabel(seg.step);
+            if (label) {
+              stepLine.bindTooltip(label, {
+                permanent: true,
+                direction: 'center',
+                className: 'route-step-label'
+              });
+            }
             bounds.extend(stepLine.getBounds());
           });
         } else {
@@ -1522,6 +1838,11 @@
         }
         
         routePolylines[listingUrl] = layerGroup;
+        activeRouteUrl = listingUrl;
+        if (markerCluster && map.hasLayer(markerCluster)) {
+          map.removeLayer(markerCluster);
+          markersHidden = true;
+        }
         
         // Fit map to show both listing and route
         if (item.geo?.lat && item.geo?.lon) {
@@ -1541,6 +1862,8 @@
           console.log('Route:', summary);
         }
         setMetroDisplayRoute(item);
+        renderRoutePanel(item);
+        refreshMarkerPopup(listingUrl);
       } catch (e) {
         console.error('Error showing route:', e);
       }
@@ -1559,6 +1882,15 @@
       if (!skipReset && !Object.keys(routePolylines).length) {
         setMetroDisplayAll();
       }
+      if (activeRouteUrl === listingUrl) {
+        activeRouteUrl = null;
+        hideRoutePanel();
+      }
+      if (!skipReset && markersHidden && markerCluster && !map.hasLayer(markerCluster)) {
+        map.addLayer(markerCluster);
+        markersHidden = false;
+      }
+      refreshMarkerPopup(listingUrl);
     }
 
     // Global function to show route (called from popup button)
@@ -1579,6 +1911,17 @@
           Object.keys(routePolylines).forEach(url => hideRouteOnMap(url, true));
           showRouteOnMap(listingUrl, item);
         }
+      }
+    };
+
+    window.clearActiveRoute = function() {
+      Object.keys(routePolylines).forEach(url => hideRouteOnMap(url, true));
+      activeRouteUrl = null;
+      hideRoutePanel();
+      setMetroDisplayAll();
+      if (markersHidden && markerCluster && !map.hasLayer(markerCluster)) {
+        map.addLayer(markerCluster);
+        markersHidden = false;
       }
     };
 
