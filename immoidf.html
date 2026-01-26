@@ -5,11 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Immo Paris</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" />
-  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css" />
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-  <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
+  <link rel="stylesheet" href="https://api.mapbox.com/mapbox-gl-js/v3.4.0/mapbox-gl.css" />
+  <script src="https://api.mapbox.com/mapbox-gl-js/v3.4.0/mapbox-gl.js"></script>
   <script>
     tailwind.config = {
       darkMode: 'class',
@@ -404,20 +401,23 @@
     let mobileView = 'list'; // 'list' or 'map'
     let map = null;
     let mapInitialized = false;
-    let markers = {};
-    let markerCluster = null;
-    let routePolylines = {}; // Store route polylines by listing URL
-    let routeMarkers = {}; // Store route markers (workplace, etc.) by listing URL
+    let mapReady = false;
+    const MAPBOX_TOKEN = 'pk.eyJ1IjoieHZjMzIzIiwiYSI6ImNta3ZjNTI1MzA0dGIzZHNsOXE2aWkyZ2cifQ.1W_o07ienqTRjFVN7z2ZkQ';
+    const LISTINGS_SOURCE_ID = 'listings';
+    const ROUTE_SOURCE_ID = 'active-route';
+    const METRO_LINES_SOURCE_ID = 'metro-lines';
+    const METRO_STATIONS_SOURCE_ID = 'metro-stations';
+    const METRO_ROUTE_STATIONS_SOURCE_ID = 'metro-stations-route';
+    const LISTINGS_LAYER_IDS = ['clusters', 'cluster-count', 'unclustered-point'];
+    let listingsData = null;
     let activeRouteUrl = null;
     let markersHidden = false;
+    let popup = null;
+    let popupUrl = null;
     let metroStations = [];
     let metroStationsByName = new Map();
-    let metroLayerGroup = null;
-    let routeMetroLayer = null;
     let metroDataPromise = null;
     let metroLines = [];
-    let metroLinesLayer = null;
-    let metroLinePolylines = [];
     let metroLineDataPromise = null;
     let metroDisplayMode = 'all';
     let isSettingRoute = false;
@@ -922,7 +922,7 @@
       if (!mapInitialized) {
         initMap(true);
       } else if (map) {
-        map.invalidateSize();
+        map.resize();
       }
     }
 
@@ -932,27 +932,12 @@
 
       const focus = () => {
         if (!map) return;
-        const marker = markers[url];
         const lat = item?.geo?.lat;
         const lon = item?.geo?.lon;
-        const targetZoom = Math.max(map.getZoom(), 17);
-
-        if (marker && markerCluster && markerCluster.zoomToShowLayer) {
-          markerCluster.zoomToShowLayer(marker, () => {
-            map.setView(marker.getLatLng(), targetZoom, { animate: true });
-            marker.openPopup();
-          });
-          return;
-        }
-
-        if (marker) {
-          map.setView(marker.getLatLng(), targetZoom, { animate: true });
-          marker.openPopup();
-          return;
-        }
-
+        const targetZoom = Math.max(map.getZoom(), 16);
         if (lat && lon) {
-          map.setView([lat, lon], targetZoom, { animate: true });
+          map.flyTo({ center: [lon, lat], zoom: targetZoom, essential: true });
+          openListingPopup(item);
         }
       };
 
@@ -973,20 +958,34 @@
       if (!isVisible && !force) return;
       
       mapInitialized = true;
-      map = L.map('map', { zoomControl: false }).setView([48.86, 2.35], 12);
-      L.control.zoom({ position: 'topright' }).addTo(map);
-      
-      L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
-        attribution: '© OpenStreetMap © CARTO',
-        maxZoom: 19
-      }).addTo(map);
+      mapboxgl.accessToken = MAPBOX_TOKEN;
+      map = new mapboxgl.Map({
+        container: 'map',
+        style: 'mapbox://styles/mapbox/light-v11',
+        center: [2.35, 48.86],
+        zoom: 12,
+        pitch: 0
+      });
+      map.addControl(new mapboxgl.NavigationControl({ visualizePitch: true }), 'top-right');
 
-      updateMapMarkers();
-      setMetroDisplayAll();
-      map.on('zoomend', updateMetroStationsVisibility);
+      map.on('load', () => {
+        mapReady = true;
+        setupMapLayers();
+        add3DBuildings();
+        if (listingsData) {
+          const source = map.getSource(LISTINGS_SOURCE_ID);
+          if (source) source.setData(listingsData);
+        }
+        updateMapMarkers();
+        setMetroDisplayAll();
+        updateMetroStationsVisibility();
+      });
+
+      map.on('zoom', updateMetroStationsVisibility);
+
       const routePanel = document.getElementById('routePanel');
       if (routePanel) {
-        L.DomEvent.disableClickPropagation(routePanel);
+        routePanel.addEventListener('click', (e) => e.stopPropagation());
       }
       map.on('click', () => {
         if (activeRouteUrl) {
@@ -996,87 +995,260 @@
     }
 
     function updateMapMarkers() {
-      if (!map) return;
-      
-      // Clear existing cluster and markers
-      if (markerCluster) {
-        map.removeLayer(markerCluster);
-      }
-      markers = {};
-      
-      // Create new cluster group with custom styling
-      markerCluster = L.markerClusterGroup({
-        maxClusterRadius: 50,
-        spiderfyOnMaxZoom: true,
-        showCoverageOnHover: false,
-        zoomToBoundsOnClick: true,
-        disableClusteringAtZoom: 17,
-        iconCreateFunction: function(cluster) {
-          const count = cluster.getChildCount();
-          let size = 'small';
-          let className = 'bg-slate-500';
-          if (count >= 10) { size = 'large'; className = 'bg-slate-700'; }
-          else if (count >= 5) { size = 'medium'; className = 'bg-slate-600'; }
-          
-          return L.divIcon({
-            html: `<div class="flex items-center justify-center w-full h-full rounded-full ${className} text-white font-bold shadow-lg border-2 border-white">${count}</div>`,
-            className: 'custom-cluster',
-            iconSize: L.point(40, 40)
-          });
-        }
-      });
-
+      if (!map || !mapReady) return;
       const filtered = getFilteredItems();
-      const bounds = L.latLngBounds();
+      const data = buildListingsGeoJSON(filtered);
+      listingsData = data;
+      const source = map.getSource(LISTINGS_SOURCE_ID);
+      if (source) source.setData(data);
+      setListingsVisibility(true);
 
+      const bounds = new mapboxgl.LngLatBounds();
       filtered.forEach(item => {
         if (!item.geo?.lat || !item.geo?.lon) return;
-        
-        const lat = item.geo.lat;
-        const lon = item.geo.lon;
-        
-        const color = item._score >= 7 ? '#10b981' : item._score >= 5 ? '#f59e0b' : item._score >= 3 ? '#f97316' : '#ef4444';
-        
-        const marker = L.circleMarker([lat, lon], {
-          radius: 10,
-          fillColor: color,
-          color: '#fff',
-          weight: 2,
-          opacity: 1,
-          fillOpacity: 0.9
-        });
-
-        const photo = item.photos?.[0];
-        const addressText = item.location_hint?.address_text || item.location_hint?.arrondissement_text || item._arr || 'Paris';
-        const photoHtml = photo 
-          ? `<img src="${photo}" alt="" style="width:100%;height:80px;object-fit:cover;border-radius:4px;margin-bottom:8px">`
-          : '';
-        
-        marker.bindPopup(buildMarkerPopup(item), { maxWidth: 260 });
-
-        markerCluster.addLayer(marker);
-        markers[item.listing_url] = marker;
-        bounds.extend([lat, lon]);
+        bounds.extend([item.geo.lon, item.geo.lat]);
       });
-
-      map.addLayer(markerCluster);
-      markersHidden = false;
-
-      if (bounds.isValid()) {
-        map.fitBounds(bounds, { padding: [40, 40], maxZoom: 15 });
+      if (!bounds.isEmpty()) {
+        map.fitBounds(bounds, { padding: 40, maxZoom: 15 });
       }
     }
 
     function highlightMarker(url, active) {
-      const m = markers[url];
-      if (!m) return;
+      if (!map || !mapReady) return;
+      if (!url) return;
+      map.setFeatureState({ source: LISTINGS_SOURCE_ID, id: url }, { hover: !!active });
       if (active) {
-        m.setStyle({ radius: 14, weight: 3, color: '#3b82f6' });
-        m.openPopup();
-      } else {
-        m.setStyle({ radius: 10, weight: 2, color: '#fff' });
-        m.closePopup();
+        const item = items.find(i => i.listing_url === url);
+        if (item) openListingPopup(item);
       }
+    }
+
+    function buildListingsGeoJSON(list) {
+      return {
+        type: 'FeatureCollection',
+        features: list
+          .filter(item => item.geo?.lat && item.geo?.lon)
+          .map(item => ({
+            type: 'Feature',
+            id: item.listing_url,
+            properties: {
+              url: item.listing_url,
+              score: item._score || 0
+            },
+            geometry: {
+              type: 'Point',
+              coordinates: [item.geo.lon, item.geo.lat]
+            }
+          }))
+      };
+    }
+
+    function setListingsVisibility(visible) {
+      if (!map || !mapReady) return;
+      LISTINGS_LAYER_IDS.forEach(id => {
+        if (map.getLayer(id)) {
+          map.setLayoutProperty(id, 'visibility', visible ? 'visible' : 'none');
+        }
+      });
+      markersHidden = !visible;
+    }
+
+    function openListingPopup(item) {
+      if (!map || !item?.geo?.lat || !item?.geo?.lon) return;
+      const html = buildMarkerPopup(item);
+      if (popup) popup.remove();
+      popup = new mapboxgl.Popup({ offset: 14, closeButton: false })
+        .setLngLat([item.geo.lon, item.geo.lat])
+        .setHTML(html)
+        .addTo(map);
+      popupUrl = item.listing_url;
+    }
+
+    function setupMapLayers() {
+      if (!map || !mapReady) return;
+      if (!map.getSource(LISTINGS_SOURCE_ID)) {
+        map.addSource(LISTINGS_SOURCE_ID, {
+          type: 'geojson',
+          data: listingsData || { type: 'FeatureCollection', features: [] },
+          cluster: true,
+          clusterRadius: 50,
+          clusterMaxZoom: 16
+        });
+
+        map.addLayer({
+          id: 'clusters',
+          type: 'circle',
+          source: LISTINGS_SOURCE_ID,
+          filter: ['has', 'point_count'],
+          paint: {
+            'circle-color': [
+              'step',
+              ['get', 'point_count'],
+              '#94a3b8',
+              5, '#64748b',
+              10, '#334155'
+            ],
+            'circle-radius': [
+              'step',
+              ['get', 'point_count'],
+              18,
+              5, 22,
+              10, 26
+            ],
+            'circle-stroke-color': '#ffffff',
+            'circle-stroke-width': 2
+          }
+        });
+
+        map.addLayer({
+          id: 'cluster-count',
+          type: 'symbol',
+          source: LISTINGS_SOURCE_ID,
+          filter: ['has', 'point_count'],
+          layout: {
+            'text-field': '{point_count_abbreviated}',
+            'text-font': ['Open Sans Bold', 'Arial Unicode MS Bold'],
+            'text-size': 12
+          },
+          paint: { 'text-color': '#ffffff' }
+        });
+
+        map.addLayer({
+          id: 'unclustered-point',
+          type: 'circle',
+          source: LISTINGS_SOURCE_ID,
+          filter: ['!', ['has', 'point_count']],
+          paint: {
+            'circle-color': [
+              'case',
+              ['>=', ['get', 'score'], 7], '#10b981',
+              ['>=', ['get', 'score'], 5], '#f59e0b',
+              ['>=', ['get', 'score'], 3], '#f97316',
+              '#ef4444'
+            ],
+            'circle-radius': [
+              'case',
+              ['boolean', ['feature-state', 'hover'], false], 14,
+              10
+            ],
+            'circle-stroke-color': '#ffffff',
+            'circle-stroke-width': 2,
+            'circle-opacity': 0.9
+          }
+        });
+
+        map.on('click', 'clusters', (e) => {
+          const features = map.queryRenderedFeatures(e.point, { layers: ['clusters'] });
+          if (!features.length) return;
+          const clusterId = features[0].properties.cluster_id;
+          const source = map.getSource(LISTINGS_SOURCE_ID);
+          if (!source) return;
+          source.getClusterExpansionZoom(clusterId, (err, zoom) => {
+            if (err) return;
+            map.easeTo({ center: features[0].geometry.coordinates, zoom });
+          });
+        });
+
+        map.on('click', 'unclustered-point', (e) => {
+          const feature = e.features && e.features[0];
+          if (!feature) return;
+          const url = feature.properties?.url;
+          const item = items.find(i => i.listing_url === url);
+          if (item) openListingPopup(item);
+        });
+
+        map.on('mouseenter', 'unclustered-point', () => {
+          map.getCanvas().style.cursor = 'pointer';
+        });
+        map.on('mouseleave', 'unclustered-point', () => {
+          map.getCanvas().style.cursor = '';
+        });
+      }
+
+      if (!map.getSource(ROUTE_SOURCE_ID)) {
+        map.addSource(ROUTE_SOURCE_ID, {
+          type: 'geojson',
+          data: { type: 'FeatureCollection', features: [] }
+        });
+
+        map.addLayer({
+          id: 'route-outline-transit',
+          type: 'line',
+          source: ROUTE_SOURCE_ID,
+          filter: ['==', ['get', 'type'], 'transit'],
+          paint: { 'line-color': '#0b1220', 'line-width': 10, 'line-opacity': 0.35 }
+        });
+        map.addLayer({
+          id: 'route-outline-walk',
+          type: 'line',
+          source: ROUTE_SOURCE_ID,
+          filter: ['==', ['get', 'type'], 'walk'],
+          paint: { 'line-color': '#0b1220', 'line-width': 9, 'line-opacity': 0.25, 'line-dasharray': [2, 2] }
+        });
+        map.addLayer({
+          id: 'route-transit',
+          type: 'line',
+          source: ROUTE_SOURCE_ID,
+          filter: ['==', ['get', 'type'], 'transit'],
+          paint: { 'line-color': ['get', 'color'], 'line-width': 6, 'line-opacity': 0.9 }
+        });
+        map.addLayer({
+          id: 'route-walk',
+          type: 'line',
+          source: ROUTE_SOURCE_ID,
+          filter: ['==', ['get', 'type'], 'walk'],
+          paint: { 'line-color': '#94A3B8', 'line-width': 5, 'line-opacity': 0.8, 'line-dasharray': [1.2, 1.2] }
+        });
+        map.addLayer({
+          id: 'route-labels',
+          type: 'symbol',
+          source: ROUTE_SOURCE_ID,
+          filter: ['has', 'label'],
+          layout: {
+            'symbol-placement': 'line',
+            'text-field': ['get', 'label'],
+            'text-size': 11,
+            'text-font': ['Open Sans Regular', 'Arial Unicode MS Regular']
+          },
+          paint: {
+            'text-color': '#ffffff',
+            'text-halo-color': 'rgba(15,23,42,0.9)',
+            'text-halo-width': 1.5
+          }
+        });
+        setRouteVisibility(false);
+      }
+    }
+
+    function setRouteVisibility(visible) {
+      const ids = ['route-outline-transit', 'route-outline-walk', 'route-transit', 'route-walk', 'route-labels'];
+      ids.forEach(id => {
+        if (map.getLayer(id)) {
+          map.setLayoutProperty(id, 'visibility', visible ? 'visible' : 'none');
+        }
+      });
+    }
+
+    function add3DBuildings() {
+      if (!map) return;
+      const layers = map.getStyle().layers;
+      const labelLayerId = layers.find(layer => layer.type === 'symbol' && layer.layout['text-field']);
+      const beforeId = labelLayerId ? labelLayerId.id : undefined;
+      if (map.getLayer('3d-buildings')) return;
+      map.addLayer({
+        id: '3d-buildings',
+        source: 'composite',
+        'source-layer': 'building',
+        filter: ['==', 'extrude', 'true'],
+        type: 'fill-extrusion',
+        minzoom: 15,
+        paint: {
+          'fill-extrusion-color': '#cbd5e1',
+          'fill-extrusion-height': ['get', 'height'],
+          'fill-extrusion-base': ['get', 'min_height'],
+          'fill-extrusion-opacity': 0.45
+        }
+      }, beforeId);
     }
 
     function buildMarkerPopup(item) {
@@ -1088,7 +1260,7 @@
       const routeDetails = item.commute?.route_details;
       const hasRoute = routeDetails && routeDetails.polyline;
       const routeSummary = hasRoute ? formatRouteSummary(routeDetails) : null;
-      const isRouteVisible = routePolylines[item.listing_url] !== undefined;
+      const isRouteVisible = activeRouteUrl === item.listing_url;
       const routeButtonHtml = hasRoute
         ? `<button onclick="window.showRouteForListing('${item.listing_url}')" class="mt-2 px-3 py-1.5 w-full text-xs font-medium ${isRouteVisible ? 'bg-red-600 hover:bg-red-700' : 'bg-slate-700 hover:bg-slate-800'} text-white rounded-lg transition" style="cursor:pointer">
              ${isRouteVisible ? '❌ Masquer le trajet' : '🚇 Afficher le trajet'}
@@ -1110,13 +1282,10 @@
     }
 
     function refreshMarkerPopup(listingUrl) {
-      const marker = markers[listingUrl];
-      if (!marker) return;
+      if (!popup || popupUrl !== listingUrl) return;
       const item = items.find(i => i.listing_url === listingUrl);
       if (!item) return;
-      if (marker.getPopup && marker.getPopup()) {
-        marker.getPopup().setContent(buildMarkerPopup(item));
-      }
+      popup.setHTML(buildMarkerPopup(item));
     }
 
     function normalizeStationName(name) {
@@ -1221,122 +1390,131 @@
       return tryNext(0);
     }
 
-    function makeMetroMarker(station, emphasize = false) {
-      const color = getMetroLineColor(station.line);
-      const marker = L.circleMarker([station.lat, station.lon], {
-        radius: emphasize ? 6 : 4,
-        fillColor: color,
-        color: '#111827',
-        weight: emphasize ? 2 : 1,
-        opacity: 0.9,
-        fillOpacity: emphasize ? 0.9 : 0.7
-      });
-      marker.bindPopup(`<strong>${station.name}</strong><br>Métro ${station.line}`);
-      return marker;
-    }
-
-    function ensureAllMetroLayer() {
-      if (metroLayerGroup) return;
-      metroLayerGroup = L.layerGroup();
-      metroStations.forEach(station => {
-        metroLayerGroup.addLayer(makeMetroMarker(station));
-      });
-    }
-
-    function ensureMetroLinesLayer(forceRecreate = false) {
-      if (!forceRecreate && metroLinesLayer && metroLinePolylines.length) {
-        console.log('ensureMetroLinesLayer: returning early, polylines already exist');
-        return;
-      }
-      console.log('ensureMetroLinesLayer: creating/recreating polylines', { forceRecreate, mode: metroDisplayMode });
-      if (metroLinesLayer) {
-        metroLinesLayer.clearLayers();
-      } else {
-        metroLinesLayer = L.layerGroup();
-      }
-      metroLinePolylines = [];
-      // Use current mode opacity when creating polylines
-      // In route mode, create all with muted opacity, then we'll update route lines to normal
-      const initialOpacity = metroDisplayMode === 'route' ? METRO_LINE_OPACITY_MUTED : METRO_LINE_OPACITY;
-      console.log('Creating polylines with opacity:', initialOpacity, 'mode:', metroDisplayMode);
-      metroLines.forEach(line => {
+    function buildMetroLinesGeoJSON(lines) {
+      const features = [];
+      (lines || []).forEach(line => {
         const lineKey = normalizeLineKey(line.line);
         const color = metroLineColors[lineKey] || line.color || '#0f172a';
         (line.segments || []).forEach(segment => {
           if (!segment || segment.length < 2) return;
-          const polyline = L.polyline(segment, {
-            color,
-            weight: 3,
-            opacity: initialOpacity,
-            smoothFactor: 1
+          const coords = segment.map(([lat, lon]) => [lon, lat]);
+          features.push({
+            type: 'Feature',
+            properties: { lineKey, color },
+            geometry: { type: 'LineString', coordinates: coords }
           });
-          // Store line key with polyline for later reference
-          polyline._metroLineKey = lineKey;
-          metroLinePolylines.push(polyline);
-          polyline.addTo(metroLinesLayer);
         });
       });
-      console.log('Created', metroLinePolylines.length, 'polylines');
+      return { type: 'FeatureCollection', features };
     }
 
-    function setMetroLinesOpacity(opacity) {
-      // Ensure polylines exist before styling
-      ensureMetroLinesLayer();
-      if (!metroLinesLayer) return;
-      
-      let count = 0;
-      
-      // Update all polylines via stored array
-      if (metroLinePolylines && metroLinePolylines.length > 0) {
-        metroLinePolylines.forEach(polyline => {
-          if (polyline) {
-            // Try both setStyle and setOpacity methods
-            if (typeof polyline.setStyle === 'function') {
-              polyline.setStyle({ opacity });
-            }
-            if (typeof polyline.setOpacity === 'function') {
-              polyline.setOpacity(opacity);
-            }
-            count++;
+    function buildMetroStationsGeoJSON(stations) {
+      const features = (stations || []).map(station => ({
+        type: 'Feature',
+        properties: {
+          name: station.name,
+          line: station.line,
+          color: getMetroLineColor(station.line)
+        },
+        geometry: {
+          type: 'Point',
+          coordinates: [station.lon, station.lat]
+        }
+      }));
+      return { type: 'FeatureCollection', features };
+    }
+
+    function ensureMetroSources() {
+      if (!map || !mapReady) return;
+      if (!map.getSource(METRO_LINES_SOURCE_ID)) {
+        map.addSource(METRO_LINES_SOURCE_ID, {
+          type: 'geojson',
+          data: buildMetroLinesGeoJSON(metroLines)
+        });
+        map.addLayer({
+          id: 'metro-lines-base',
+          type: 'line',
+          source: METRO_LINES_SOURCE_ID,
+          paint: {
+            'line-color': ['get', 'color'],
+            'line-width': 2.5,
+            'line-opacity': METRO_LINE_OPACITY
+          }
+        });
+        map.addLayer({
+          id: 'metro-lines-route',
+          type: 'line',
+          source: METRO_LINES_SOURCE_ID,
+          filter: ['in', ['get', 'lineKey'], ['literal', []]],
+          paint: {
+            'line-color': ['get', 'color'],
+            'line-width': 3.5,
+            'line-opacity': METRO_LINE_OPACITY
           }
         });
       }
-      
-      // Also update via layer group iteration as backup
-      metroLinesLayer.eachLayer(layer => {
-        if (layer) {
-          if (typeof layer.setStyle === 'function') {
-            layer.setStyle({ opacity });
+
+      if (!map.getSource(METRO_STATIONS_SOURCE_ID)) {
+        map.addSource(METRO_STATIONS_SOURCE_ID, {
+          type: 'geojson',
+          data: buildMetroStationsGeoJSON(metroStations)
+        });
+        map.addLayer({
+          id: 'metro-stations',
+          type: 'circle',
+          source: METRO_STATIONS_SOURCE_ID,
+          paint: {
+            'circle-radius': 3.5,
+            'circle-color': ['get', 'color'],
+            'circle-stroke-color': '#0f172a',
+            'circle-stroke-width': 1,
+            'circle-opacity': 0.7
           }
-          if (typeof layer.setOpacity === 'function') {
-            layer.setOpacity(opacity);
+        });
+      }
+
+      if (!map.getSource(METRO_ROUTE_STATIONS_SOURCE_ID)) {
+        map.addSource(METRO_ROUTE_STATIONS_SOURCE_ID, {
+          type: 'geojson',
+          data: { type: 'FeatureCollection', features: [] }
+        });
+        map.addLayer({
+          id: 'metro-stations-route',
+          type: 'circle',
+          source: METRO_ROUTE_STATIONS_SOURCE_ID,
+          paint: {
+            'circle-radius': 5,
+            'circle-color': ['get', 'color'],
+            'circle-stroke-color': '#0f172a',
+            'circle-stroke-width': 1.4,
+            'circle-opacity': 0.9
           }
-        }
-      });
-      
-      console.log('Updated metro lines opacity:', { opacity, count, total: metroLinePolylines?.length || 0 });
+        });
+      }
+    }
+
+    function setMetroLinesOpacity(opacity) {
+      if (!map || !mapReady) return;
+      if (map.getLayer('metro-lines-base')) {
+        map.setPaintProperty('metro-lines-base', 'line-opacity', opacity);
+      }
     }
 
     function updateMetroLinesOpacityByMode() {
       const target = metroDisplayMode === 'route' ? METRO_LINE_OPACITY_MUTED : METRO_LINE_OPACITY;
-      console.log('updateMetroLinesOpacityByMode:', { mode: metroDisplayMode, targetOpacity: target });
       setMetroLinesOpacity(target);
     }
 
     function updateMetroStationsVisibility() {
-      if (!map) return;
+      if (!map || !mapReady) return;
       const showStations = map.getZoom() >= METRO_STATION_MIN_ZOOM;
-      if (!showStations) {
-        if (metroLayerGroup && map.hasLayer(metroLayerGroup)) map.removeLayer(metroLayerGroup);
-        if (routeMetroLayer && map.hasLayer(routeMetroLayer)) map.removeLayer(routeMetroLayer);
-        return;
+      const showAll = showStations && metroDisplayMode !== 'route';
+      const showRoute = showStations && metroDisplayMode === 'route';
+      if (map.getLayer('metro-stations')) {
+        map.setLayoutProperty('metro-stations', 'visibility', showAll ? 'visible' : 'none');
       }
-      if (metroDisplayMode === 'route') {
-        if (metroLayerGroup && map.hasLayer(metroLayerGroup)) map.removeLayer(metroLayerGroup);
-        if (routeMetroLayer && !map.hasLayer(routeMetroLayer)) routeMetroLayer.addTo(map);
-      } else {
-        if (routeMetroLayer && map.hasLayer(routeMetroLayer)) map.removeLayer(routeMetroLayer);
-        if (metroLayerGroup && !map.hasLayer(metroLayerGroup)) metroLayerGroup.addTo(map);
+      if (map.getLayer('metro-stations-route')) {
+        map.setLayoutProperty('metro-stations-route', 'visibility', showRoute ? 'visible' : 'none');
       }
     }
 
@@ -1376,39 +1554,25 @@
     }
 
     function setMetroDisplayAll() {
-      if (!map) return;
-      // Don't reset if we're setting a route or already in route mode
-      console.log('setMetroDisplayAll: called, checking flag and mode', { isSettingRoute, mode: metroDisplayMode });
-      if (isSettingRoute || metroDisplayMode === 'route') {
-        console.log('setMetroDisplayAll: SKIPPING (sync check), isSettingRoute:', isSettingRoute, 'mode:', metroDisplayMode);
-        return;
-      }
-      console.log('setMetroDisplayAll: proceeding with async operation');
+      if (!map || !mapReady) return;
+      if (isSettingRoute || metroDisplayMode === 'route') return;
       Promise.all([loadMetroStations(), loadMetroLines()]).then(() => {
-        // Double-check after async operations
-        console.log('setMetroDisplayAll: after async, checking again', { isSettingRoute, mode: metroDisplayMode });
-        if (isSettingRoute || metroDisplayMode === 'route') {
-          console.log('setMetroDisplayAll: SKIPPING (async check), isSettingRoute:', isSettingRoute, 'mode:', metroDisplayMode);
-          return;
-        }
-        if (routeMetroLayer) {
-          map.removeLayer(routeMetroLayer);
-          routeMetroLayer = null;
-        }
-        ensureAllMetroLayer();
+        if (isSettingRoute || metroDisplayMode === 'route') return;
+        ensureMetroSources();
         metroDisplayMode = 'all';
-        console.log('setMetroDisplayAll: setting mode to all');
-        // Force recreate polylines with correct opacity for all mode
-        ensureMetroLinesLayer(true);
-        if (metroLinesLayer && !map.hasLayer(metroLinesLayer)) {
-          metroLinesLayer.addTo(map);
+        updateMetroLinesOpacityByMode();
+        if (map.getLayer('metro-lines-route')) {
+          map.setFilter('metro-lines-route', ['in', ['get', 'lineKey'], ['literal', []]]);
+          map.setLayoutProperty('metro-lines-route', 'visibility', 'none');
         }
+        const routeSource = map.getSource(METRO_ROUTE_STATIONS_SOURCE_ID);
+        if (routeSource) routeSource.setData({ type: 'FeatureCollection', features: [] });
         updateMetroStationsVisibility();
       });
     }
 
     function setMetroDisplayRoute(item) {
-      if (!map) return;
+      if (!map || !mapReady) return;
       // Set flag IMMEDIATELY to prevent setMetroDisplayAll from interfering
       isSettingRoute = true;
       metroDisplayMode = 'route';
@@ -1439,61 +1603,16 @@
           }
         });
         
-        if (metroLayerGroup && map.hasLayer(metroLayerGroup)) {
-          map.removeLayer(metroLayerGroup);
+        ensureMetroSources();
+        updateMetroLinesOpacityByMode();
+        if (map.getLayer('metro-lines-route')) {
+          map.setFilter('metro-lines-route', ['in', ['get', 'lineKey'], ['literal', Array.from(routeLines)]]);
+          map.setLayoutProperty('metro-lines-route', 'visibility', 'visible');
         }
-        if (routeMetroLayer) {
-          map.removeLayer(routeMetroLayer);
-        }
-        
-        console.log('setMetroDisplayRoute: setting mode to route, route lines:', Array.from(routeLines));
-        
-        // Small delay to ensure mode is set before any async operations
-        // Force recreate all polylines with muted opacity first
-        // We'll update route lines to normal opacity after
-        setTimeout(() => {
-          console.log('setMetroDisplayRoute: Current metroDisplayMode before ensureMetroLinesLayer:', metroDisplayMode);
-          ensureMetroLinesLayer(true);
-          if (metroLinesLayer && !map.hasLayer(metroLinesLayer)) {
-            metroLinesLayer.addTo(map);
-          }
-          
-          // Now update opacity: muted for all lines, then normal for route lines
-          if (metroLinePolylines && metroLinePolylines.length > 0) {
-            let routeCount = 0;
-            let mutedCount = 0;
-            metroLinePolylines.forEach(polyline => {
-              if (!polyline) return;
-              // Check if this polyline belongs to a route line
-              const lineKey = polyline._metroLineKey;
-              const belongsToRoute = lineKey && routeLines.has(lineKey);
-              
-              const opacity = belongsToRoute ? METRO_LINE_OPACITY : METRO_LINE_OPACITY_MUTED;
-              if (belongsToRoute) routeCount++;
-              else mutedCount++;
-              
-              if (typeof polyline.setStyle === 'function') {
-                polyline.setStyle({ opacity });
-              }
-              if (typeof polyline.setOpacity === 'function') {
-                polyline.setOpacity(opacity);
-              }
-              if (belongsToRoute && typeof polyline.bringToFront === 'function') {
-                polyline.bringToFront();
-              }
-            });
-            console.log('Updated polylines:', { route: routeCount, muted: mutedCount, total: metroLinePolylines.length });
-          }
-          
-          routeMetroLayer = L.layerGroup();
-          stations.forEach(station => {
-            routeMetroLayer.addLayer(makeMetroMarker(station, true));
-          });
-          updateMetroStationsVisibility();
-          
-          // Clear flag after everything is done
-          isSettingRoute = false;
-        }, 50);
+        const routeSource = map.getSource(METRO_ROUTE_STATIONS_SOURCE_ID);
+        if (routeSource) routeSource.setData(buildMetroStationsGeoJSON(stations));
+        updateMetroStationsVisibility();
+        isSettingRoute = false;
       });
     }
 
@@ -1763,21 +1882,7 @@
         return;
       }
       
-      // Remove existing route for this listing if any
-      // Don't call hideRouteOnMap() as it may reset mode asynchronously
-      if (routePolylines[listingUrl]) {
-        map.removeLayer(routePolylines[listingUrl]);
-        delete routePolylines[listingUrl];
-      }
-      if (routeMarkers[listingUrl]) {
-        routeMarkers[listingUrl].forEach(marker => map.removeLayer(marker));
-        delete routeMarkers[listingUrl];
-      }
-      
       try {
-        const layerGroup = L.layerGroup().addTo(map);
-        let bounds = L.latLngBounds();
-        
         const steps = routeDetails.steps || [];
         const stepSegments = [];
         let walkBuffer = null;
@@ -1806,55 +1911,55 @@
           stepSegments.push({ step, coords });
         });
         flushWalk();
-        
+
+        const features = [];
+        const bounds = new mapboxgl.LngLatBounds();
         if (stepSegments.length) {
           stepSegments.forEach(seg => {
-            const outline = L.polyline(seg.coords, getStepOutlineStyle(seg.step)).addTo(layerGroup);
-            const stepLine = L.polyline(seg.coords, getStepStyle(seg.step)).addTo(layerGroup);
+            const lngLat = seg.coords.map(([lat, lon]) => [lon, lat]);
             const label = stepLabel(seg.step);
-            if (label) {
-              stepLine.bindTooltip(label, {
-                permanent: true,
-                direction: 'center',
-                className: 'route-step-label'
-              });
-            }
-            bounds.extend(stepLine.getBounds());
+            features.push({
+              type: 'Feature',
+              properties: {
+                type: seg.step.travel_mode === 'WALKING' || seg.step.travel_mode === 'WALK' ? 'walk' : 'transit',
+                color: getStepColor(seg.step),
+                label
+              },
+              geometry: { type: 'LineString', coordinates: lngLat }
+            });
+            lngLat.forEach(coord => bounds.extend(coord));
           });
         } else {
-          // Fallback to full route polyline if step polylines are missing
           const polyline = decodePolyline(routeDetails.polyline);
           if (!polyline || polyline.length === 0) {
             console.log('Failed to decode polyline');
             return;
           }
-          const routePolyline = L.polyline(polyline, {
-            color: '#3b82f6',
-            weight: 4,
-            opacity: 0.7,
-            smoothFactor: 1
-          }).addTo(layerGroup);
-          bounds = routePolyline.getBounds();
+          const lngLat = polyline.map(([lat, lon]) => [lon, lat]);
+          features.push({
+            type: 'Feature',
+            properties: { type: 'transit', color: '#3b82f6', label: null },
+            geometry: { type: 'LineString', coordinates: lngLat }
+          });
+          lngLat.forEach(coord => bounds.extend(coord));
         }
-        
-        routePolylines[listingUrl] = layerGroup;
+
+        const source = map.getSource(ROUTE_SOURCE_ID);
+        if (source) {
+          source.setData({ type: 'FeatureCollection', features });
+        }
+        setRouteVisibility(true);
         activeRouteUrl = listingUrl;
-        if (markerCluster && map.hasLayer(markerCluster)) {
-          map.removeLayer(markerCluster);
-          markersHidden = true;
-        }
-        
-        // Fit map to show both listing and route
+        setListingsVisibility(false);
+
         if (item.geo?.lat && item.geo?.lon) {
-          bounds.extend([item.geo.lat, item.geo.lon]);
+          bounds.extend([item.geo.lon, item.geo.lat]);
         }
-        map.fitBounds(bounds, { padding: [50, 50], maxZoom: 15 });
+        if (!bounds.isEmpty()) {
+          map.fitBounds(bounds, { padding: 50, maxZoom: 15 });
+        }
         
-        // Update popup button state
-        const marker = markers[listingUrl];
-        if (marker) {
-          marker.openPopup();
-        }
+        openListingPopup(item);
         
         // Show route summary in console (for debugging)
         const summary = formatRouteSummary(routeDetails);
@@ -1871,24 +1976,20 @@
 
     // Hide route on map
     function hideRouteOnMap(listingUrl, skipReset = false) {
-      if (routePolylines[listingUrl]) {
-        map.removeLayer(routePolylines[listingUrl]);
-        delete routePolylines[listingUrl];
+      if (map && mapReady) {
+        const source = map.getSource(ROUTE_SOURCE_ID);
+        if (source) source.setData({ type: 'FeatureCollection', features: [] });
+        setRouteVisibility(false);
       }
-      if (routeMarkers[listingUrl]) {
-        routeMarkers[listingUrl].forEach(marker => map.removeLayer(marker));
-        delete routeMarkers[listingUrl];
-      }
-      if (!skipReset && !Object.keys(routePolylines).length) {
+      if (!skipReset) {
         setMetroDisplayAll();
       }
       if (activeRouteUrl === listingUrl) {
         activeRouteUrl = null;
         hideRoutePanel();
       }
-      if (!skipReset && markersHidden && markerCluster && !map.hasLayer(markerCluster)) {
-        map.addLayer(markerCluster);
-        markersHidden = false;
+      if (!skipReset && markersHidden) {
+        setListingsVisibility(true);
       }
       refreshMarkerPopup(listingUrl);
     }
@@ -1898,7 +1999,7 @@
       const item = items.find(i => i.listing_url === listingUrl);
       if (item) {
         // Toggle route visibility
-        if (routePolylines[listingUrl]) {
+        if (activeRouteUrl === listingUrl) {
           hideRouteOnMap(listingUrl);
         } else {
           // Set flag and mode IMMEDIATELY BEFORE any other operations
@@ -1907,22 +2008,19 @@
           metroDisplayMode = 'route';
           console.log('showRouteForListing: setting flag and mode to route BEFORE hideRouteOnMap');
           
-          // Hide other routes but skip reset (we'll set route mode right after)
-          Object.keys(routePolylines).forEach(url => hideRouteOnMap(url, true));
           showRouteOnMap(listingUrl, item);
         }
       }
     };
 
     window.clearActiveRoute = function() {
-      Object.keys(routePolylines).forEach(url => hideRouteOnMap(url, true));
+      if (activeRouteUrl) {
+        hideRouteOnMap(activeRouteUrl, true);
+      }
       activeRouteUrl = null;
       hideRoutePanel();
       setMetroDisplayAll();
-      if (markersHidden && markerCluster && !map.hasLayer(markerCluster)) {
-        map.addLayer(markerCluster);
-        markersHidden = false;
-      }
+      if (markersHidden) setListingsVisibility(true);
     };
 
     // Get selected arrondissements
@@ -2093,11 +2191,8 @@
             if (!mapInitialized) {
               initMap(true);
             } else if (map) {
-              map.invalidateSize();
-              // Fit bounds to markers
-              const bounds = L.latLngBounds();
-              Object.values(markers).forEach(m => bounds.extend(m.getLatLng()));
-              if (bounds.isValid()) map.fitBounds(bounds, { padding: [40, 40], maxZoom: 15 });
+              map.resize();
+              updateMapMarkers();
             }
           }, 150);
         }
