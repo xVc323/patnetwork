@@ -137,11 +137,52 @@
     .dark .btn-accent { color: #f8fafc; }
     .btn-accent:hover { filter: brightness(1.05); }
     .card-reveal { animation: cardIn 0.36s ease both; }
-    .route-panel {
-      backdrop-filter: blur(10px);
-      background: rgba(255, 255, 255, 0.9);
+    .route-icon {
+      width: 20px;
+      height: 20px;
+      display: inline-block;
     }
-    .dark .route-panel { background: rgba(15, 23, 42, 0.92); }
+    .metro-icon {
+      width: 16px;
+      height: 16px;
+      display: inline-block;
+      vertical-align: text-bottom;
+    }
+    .route-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      padding: 0.15rem 0.5rem;
+      border-radius: 999px;
+      background: rgba(15, 23, 42, 0.06);
+      color: var(--ink);
+      border: 1px solid var(--line);
+      white-space: nowrap;
+    }
+    .dark .route-pill {
+      background: rgba(15, 23, 42, 0.6);
+    }
+    .route-arrow {
+      display: inline-flex;
+      align-items: center;
+      color: #94a3b8;
+    }
+    .listing-popup .mapboxgl-popup-content {
+      padding: 10px;
+      border-radius: 12px;
+      max-width: 240px;
+      background: var(--surface);
+      color: var(--ink);
+      border: 1px solid var(--line);
+    }
+    .listing-popup .mapboxgl-popup-tip {
+      border-top-color: var(--surface);
+    }
+    .dark .listing-popup .mapboxgl-popup-content {
+      background: var(--surface);
+      color: var(--ink);
+      border-color: var(--line);
+    }
     .route-step-dot {
       width: 8px; height: 8px; border-radius: 999px; display: inline-block;
     }
@@ -311,9 +352,6 @@
     <!-- Map -->
     <div id="mapPanel" class="hidden lg:flex lg:flex-1 h-full border-l border-slate-200/70 dark:border-slate-800/70 relative">
       <div id="map" class="w-full h-full"></div>
-      <div id="routePanel" class="hidden route-panel surface-card rounded-2xl p-4 absolute bottom-4 left-4 right-4 lg:right-auto lg:w-[360px] text-slate-900 dark:text-slate-100">
-        <!-- Filled by JS -->
-      </div>
     </div>
   </main>
 
@@ -405,6 +443,7 @@
     const MAPBOX_TOKEN = 'pk.eyJ1IjoieHZjMzIzIiwiYSI6ImNta3ZjdndodjAyOTUzZXI3M29zbDN5dm8ifQ.Y6Kgk6oYnfzTel-P8GITSg';
     const LISTINGS_SOURCE_ID = 'listings';
     const ROUTE_SOURCE_ID = 'active-route';
+    const ROUTE_LABELS_SOURCE_ID = 'route-labels';
     const METRO_LINES_SOURCE_ID = 'metro-lines';
     const METRO_STATIONS_SOURCE_ID = 'metro-stations';
     const METRO_ROUTE_STATIONS_SOURCE_ID = 'metro-stations-route';
@@ -424,6 +463,16 @@
     const METRO_STATION_MIN_ZOOM = 13;
     const METRO_LINE_OPACITY = 0.6;
     const METRO_LINE_OPACITY_MUTED = 0.04;
+    const METRO_M_ICON_URL = 'https://commons.wikimedia.org/wiki/Special:FilePath/Metro-M.svg?width=24';
+    const BUS_ICON_URL = 'https://upload.wikimedia.org/wikipedia/commons/2/22/Paris_transit_icons_-_Bus.svg';
+    const ROUTE_ICON_SVGS = {
+      'route-label-pill': 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCAyMDAgNDAiPgogIDxyZWN0IHg9IjEiIHk9IjEiIHdpZHRoPSIxOTgiIGhlaWdodD0iMzgiIHJ4PSIxOCIgZmlsbD0iI2ZmZmZmZiIgc3Ryb2tlPSIjZTJlOGYwIiBzdHJva2Utd2lkdGg9IjIiLz4KPC9zdmc+Cg==',
+      'route-label-pill-dark': 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCAyMDAgNDAiPgogIDxyZWN0IHg9IjEiIHk9IjEiIHdpZHRoPSIxOTgiIGhlaWdodD0iMzgiIHJ4PSIxOCIgZmlsbD0iIzBmMTcyYSIgc3Ryb2tlPSIjMzM0MTU1IiBzdHJva2Utd2lkdGg9IjIiLz4KPC9zdmc+Cg==',
+      'route-icon-metro': 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzMiIgaGVpZ2h0PSIzMiIgdmlld0JveD0iMCAwIDMyIDMyIj4KICA8Y2lyY2xlIGN4PSIxNiIgY3k9IjE2IiByPSIxNSIgZmlsbD0iIzBmMTcyYSIvPgogIDx0ZXh0IHg9IjE2IiB5PSIyMSIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjE2IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSIjZmZmZmZmIj5NPC90ZXh0Pgo8L3N2Zz4K',
+      'route-icon-bus': 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzMiIgaGVpZ2h0PSIzMiIgdmlld0JveD0iMCAwIDMyIDMyIj4KICA8cmVjdCB4PSI0IiB5PSI3IiB3aWR0aD0iMjQiIGhlaWdodD0iMTYiIHJ4PSIzIiBmaWxsPSIjMWYyOTM3Ii8+CiAgPHJlY3QgeD0iNyIgeT0iMTAiIHdpZHRoPSIxOCIgaGVpZ2h0PSI2IiByeD0iMiIgZmlsbD0iI2ZmZmZmZiIvPgogIDxjaXJjbGUgY3g9IjEwIiBjeT0iMjUiIHI9IjIiIGZpbGw9IiMxMTE4MjciLz4KICA8Y2lyY2xlIGN4PSIyMiIgY3k9IjI1IiByPSIyIiBmaWxsPSIjMTExODI3Ii8+Cjwvc3ZnPgo=',
+      'route-icon-walk': 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzMiIgaGVpZ2h0PSIzMiIgdmlld0JveD0iMCAwIDMyIDMyIj4KICA8Y2lyY2xlIGN4PSIxNiIgY3k9IjgiIHI9IjMiIGZpbGw9IiMxMTE4MjciLz4KICA8cGF0aCBkPSJNMTYgMTIgTDE2IDIwIiBzdHJva2U9IiMxMTE4MjciIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+CiAgPHBhdGggZD0iTTE2IDE0IEwxMSAxOCIgc3Ryb2tlPSIjMTExODI3IiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPgogIDxwYXRoIGQ9Ik0xNiAyMCBMMTIgMjYiIHN0cm9rZT0iIzExMTgyNyIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiLz4KICA8cGF0aCBkPSJNMTYgMjAgTDIwIDI2IiBzdHJva2U9IiMxMTE4MjciIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+Cjwvc3ZnPgo=',
+      'route-icon-rail': 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzMiIgaGVpZ2h0PSIzMiIgdmlld0JveD0iMCAwIDMyIDMyIj4KICA8cmVjdCB4PSI3IiB5PSI2IiB3aWR0aD0iMTgiIGhlaWdodD0iMTgiIHJ4PSIzIiBmaWxsPSIjMGYxNzJhIi8+CiAgPHJlY3QgeD0iMTAiIHk9IjkiIHdpZHRoPSIxMiIgaGVpZ2h0PSI2IiByeD0iMSIgZmlsbD0iI2ZmZmZmZiIvPgogIDxwYXRoIGQ9Ik0xMiAyNCBMMTAgMjgiIHN0cm9rZT0iIzExMTgyNyIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiLz4KICA8cGF0aCBkPSJNMjAgMjQgTDIyIDI4IiBzdHJva2U9IiMxMTE4MjciIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+Cjwvc3ZnPgo='
+    };
     const lightbox = {
       el: document.getElementById('lightbox'),
       img: document.getElementById('lightboxImg'),
@@ -790,7 +839,12 @@
               <div class="flex flex-wrap gap-1.5 mb-3">
                 <span class="chip">${item.surface_m2 || '?'} m²</span>
                 <span class="chip">${item.rooms || '?'} pièces</span>
-                <span class="chip chip-commute">${item.commute?.minutes_total || '?'} min</span>
+                <span class="chip chip-commute">
+                  <span class="inline-flex items-center gap-1">
+                    ${clockIconSvg()}
+                    <span>${item.commute?.minutes_total || '?'} min</span>
+                  </span>
+                </span>
               </div>
 
               ${routeSummary ? `<div class="text-[11px] text-slate-500 dark:text-slate-300 leading-snug mb-3">${routeSummary}</div>` : ''}
@@ -970,28 +1024,59 @@
 
       map.on('load', () => {
         mapReady = true;
-        setupMapLayers();
-        add3DBuildings();
-        if (listingsData) {
-          const source = map.getSource(LISTINGS_SOURCE_ID);
-          if (source) source.setData(listingsData);
-        }
-        updateMapMarkers();
-        setMetroDisplayAll();
-        updateMetroStationsVisibility();
+        addRouteIcons().finally(() => {
+          setupMapLayers();
+          applyRouteLabelTheme();
+          add3DBuildings();
+          if (listingsData) {
+            const source = map.getSource(LISTINGS_SOURCE_ID);
+            if (source) source.setData(listingsData);
+          }
+          updateMapMarkers();
+          setMetroDisplayAll();
+          updateMetroStationsVisibility();
+        });
       });
 
       map.on('zoom', updateMetroStationsVisibility);
 
-      const routePanel = document.getElementById('routePanel');
-      if (routePanel) {
-        routePanel.addEventListener('click', (e) => e.stopPropagation());
-      }
       map.on('click', () => {
         if (activeRouteUrl) {
           window.clearActiveRoute();
         }
       });
+    }
+
+    function addRouteIcons() {
+      if (!map) return Promise.resolve();
+      const entries = Object.entries(ROUTE_ICON_SVGS);
+      const loaders = entries.map(([name, dataUrl]) => {
+        if (map.hasImage(name)) return Promise.resolve();
+        return new Promise(resolve => {
+          const img = new Image(32, 32);
+          img.onload = () => {
+            if (!map.hasImage(name)) {
+              map.addImage(name, img, { sdf: false });
+            }
+            resolve();
+          };
+          img.onerror = () => resolve();
+          img.src = dataUrl;
+        });
+      });
+      return Promise.all(loaders);
+    }
+
+    function applyRouteLabelTheme() {
+      if (!map) return;
+      const isDark = document.documentElement.classList.contains('dark');
+      if (map.getLayer('route-label-bg')) {
+        map.setLayoutProperty('route-label-bg', 'icon-image', isDark ? 'route-label-pill-dark' : 'route-label-pill');
+      }
+      if (map.getLayer('route-labels')) {
+        map.setPaintProperty('route-labels', 'text-color', isDark ? '#f8fafc' : '#0f172a');
+        map.setPaintProperty('route-labels', 'text-halo-color', isDark ? '#0f172a' : '#ffffff');
+      }
     }
 
     function updateMapMarkers() {
@@ -1057,7 +1142,7 @@
       if (!map || !item?.geo?.lat || !item?.geo?.lon) return;
       const html = buildMarkerPopup(item);
       if (popup) popup.remove();
-      popup = new mapboxgl.Popup({ offset: 14, closeButton: false })
+      popup = new mapboxgl.Popup({ offset: 14, closeButton: false, anchor: 'bottom', className: 'listing-popup' })
         .setLngLat([item.geo.lon, item.geo.lat])
         .setHTML(html)
         .addTo(map);
@@ -1199,21 +1284,59 @@
           filter: ['==', ['get', 'type'], 'walk'],
           paint: { 'line-color': '#94A3B8', 'line-width': 5, 'line-opacity': 0.8, 'line-dasharray': [1.2, 1.2] }
         });
+      }
+
+      if (!map.getSource(ROUTE_LABELS_SOURCE_ID)) {
+        map.addSource(ROUTE_LABELS_SOURCE_ID, {
+          type: 'geojson',
+          data: { type: 'FeatureCollection', features: [] }
+        });
+        map.addLayer({
+          id: 'route-label-bg',
+          type: 'symbol',
+          source: ROUTE_LABELS_SOURCE_ID,
+          layout: {
+            'icon-image': 'route-label-pill',
+            'icon-text-fit': 'both',
+            'icon-text-fit-padding': [6, 10, 6, 10],
+            'icon-allow-overlap': true,
+            'icon-ignore-placement': true,
+            'text-field': ['get', 'label_bg'],
+            'text-size': 13,
+            'text-font': ['Open Sans Semibold', 'Arial Unicode MS Bold'],
+            'text-allow-overlap': true,
+            'text-ignore-placement': true,
+            'text-offset': [1.0, 0],
+            'text-anchor': 'left'
+          },
+          paint: {
+            'icon-opacity': 1,
+            'text-opacity': 0
+          }
+        });
         map.addLayer({
           id: 'route-labels',
           type: 'symbol',
-          source: ROUTE_SOURCE_ID,
-          filter: ['has', 'label'],
+          source: ROUTE_LABELS_SOURCE_ID,
           layout: {
-            'symbol-placement': 'line',
+            'icon-image': ['coalesce', ['get', 'icon'], 'route-icon-walk'],
+            'icon-size': 0.6,
+            'icon-allow-overlap': true,
+            'icon-ignore-placement': true,
             'text-field': ['get', 'label'],
-            'text-size': 11,
-            'text-font': ['Open Sans Regular', 'Arial Unicode MS Regular']
+            'text-size': 13,
+            'text-font': ['Open Sans Semibold', 'Arial Unicode MS Bold'],
+            'text-allow-overlap': true,
+            'text-ignore-placement': true,
+            'text-padding': 6,
+            'text-offset': [1.0, 0],
+            'text-anchor': 'left'
           },
           paint: {
-            'text-color': '#ffffff',
-            'text-halo-color': 'rgba(15,23,42,0.9)',
-            'text-halo-width': 1.5
+            'text-color': '#0f172a',
+            'text-halo-color': '#ffffff',
+            'text-halo-width': 1,
+            'text-halo-blur': 0
           }
         });
         setRouteVisibility(false);
@@ -1221,7 +1344,7 @@
     }
 
     function setRouteVisibility(visible) {
-      const ids = ['route-outline-transit', 'route-outline-walk', 'route-transit', 'route-walk', 'route-labels'];
+      const ids = ['route-outline-transit', 'route-outline-walk', 'route-transit', 'route-walk', 'route-label-bg', 'route-labels'];
       ids.forEach(id => {
         if (map.getLayer(id)) {
           map.setLayoutProperty(id, 'visibility', visible ? 'visible' : 'none');
@@ -1252,15 +1375,15 @@
     }
 
     function buildMarkerPopup(item) {
-      const photo = item.photos?.[0];
       const addressText = item.location_hint?.address_text || item.location_hint?.arrondissement_text || item._arr || 'Paris';
-      const photoHtml = photo
-        ? `<img src="${photo}" alt="" style="width:100%;height:80px;object-fit:cover;border-radius:4px;margin-bottom:8px">`
-        : '';
       const routeDetails = item.commute?.route_details;
       const hasRoute = routeDetails && routeDetails.polyline;
       const routeSummary = hasRoute ? formatRouteSummary(routeDetails) : null;
       const isRouteVisible = activeRouteUrl === item.listing_url;
+      const photo = item.photos?.[0];
+      const photoHtml = photo
+        ? `<img src="${photo}" alt="" style="width:100%;height:80px;object-fit:cover;border-radius:6px;margin-bottom:6px">`
+        : '';
       const routeButtonHtml = hasRoute
         ? `<button onclick="window.showRouteForListing('${item.listing_url}')" class="mt-2 px-3 py-1.5 w-full text-xs font-medium ${isRouteVisible ? 'bg-red-600 hover:bg-red-700' : 'bg-slate-700 hover:bg-slate-800'} text-white rounded-lg transition" style="cursor:pointer">
              ${isRouteVisible ? '❌ Masquer le trajet' : '🚇 Afficher le trajet'}
@@ -1276,7 +1399,7 @@
           <strong>Score: ${item._score.toFixed(1)}/10</strong><br>
           <span style="color:#64748b">Trajet: ${item.commute?.minutes_total || '?'} min</span><br>
           ${routeButtonHtml}
-          <a href="${item.listing_url}" target="_blank" rel="noopener" style="color:#334155;text-decoration:none;font-weight:500;display:block;margin-top:8px">Voir l'annonce →</a>
+          <a href="${item.listing_url}" target="_blank" rel="noopener" style="color:#334155;text-decoration:none;font-weight:500;display:block;margin-top:6px">Voir l'annonce →</a>
         </div>
       `;
     }
@@ -1286,6 +1409,40 @@
       const item = items.find(i => i.listing_url === listingUrl);
       if (!item) return;
       popup.setHTML(buildMarkerPopup(item));
+    }
+
+    function primaryMetroLineKey(routeDetails) {
+      const steps = routeDetails?.steps || [];
+      for (const step of steps) {
+        if (step.travel_mode !== 'TRANSIT') continue;
+        const line = step.transit_details?.line;
+        const vehicle = (line?.vehicle_type || '').toString().toUpperCase();
+        if (!(vehicle.includes('SUBWAY') || vehicle.includes('METRO'))) continue;
+        const lineKey = getLineKey(line);
+        if (lineKey && /^[0-9]+$/.test(lineKey)) return lineKey;
+      }
+      return '';
+    }
+
+    function primaryTransitIconHtml(routeDetails) {
+      const steps = routeDetails?.steps || [];
+      for (const step of steps) {
+        if (step.travel_mode !== 'TRANSIT') continue;
+        const line = step.transit_details?.line;
+        const lineKey = getLineKey(line);
+        const vehicle = (line?.vehicle_type || '').toString().toUpperCase();
+        if (vehicle.includes('BUS')) {
+          return `<img class="metro-icon" src="${BUS_ICON_URL}" alt="Bus" loading="lazy"><span>${lineKey || ''}</span>`;
+        }
+        if (vehicle.includes('SUBWAY') || vehicle.includes('METRO')) {
+          const lineIcon = metroIconUrl(lineKey);
+          if (lineIcon) {
+            return `<img class="metro-icon" src="${METRO_M_ICON_URL}" alt="M" loading="lazy"><img class="metro-icon" src="${lineIcon}" alt="Metro ${lineKey}" loading="lazy">`;
+          }
+          return `<span class="chip">M${lineKey || ''}</span>`;
+        }
+      }
+      return walkIconSvg();
     }
 
     function normalizeStationName(name) {
@@ -1694,6 +1851,76 @@
       return normalizeLineKey(raw);
     }
 
+    function metroIconUrl(lineKey) {
+      if (!lineKey) return null;
+      const clean = lineKey.toString().replace(/\\s+/g, '');
+      if (!/^[0-9]+$/.test(clean)) return null;
+      return `https://commons.wikimedia.org/wiki/Special:FilePath/Paris_transit_icons_-_M%C3%A9tro_${clean}.svg?width=28`;
+    }
+
+    function walkIconSvg() {
+      return `
+        <svg class="metro-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="5" r="2"></circle>
+          <path d="M9 22l3-7 3 2 2 5"></path>
+          <path d="M11 8l-3 5 4 2"></path>
+          <path d="M13 9l4 2"></path>
+        </svg>
+      `;
+    }
+
+    function clockIconSvg() {
+      return `
+        <svg class="metro-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="9"></circle>
+          <path d="M12 7v5l3 2"></path>
+        </svg>
+      `;
+    }
+
+    function transitIconHtml(step) {
+      const line = step?.transit_details?.line;
+      const lineKey = getLineKey(line);
+      const vehicle = (line?.vehicle_type || '').toString().toUpperCase();
+      const minutes = getStepMinutes(step);
+      if (vehicle.includes('BUS')) {
+        return `<span class="inline-flex items-center gap-1">
+                  <img class="metro-icon" src="${BUS_ICON_URL}" alt="Bus" loading="lazy">
+                  <span>${lineKey || ''}${minutes ? ` · ${minutes} min` : ''}</span>
+                </span>`;
+      }
+      if (vehicle.includes('SUBWAY') || vehicle.includes('METRO')) {
+        const lineIcon = metroIconUrl(lineKey);
+        if (lineIcon) {
+          return `<span class="inline-flex items-center gap-1">
+                    <img class="metro-icon" src="${METRO_M_ICON_URL}" alt="M" loading="lazy">
+                    <img class="metro-icon" src="${lineIcon}" alt="Metro ${lineKey}" loading="lazy">
+                    <span>${minutes ? `${minutes} min` : ''}</span>
+                  </span>`;
+        }
+        return `<span class="inline-flex items-center gap-1">
+                  <span class="chip">M${lineKey || ''}</span>
+                  <span>${minutes ? `${minutes} min` : ''}</span>
+                </span>`;
+      }
+      if (vehicle.includes('TRAM')) {
+        return `<span class="inline-flex items-center gap-1">
+                  <span class="chip">Tram ${lineKey || ''}</span>
+                  <span>${minutes ? `${minutes} min` : ''}</span>
+                </span>`;
+      }
+      if (vehicle.includes('HEAVY_RAIL') || vehicle.includes('RAIL')) {
+        return `<span class="inline-flex items-center gap-1">
+                  <span class="chip">RER ${lineKey || ''}</span>
+                  <span>${minutes ? `${minutes} min` : ''}</span>
+                </span>`;
+      }
+      return `<span class="inline-flex items-center gap-1">
+                <span class="chip">Transit</span>
+                <span>${minutes ? `${minutes} min` : ''}</span>
+              </span>`;
+    }
+
     function getStepColor(step) {
       const mode = step.travel_mode;
       if (mode === 'WALKING' || mode === 'WALK') return '#9CA3AF';
@@ -1742,18 +1969,6 @@
       return style;
     }
 
-    function stepLabel(step) {
-      const minutes = getStepMinutes(step);
-      if (!minutes) return null;
-      if (step.travel_mode === 'WALKING' || step.travel_mode === 'WALK') {
-        return `Marche ${minutes} min`;
-      }
-      if (step.travel_mode === 'TRANSIT') {
-        return `${formatTransitLabel(step)} · ${minutes} min`;
-      }
-      return null;
-    }
-
     // Format route summary HTML
     function formatRouteSummary(routeDetails) {
       if (!routeDetails || !routeDetails.steps) return null;
@@ -1762,7 +1977,10 @@
       let walkingBucket = 0;
       const flushWalking = () => {
         if (walkingBucket > 0) {
-          parts.push(`<span style="color:#94A3B8">Marche ${walkingBucket} min</span>`);
+          parts.push(`<span class="route-pill">
+                        ${walkIconSvg()}
+                        <span>${walkingBucket} min</span>
+                      </span>`);
           walkingBucket = 0;
         }
       };
@@ -1776,14 +1994,18 @@
         }
         flushWalking();
         if (step.travel_mode === 'TRANSIT') {
-          const label = formatTransitLabel(step);
-          const color = getStepColor(step);
-          parts.push(`<span style="color:${color};font-weight:600">${label}</span> (${duration} min)`);
+          parts.push(`<span class="route-pill">${transitIconHtml(step)}</span>`);
         }
       });
       flushWalking();
       
-      return parts.length ? parts.join(' → ') : null;
+      const arrow = `<span class="route-arrow">
+        <svg width="14" height="14" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M4 10h12"></path>
+          <path d="M11 5l5 5-5 5"></path>
+        </svg>
+      </span>`;
+      return parts.length ? parts.join(` ${arrow} `) : null;
     }
 
     function buildRouteSteps(routeDetails) {
@@ -1806,70 +2028,20 @@
         }
         flushWalking();
         if (step.travel_mode === 'TRANSIT') {
+          const line = step.transit_details?.line;
+          const lineKey = getLineKey(line);
           segments.push({
             type: 'transit',
             label: formatTransitLabel(step),
             color: getStepColor(step),
             minutes: duration,
-            stops: step.transit_details?.num_stops
+            stops: step.transit_details?.num_stops,
+            lineKey
           });
         }
       });
       flushWalking();
       return segments;
-    }
-
-    function renderRoutePanel(item) {
-      const panel = document.getElementById('routePanel');
-      if (!panel || !item) return;
-      const routeDetails = item.commute?.route_details;
-      if (!routeDetails) return;
-      const steps = buildRouteSteps(routeDetails);
-      const title = item.title || 'Trajet sélectionné';
-      const minutes = item.commute?.minutes_total || '?';
-      const content = steps.map((step, idx) => {
-        const isTransit = step.type === 'transit';
-        const color = isTransit ? step.color : '#94A3B8';
-        const label = isTransit ? step.label : 'Marche';
-        const stops = isTransit && step.stops ? ` · ${step.stops} arrêts` : '';
-        return `
-          <div class="flex items-start gap-3">
-            <div class="flex flex-col items-center mt-1">
-              <span class="route-step-dot" style="background:${color}"></span>
-              ${idx < steps.length - 1 ? '<span class="route-step-line"></span>' : ''}
-            </div>
-            <div class="flex-1 text-xs text-slate-600 dark:text-slate-300">
-              <div class="font-semibold" style="color:${color}">${label}</div>
-              <div>${step.minutes} min${stops}</div>
-            </div>
-          </div>
-        `;
-      }).join('');
-
-      panel.innerHTML = `
-        <div class="flex items-start justify-between gap-3">
-          <div>
-            <div class="text-xs uppercase tracking-[0.2em] text-slate-400">Trajet</div>
-            <div class="font-semibold">${title}</div>
-          </div>
-          <button class="text-xs px-2.5 py-1 rounded-full border border-slate-200/70 dark:border-slate-700/70 text-slate-500 hover:text-slate-900 dark:hover:text-slate-100" onclick="window.clearActiveRoute()">
-            Fermer
-          </button>
-        </div>
-        <div class="mt-2 flex items-center gap-2 text-sm">
-          <span class="chip chip-commute">${minutes} min</span>
-          <span class="text-xs text-slate-500">Cliquez sur la carte pour fermer</span>
-        </div>
-        <div class="mt-3 space-y-2">${content || '<div class="text-xs text-slate-500">Détails indisponibles.</div>'}</div>
-      `;
-      panel.classList.remove('hidden');
-    }
-
-    function hideRoutePanel() {
-      const panel = document.getElementById('routePanel');
-      if (!panel) return;
-      panel.classList.add('hidden');
-      panel.innerHTML = '';
     }
 
     // Show route on map
@@ -1913,11 +2085,45 @@
         flushWalk();
 
         const features = [];
+        const labelFeatures = [];
         const bounds = new mapboxgl.LngLatBounds();
         if (stepSegments.length) {
           stepSegments.forEach(seg => {
             const lngLat = seg.coords.map(([lat, lon]) => [lon, lat]);
-            const label = stepLabel(seg.step);
+            const label = (() => {
+              const minutes = getStepMinutes(seg.step);
+              const line = seg.step.transit_details?.line;
+              const lineKey = getLineKey(line);
+              if (seg.step.travel_mode === 'WALKING' || seg.step.travel_mode === 'WALK') {
+                return minutes ? `${minutes} min` : null;
+              }
+              const vehicle = (line?.vehicle_type || '').toString().toUpperCase();
+              if (vehicle.includes('BUS')) {
+                return minutes ? `${lineKey} · ${minutes} min` : `${lineKey}`;
+              }
+              if (vehicle.includes('TRAM')) {
+                return minutes ? `${lineKey} · ${minutes} min` : `${lineKey}`;
+              }
+              if (vehicle.includes('HEAVY_RAIL') || vehicle.includes('RAIL')) {
+                return minutes ? `${lineKey} · ${minutes} min` : `${lineKey}`;
+              }
+              if (vehicle.includes('SUBWAY') || vehicle.includes('METRO')) {
+                return minutes ? `${lineKey} · ${minutes} min` : `${lineKey}`;
+              }
+              return minutes ? `${minutes} min` : null;
+            })();
+            const icon = (() => {
+              if (seg.step.travel_mode === 'WALKING' || seg.step.travel_mode === 'WALK') {
+                return 'route-icon-walk';
+              }
+              const line = seg.step.transit_details?.line;
+              const vehicle = (line?.vehicle_type || '').toString().toUpperCase();
+              if (vehicle.includes('BUS')) return 'route-icon-bus';
+              if (vehicle.includes('TRAM')) return 'route-icon-rail';
+              if (vehicle.includes('HEAVY_RAIL') || vehicle.includes('RAIL')) return 'route-icon-rail';
+              if (vehicle.includes('SUBWAY') || vehicle.includes('METRO')) return 'route-icon-metro';
+              return 'route-icon-rail';
+            })();
             features.push({
               type: 'Feature',
               properties: {
@@ -1927,6 +2133,15 @@
               },
               geometry: { type: 'LineString', coordinates: lngLat }
             });
+            if (label && lngLat.length) {
+              const mid = lngLat[Math.floor(lngLat.length / 2)];
+              const labelBg = `\u00A0\u00A0${label}`;
+              labelFeatures.push({
+                type: 'Feature',
+                properties: { label, label_bg: labelBg, icon },
+                geometry: { type: 'Point', coordinates: mid }
+              });
+            }
             lngLat.forEach(coord => bounds.extend(coord));
           });
         } else {
@@ -1938,19 +2153,38 @@
           const lngLat = polyline.map(([lat, lon]) => [lon, lat]);
           features.push({
             type: 'Feature',
-            properties: { type: 'transit', color: '#3b82f6', label: null },
+            properties: { type: 'transit', color: '#3b82f6' },
             geometry: { type: 'LineString', coordinates: lngLat }
           });
+          const minutes = item.commute?.minutes_total;
+          if (minutes) {
+            const mid = lngLat[Math.floor(lngLat.length / 2)];
+            const label = `${minutes} min`;
+            labelFeatures.push({
+              type: 'Feature',
+              properties: { label, label_bg: `\u00A0\u00A0${label}`, icon: 'route-icon-rail' },
+              geometry: { type: 'Point', coordinates: mid }
+            });
+          }
           lngLat.forEach(coord => bounds.extend(coord));
         }
 
-        const source = map.getSource(ROUTE_SOURCE_ID);
-        if (source) {
-          source.setData({ type: 'FeatureCollection', features });
+        const routeSource = map.getSource(ROUTE_SOURCE_ID);
+        if (routeSource) {
+          routeSource.setData({ type: 'FeatureCollection', features });
+        }
+        const labelSource = map.getSource(ROUTE_LABELS_SOURCE_ID);
+        if (labelSource) {
+          labelSource.setData({ type: 'FeatureCollection', features: labelFeatures });
         }
         setRouteVisibility(true);
         activeRouteUrl = listingUrl;
         setListingsVisibility(false);
+        if (popup) {
+          popup.remove();
+          popup = null;
+          popupUrl = null;
+        }
 
         if (item.geo?.lat && item.geo?.lon) {
           bounds.extend([item.geo.lon, item.geo.lat]);
@@ -1959,7 +2193,7 @@
           map.fitBounds(bounds, { padding: 50, maxZoom: 15 });
         }
         
-        openListingPopup(item);
+        // Popup hidden when route is visible
         
         // Show route summary in console (for debugging)
         const summary = formatRouteSummary(routeDetails);
@@ -1967,7 +2201,6 @@
           console.log('Route:', summary);
         }
         setMetroDisplayRoute(item);
-        renderRoutePanel(item);
         refreshMarkerPopup(listingUrl);
       } catch (e) {
         console.error('Error showing route:', e);
@@ -1977,8 +2210,10 @@
     // Hide route on map
     function hideRouteOnMap(listingUrl, skipReset = false) {
       if (map && mapReady) {
-        const source = map.getSource(ROUTE_SOURCE_ID);
-        if (source) source.setData({ type: 'FeatureCollection', features: [] });
+        const routeSource = map.getSource(ROUTE_SOURCE_ID);
+        if (routeSource) routeSource.setData({ type: 'FeatureCollection', features: [] });
+        const labelSource = map.getSource(ROUTE_LABELS_SOURCE_ID);
+        if (labelSource) labelSource.setData({ type: 'FeatureCollection', features: [] });
         setRouteVisibility(false);
       }
       if (!skipReset) {
@@ -1986,7 +2221,6 @@
       }
       if (activeRouteUrl === listingUrl) {
         activeRouteUrl = null;
-        hideRoutePanel();
       }
       if (!skipReset && markersHidden) {
         setListingsVisibility(true);
@@ -2018,7 +2252,6 @@
         hideRouteOnMap(activeRouteUrl, true);
       }
       activeRouteUrl = null;
-      hideRoutePanel();
       setMetroDisplayAll();
       if (markersHidden) setListingsVisibility(true);
     };
@@ -2161,6 +2394,7 @@
       document.getElementById('toggleDark').addEventListener('click', () => {
         document.documentElement.classList.toggle('dark');
         localStorage.theme = document.documentElement.classList.contains('dark') ? 'dark' : 'light';
+        applyRouteLabelTheme();
       });
 
       document.getElementById('toggleFilters').addEventListener('click', () => {
