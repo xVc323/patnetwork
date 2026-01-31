@@ -686,6 +686,19 @@
       }
     }
 
+    function formatSourceLabel(source) {
+      if (!source) return 'Voir';
+      const map = {
+        seloger: 'SeLoger',
+        leboncoin: 'LeBonCoin',
+        bienici: 'BienIci',
+        pap: 'PAP',
+        logicimmo: 'Logic-Immo',
+        gdc: 'GDC',
+      };
+      return map[source] || source;
+    }
+
     function daysSince(dateStr) {
       if (!dateStr) return null;
       const ts = Date.parse(dateStr);
@@ -800,11 +813,29 @@
         const addressText = item.location_hint?.address_text || item.location_hint?.arrondissement_text || item._arr || 'Paris';
         const routeDetails = item.commute?.route_details;
         const routeSummary = routeDetails ? formatRouteSummary(routeDetails) : null;
+        const sources = Array.isArray(item.sources) && item.sources.length
+          ? item.sources
+          : [{ source: item.source, listing_url: item.listing_url, favicon_url: item.favicon_url }];
         const faviconHtml = favicon
           ? `<span class="inline-flex items-center justify-center w-5 h-5 rounded-md bg-white/90 dark:bg-slate-900/80 border border-white/70 dark:border-slate-700/70 shadow-sm">
                <img src="${favicon}" alt="" class="w-4 h-4 rounded-sm" loading="lazy" referrerpolicy="no-referrer" onerror="this.style.display='none'">
              </span>`
           : '';
+        const sourceButtonsHtml = sources.map(src => {
+          const url = src.listing_url || item.listing_url;
+          const srcFavicon = faviconUrl({ listing_url: url, favicon_url: src.favicon_url });
+          const srcFaviconHtml = srcFavicon ? `<img src="${srcFavicon}" class="w-4 h-4 rounded-sm" alt="">` : '';
+          const label = formatSourceLabel(src.source || item.source);
+          return `
+            <a href="${url}" target="_blank" rel="noopener"
+              class="inline-flex items-center gap-2 px-2.5 py-1 rounded-lg btn-accent text-xs font-semibold transition focus:outline-none focus:ring-2 focus:ring-slate-400/60">
+              <span class="inline-flex items-center gap-2">
+                ${srcFaviconHtml}
+                ${label} →
+              </span>
+            </a>
+          `;
+        }).join('');
         const infoHtml = infoItems.length
           ? `<div class="flex flex-wrap gap-1.5 mb-2 text-[11px] text-slate-600 dark:text-slate-300">
                ${infoItems.map(label => `
@@ -860,17 +891,19 @@
 
               ${infoHtml}
               
-              <div class="mt-auto flex items-end justify-between">
+              <div class="mt-auto flex items-end justify-between gap-2">
                 <div>
                   <div class="text-lg font-bold">${(item.price_eur || 0).toLocaleString('fr-FR')} €</div>
                   <div class="text-xs">${deltaHtml(item)}</div>
                 </div>
-                <a href="${item.listing_url}" target="_blank" rel="noopener" class="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg btn-accent text-sm font-semibold transition focus:outline-none focus:ring-2 focus:ring-slate-400/60">
-                  <span class="inline-flex items-center gap-2">
-                    ${faviconHtml}
-                    Voir →
-                  </span>
-                </a>
+                ${sources.length > 1
+                  ? `<div class="flex flex-wrap justify-end gap-2">${sourceButtonsHtml}</div>`
+                  : `<a href="${item.listing_url}" target="_blank" rel="noopener" class="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg btn-accent text-sm font-semibold transition focus:outline-none focus:ring-2 focus:ring-slate-400/60">
+                      <span class="inline-flex items-center gap-2">
+                        ${faviconHtml}
+                        Voir →
+                      </span>
+                    </a>`}
               </div>
             </div>
           </article>
