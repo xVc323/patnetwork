@@ -200,6 +200,13 @@
       letter-spacing: 0.02em;
       box-shadow: 0 6px 14px rgba(15, 23, 42, 0.2);
     }
+    .share-focus-ring {
+      animation: shareFocusPulse 1.4s ease-out 1;
+      box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.55), 0 14px 32px rgba(15, 23, 42, 0.16);
+    }
+    #shareToast {
+      transition: opacity 0.2s ease, transform 0.2s ease;
+    }
     @keyframes lightboxIn {
       from { opacity: 0; transform: scale(0.98); }
       to { opacity: 1; transform: scale(1); }
@@ -207,6 +214,10 @@
     @keyframes cardIn {
       from { opacity: 0; transform: translateY(8px); }
       to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes shareFocusPulse {
+      0% { box-shadow: 0 0 0 0 rgba(14, 165, 233, 0.6), 0 14px 32px rgba(15, 23, 42, 0.16); }
+      100% { box-shadow: 0 0 0 10px rgba(14, 165, 233, 0), 0 14px 32px rgba(15, 23, 42, 0.16); }
     }
     @media (max-width: 640px) {
       .card-img, .carousel { aspect-ratio: 16/9; }
@@ -246,6 +257,14 @@
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"/>
             </svg>
+          </button>
+
+          <!-- Share -->
+          <button id="shareViewBtn" class="p-2 rounded-lg btn-ghost inline-flex items-center gap-2" aria-label="Partager la sélection">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342A3 3 0 0112 12a3 3 0 013.316 1.342m0 0A3 3 0 0018 14a3 3 0 10-3.316-4.658m0 4A3 3 0 018 14a3 3 0 10-3.316-4.658M15.316 9.342L8.684 13.342"/>
+            </svg>
+            <span class="hidden md:inline text-xs font-semibold">Partager</span>
           </button>
           
           <!-- Dark Mode -->
@@ -389,6 +408,10 @@
     </div>
   </div>
 
+  <div id="shareToast" class="hidden fixed bottom-5 left-1/2 -translate-x-1/2 z-[210] px-4 py-2 rounded-lg bg-slate-900 text-white text-sm font-semibold shadow-xl opacity-0 translate-y-2">
+    Lien copié
+  </div>
+
   <script id="criteriaData" type="application/json">{"bedrooms_min": 1, "default_price_profile": "low", "energy": ["A", "B", "C", "D"], "estate_types": ["House", "Apartment"], "exclude_ground": true, "lbc": {"city": "Paris", "lat": 48.86023250788424, "lng": 2.339006433295173, "radius": 5000}, "locations": {"bienici": {"city": "paris", "postal_code": "75000"}, "logic_immo": ["AD08FR31096"], "seloger": ["AD09FR35", "AD09FR36", "AD09FR40", "AD09FR41", "AD09FR42", "AD09FR26", "AD09FR27", "AD09FR28", "AD09FR29", "AD09FR30", "AD09FR31", "AD09FR32", "AD09FR33", "AD09FR34"]}, "price_max": 500000, "price_min": 300000, "price_profiles": {"low": {"price_max": 400000, "price_min": 200000, "rooms_min": 1, "surface_min": 30}, "mid": {"price_max": 500000, "price_min": 300000, "rooms_min": 2, "surface_min": 35}}, "rooms_max": 4, "rooms_min": 2, "surface_max": 200, "surface_min": 35}</script>
   <script id="rankingData" type="application/json">{"arrondissement_boost": {"cap_max": 1.0, "cap_min": -0.5, "high_bonus": 0.7, "high_threshold": 8, "low_bonus": -0.2, "low_threshold": 2}, "defaults": {"delta_mode": "price", "sort": "score"}, "district_scores": {"75001": 10, "75002": 10, "75003": 10, "75004": 8, "75005": 5, "75006": 5, "75007": 5, "75008": 6, "75009": 6, "75010": 4, "75011": 8, "75012": 2, "75013": 2, "75014": 2, "75015": 6, "75016": 7, "75017": 5, "75018": 1, "75019": 1, "75020": 0}, "elevator_bonus": {"min_floor": 2, "points": 0.4}, "elevator_malus": {"min_floor": 2, "points": -0.6}, "heating_collective_bonus": {"points": 0.3}, "profile_weights": {"low": {"arrondissement": 9, "deltaMarche": 4, "pieces": 2, "prix": 5, "surface": 5, "trajet": 3}, "mid": {"arrondissement": 9, "deltaMarche": 5, "pieces": 1, "prix": 4, "surface": 6, "trajet": 3}}, "weights": {"arrondissement": 9, "deltaMarche": 5, "pieces": 3, "prix": 7, "surface": 7, "trajet": 3}}</script>
   
@@ -493,6 +516,231 @@
       photos: [],
       current: 0
     };
+    const AVAILABLE_SORTS = new Set(['score', 'price_asc', 'price_desc', 'surface_desc', 'commute_asc', 'recent_desc', 'delta_asc']);
+    const AVAILABLE_RECENT_FILTERS = new Set(['0', '3', '7', '14', '30']);
+    const SESSION_STORAGE_KEY = 'immo.paris.session_id';
+    const shareUiState = {
+      selectedArrondissements: [],
+      focusListingUrl: '',
+      recentValue: '0',
+      fromSharedLink: false,
+      focusHandled: false
+    };
+
+    function getSessionId() {
+      try {
+        const existing = localStorage.getItem(SESSION_STORAGE_KEY);
+        if (existing) return existing;
+        const generated = `sess_${Math.random().toString(36).slice(2, 10)}_${Date.now().toString(36)}`;
+        localStorage.setItem(SESSION_STORAGE_KEY, generated);
+        return generated;
+      } catch (err) {
+        return `anon_${Date.now().toString(36)}`;
+      }
+    }
+
+    function trackEvent(eventName, properties = {}) {
+      if (!eventName || window.location.protocol === 'file:') return;
+      fetch('/api/track', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          event_name: eventName,
+          session_id: getSessionId(),
+          path: `${window.location.pathname}${window.location.search}`,
+          properties
+        }),
+        keepalive: true
+      }).catch(() => {});
+    }
+
+    function showShareToast(message = 'Lien copié') {
+      const toast = document.getElementById('shareToast');
+      if (!toast) return;
+      toast.textContent = message;
+      toast.classList.remove('hidden', 'opacity-0', 'translate-y-2');
+      toast.classList.add('opacity-100');
+      if (showShareToast._timer) {
+        clearTimeout(showShareToast._timer);
+      }
+      showShareToast._timer = setTimeout(() => {
+        toast.classList.remove('opacity-100');
+        toast.classList.add('opacity-0', 'translate-y-2');
+        setTimeout(() => toast.classList.add('hidden'), 180);
+      }, 1600);
+    }
+
+    function updateDeltaModeButtons() {
+      const btnPrice = document.getElementById('btnModePrice');
+      const btnDelta = document.getElementById('btnModeDelta');
+      if (!btnPrice || !btnDelta) return;
+      if (deltaMode === 'delta') {
+        btnDelta.className = 'px-3 py-1.5 text-sm bg-slate-800 text-white dark:bg-slate-200 dark:text-slate-900';
+        btnPrice.className = 'px-3 py-1.5 text-sm bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700';
+      } else {
+        btnPrice.className = 'px-3 py-1.5 text-sm bg-slate-800 text-white dark:bg-slate-200 dark:text-slate-900';
+        btnDelta.className = 'px-3 py-1.5 text-sm bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700';
+      }
+    }
+
+    function parseShareStateFromQuery() {
+      const params = new URLSearchParams(window.location.search);
+      const profile = params.get('profile');
+      if (profile && profileNames.includes(profile)) {
+        currentProfile = profile;
+      }
+      const sort = params.get('sort');
+      if (sort && AVAILABLE_SORTS.has(sort)) {
+        currentSort = sort;
+      }
+      const delta = params.get('delta');
+      if (delta === 'delta' || delta === 'price') {
+        deltaMode = delta;
+      }
+      const recent = params.get('recent') || '0';
+      shareUiState.recentValue = AVAILABLE_RECENT_FILTERS.has(recent) ? recent : '0';
+      const arr = params.get('arr') || '';
+      shareUiState.selectedArrondissements = arr
+        .split(',')
+        .map(s => s.trim())
+        .filter(Boolean);
+      shareUiState.focusListingUrl = params.get('focus') || '';
+      shareUiState.fromSharedLink = params.get('shared') === '1' || !!shareUiState.focusListingUrl;
+    }
+
+    function applyShareStateToControls() {
+      const sortSelect = document.getElementById('sortSelect');
+      if (sortSelect && AVAILABLE_SORTS.has(currentSort)) {
+        sortSelect.value = currentSort;
+      }
+      const recentSelect = document.getElementById('recentSelect');
+      if (recentSelect) {
+        recentSelect.value = shareUiState.recentValue;
+      }
+      updateDeltaModeButtons();
+
+      const selected = new Set(shareUiState.selectedArrondissements);
+      const allCheckbox = document.querySelector('.arrondissement-checkbox[value=""]');
+      if (!selected.size) {
+        if (allCheckbox) allCheckbox.checked = true;
+      } else {
+        if (allCheckbox) allCheckbox.checked = false;
+        document.querySelectorAll('.arrondissement-checkbox:not([value=""])').forEach(cb => {
+          cb.checked = selected.has(cb.value);
+        });
+      }
+      updateArrondissementLabel();
+    }
+
+    async function copyTextToClipboard(text) {
+      if (!text) return false;
+      try {
+        if (navigator.clipboard && window.isSecureContext) {
+          await navigator.clipboard.writeText(text);
+          return true;
+        }
+      } catch (err) {}
+      try {
+        const el = document.createElement('textarea');
+        el.value = text;
+        el.setAttribute('readonly', '');
+        el.style.position = 'absolute';
+        el.style.left = '-9999px';
+        document.body.appendChild(el);
+        el.select();
+        const ok = document.execCommand('copy');
+        document.body.removeChild(el);
+        return ok;
+      } catch (err) {
+        return false;
+      }
+    }
+
+    function buildShareUrl(focusListingUrl = '') {
+      const url = new URL(window.location.href);
+      url.searchParams.set('shared', '1');
+      if (currentSort) url.searchParams.set('sort', currentSort);
+      if (currentProfile) url.searchParams.set('profile', currentProfile);
+      if (deltaMode && deltaMode !== 'price') url.searchParams.set('delta', deltaMode);
+      else url.searchParams.delete('delta');
+
+      const recent = document.getElementById('recentSelect')?.value || '0';
+      if (recent !== '0') url.searchParams.set('recent', recent);
+      else url.searchParams.delete('recent');
+
+      const selectedArrs = getSelectedArrondissements();
+      if (selectedArrs.length) url.searchParams.set('arr', selectedArrs.join(','));
+      else url.searchParams.delete('arr');
+
+      if (focusListingUrl) url.searchParams.set('focus', focusListingUrl);
+      else url.searchParams.delete('focus');
+      return url.toString();
+    }
+
+    async function shareCurrentView({ source = 'header', focusListingUrl = '', title = 'Immo Paris', triggerEl = null } = {}) {
+      const shareUrl = buildShareUrl(focusListingUrl);
+      let method = 'clipboard';
+      let success = false;
+
+      if (navigator.share) {
+        try {
+          await navigator.share({
+            title,
+            text: 'Regarde cette sélection sur Immo Paris',
+            url: shareUrl
+          });
+          method = 'native';
+          success = true;
+        } catch (err) {
+          if (err && err.name === 'AbortError') return;
+        }
+      }
+
+      if (!success) {
+        success = await copyTextToClipboard(shareUrl);
+      }
+
+      if (!success) {
+        showShareToast('Copie impossible');
+        return;
+      }
+
+      showShareToast('Lien de partage copié');
+      if (triggerEl && triggerEl.dataset.defaultText) {
+        const prev = triggerEl.textContent;
+        triggerEl.textContent = 'Copié';
+        setTimeout(() => {
+          triggerEl.textContent = triggerEl.dataset.defaultText || prev;
+        }, 1400);
+      }
+      trackEvent('share_clicked', {
+        source,
+        method,
+        focus_listing: !!focusListingUrl,
+        profile: currentProfile,
+        sort: currentSort,
+        arr_count: getSelectedArrondissements().length,
+        recent_days: getRecentDaysLimit()
+      });
+    }
+
+    function focusSharedListing() {
+      const targetUrl = shareUiState.focusListingUrl;
+      if (!targetUrl || shareUiState.focusHandled) return;
+      const card = Array.from(document.querySelectorAll('#cardsGrid article')).find(el => el.dataset.url === targetUrl);
+      const item = items.find(i => i.listing_url === targetUrl);
+      if (!item) return;
+      shareUiState.focusHandled = true;
+      if (card) {
+        card.classList.add('share-focus-ring');
+        card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        setTimeout(() => card.classList.remove('share-focus-ring'), 1800);
+      }
+      focusListingOnMap(targetUrl, item);
+      if (!mapReady) {
+        setTimeout(() => focusListingOnMap(targetUrl, item), 500);
+      }
+    }
 
     async function loadItems() {
       if (items.length) return;
@@ -783,6 +1031,12 @@
       const container = document.getElementById('cardsGrid');
       const filtered = getFilteredItems();
       if (reset) resetPagination();
+      if (shareUiState.focusListingUrl && !shareUiState.focusHandled) {
+        const focusIndex = filtered.findIndex(i => i.listing_url === shareUiState.focusListingUrl);
+        if (focusIndex >= 0 && focusIndex >= visibleCount) {
+          visibleCount = Math.ceil((focusIndex + 1) / PAGE_SIZE) * PAGE_SIZE;
+        }
+      }
       const visible = filtered.slice(0, visibleCount);
       const hasMore = filtered.length > visible.length;
       
@@ -843,6 +1097,14 @@
                `).join('')}
              </div>`
           : '';
+        const shareButtonHtml = `
+          <button type="button"
+            class="share-card-btn inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 text-xs font-semibold text-slate-700 dark:text-slate-200 transition"
+            data-share-url="${item.listing_url}"
+            data-default-text="Partager">
+            Partager
+          </button>
+        `;
         
         const carouselHtml = photos.length > 0 
           ? `<div class="carousel relative w-full" data-idx="${idx}">
@@ -897,13 +1159,16 @@
                   <div class="text-xs">${deltaHtml(item)}</div>
                 </div>
                 ${sources.length > 1
-                  ? `<div class="flex flex-wrap justify-end gap-2">${sourceButtonsHtml}</div>`
-                  : `<a href="${item.listing_url}" target="_blank" rel="noopener" class="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg btn-accent text-sm font-semibold transition focus:outline-none focus:ring-2 focus:ring-slate-400/60">
-                      <span class="inline-flex items-center gap-2">
-                        ${faviconHtml}
-                        Voir →
-                      </span>
-                    </a>`}
+                  ? `<div class="flex flex-wrap justify-end gap-2">${sourceButtonsHtml}${shareButtonHtml}</div>`
+                  : `<div class="flex items-center gap-2">
+                       <a href="${item.listing_url}" target="_blank" rel="noopener" class="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg btn-accent text-sm font-semibold transition focus:outline-none focus:ring-2 focus:ring-slate-400/60">
+                         <span class="inline-flex items-center gap-2">
+                           ${faviconHtml}
+                           Voir →
+                         </span>
+                       </a>
+                       ${shareButtonHtml}
+                     </div>`}
               </div>
             </div>
           </article>
@@ -945,6 +1210,18 @@
           const photos = JSON.parse(img.dataset.photos);
           const current = parseInt(img.dataset.current) || 0;
           openLightbox(photos, current);
+        });
+      });
+
+      container.querySelectorAll('.share-card-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          shareCurrentView({
+            source: 'card',
+            focusListingUrl: btn.dataset.shareUrl || '',
+            title: 'Immo Paris - bien',
+            triggerEl: btn
+          });
         });
       });
 
@@ -2398,11 +2675,24 @@
       }
 
       await loadItems();
+      parseShareStateFromQuery();
       calculateScores();
       populateArrFilter();
       setupProfileButtons();
+      applyShareStateToControls();
+      calculateScores();
       renderCards({ reset: true });
       initMap();
+      if (shareUiState.fromSharedLink) {
+        trackEvent('share_opened', {
+          has_focus_listing: !!shareUiState.focusListingUrl,
+          profile: currentProfile,
+          sort: currentSort,
+          arr_count: getSelectedArrondissements().length,
+          recent_days: getRecentDaysLimit()
+        });
+      }
+      setTimeout(() => focusSharedListing(), 220);
 
       if (lightbox.close) {
         lightbox.close.addEventListener('click', closeLightbox);
@@ -2457,6 +2747,13 @@
         document.getElementById('filtersPanel').classList.toggle('hidden');
       });
 
+      const shareViewBtn = document.getElementById('shareViewBtn');
+      if (shareViewBtn) {
+        shareViewBtn.addEventListener('click', () => {
+          shareCurrentView({ source: 'header', title: 'Immo Paris - sélection' });
+        });
+      }
+
       document.getElementById('toggleView').addEventListener('click', () => {
         mobileView = mobileView === 'list' ? 'map' : 'list';
         const listPanel = document.getElementById('listPanel');
@@ -2504,16 +2801,16 @@
 
       document.getElementById('btnModePrice').addEventListener('click', () => {
         deltaMode = 'price';
-        document.getElementById('btnModePrice').className = 'px-3 py-1.5 text-sm bg-slate-800 text-white dark:bg-slate-200 dark:text-slate-900';
-        document.getElementById('btnModeDelta').className = 'px-3 py-1.5 text-sm bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700';
+        updateDeltaModeButtons();
         renderCards({ reset: true });
+        updateMapMarkers();
       });
 
       document.getElementById('btnModeDelta').addEventListener('click', () => {
         deltaMode = 'delta';
-        document.getElementById('btnModeDelta').className = 'px-3 py-1.5 text-sm bg-slate-800 text-white dark:bg-slate-200 dark:text-slate-900';
-        document.getElementById('btnModePrice').className = 'px-3 py-1.5 text-sm bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700';
+        updateDeltaModeButtons();
         renderCards({ reset: true });
+        updateMapMarkers();
       });
 
       // Arrondissement dropdown toggle
