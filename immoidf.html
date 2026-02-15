@@ -1133,22 +1133,57 @@
     }
 
     function likelySameListing(metaA, metaB) {
-      if (!withinPct(metaA.price, metaB.price, 0.06)) return false;
-      if (!withinPct(metaA.surface, metaB.surface, 0.08)) return false;
-      if (Number.isFinite(metaA.rooms) && Number.isFinite(metaB.rooms) && Math.abs(metaA.rooms - metaB.rooms) > 0.6) return false;
-      if (Number.isFinite(metaA.floor) && Number.isFinite(metaB.floor) && Math.abs(metaA.floor - metaB.floor) > 1) return false;
+      // Primary guardrails requested: same price + same surface first.
+      if (!withinPct(metaA.price, metaB.price, 0.025)) return false;
+      if (!withinPct(metaA.surface, metaB.surface, 0.035)) return false;
+      if (Number.isFinite(metaA.rooms) && Number.isFinite(metaB.rooms) && Math.abs(metaA.rooms - metaB.rooms) > 0.25) return false;
+
+      // If floor is known for both listings, require same floor.
+      if (Number.isFinite(metaA.floor) && Number.isFinite(metaB.floor) && Math.abs(metaA.floor - metaB.floor) > 0) return false;
       const textSim = tokenSimilarity(metaA.text, metaB.text);
       const addrSim = tokenSimilarity(metaA.address, metaB.address);
+      if (textSim < 0.5) return false;
       const geoDist = haversineMeters(metaA.lat, metaA.lon, metaB.lat, metaB.lon);
-      const geoClose = geoDist != null && geoDist <= 140;
-      const commuteClose = Number.isFinite(metaA.commute) && Number.isFinite(metaB.commute)
-        ? Math.abs(metaA.commute - metaB.commute) <= 3
-        : false;
-      if (textSim >= 0.84) return true;
-      if (addrSim >= 0.9 && (geoClose || commuteClose)) return true;
-      if (geoClose && (addrSim >= 0.72 || textSim >= 0.72)) return true;
-      if (addrSim >= 0.78 && textSim >= 0.65) return true;
-      return false;
+      const geoClose = geoDist != null && geoDist <= 120;
+      const floorMatch = Number.isFinite(metaA.floor) && Number.isFinite(metaB.floor) && Math.abs(metaA.floor - metaB.floor) === 0;
+
+      // Then floor + description similarity / address similarity.
+      if (textSim >= 0.72) return true;
+      if (floorMatch && textSim >= 0.62) return true;
+      if (geoClose && textSim >= 0.58) return true;
+      if (addrSim >= 0.76 && textSim >= 0.56) return true;
+
+      // Avoid merging sparse descriptions unless another strong signal exists.
+      const shortText = (metaA.textLen || 0) < 60 || (metaB.textLen || 0) < 60;
+      if (shortText && !floorMatch && !geoClose) return false;
+      return floorMatch && addrSim >= 0.62 && textSim >= 0.54;
+    }
+
+    function extractStableBridgeKey(item) {
+      if (!item || !item.listing_url) return null;
+      const source = normalizeSourceKey(item.source, item.listing_url);
+      let path = '';
+      try {
+        path = new URL(item.listing_url).pathname || '';
+      } catch (err) {
+        return null;
+      }
+
+      // SeLoger <-> Logic-Immo often share the same numeric listing id.
+      if (source === 'seloger' || source === 'logicimmo') {
+        const m = path.match(/(\d{7,})/);
+        if (m) return `bridge:sl_li:${m[1]}`;
+      }
+
+      // Bien'ici: keep only strict agency listing prefix (agXXXXXX) to track URL rotations.
+      if (source === 'bienici') {
+        const parts = path.split('/').filter(Boolean);
+        const ref = parts.length ? parts[parts.length - 1].toLowerCase() : '';
+        const m = ref.match(/^(ag\d+)-\d+$/);
+        if (m) return `bridge:bienici:${m[1]}`;
+      }
+
+      return null;
     }
 
     function mergeListings(primary, secondary) {
@@ -1248,22 +1283,6 @@
         }
       };
 
-      const candidates = itemsCopy
-        .map((item, idx) => ({
-          idx,
-          price: Number(item.price_eur),
-          surface: Number(item.surface_m2),
-          rooms: Number(item.rooms),
-          floor: Number(item.building?.floor),
-          commute: Number(item.commute?.minutes_total),
-          text: normalizeComparableText(`${item.title || ''} ${item.description || ''}`),
-          address: normalizeComparableText(item.location_hint?.address_text || item.location_hint?.arrondissement_text || ''),
-          lat: Number(item.geo?.lat),
-          lon: Number(item.geo?.lon),
-        }))
-        .filter(meta => Number.isFinite(meta.price) && Number.isFinite(meta.surface))
-        .sort((a, b) => a.price - b.price);
-
       // Strong link: same canonical stable id means same listing across URL churn.
       const byCanonical = new Map();
       for (let idx = 0; idx < itemsCopy.length; idx += 1) {
@@ -1281,9 +1300,42 @@
         }
       });
 
+      // Conservative bridge keys only (no fuzzy merge): avoids mixing unrelated listings.
+      const byBridgeKey = new Map();
+      for (let idx = 0; idx < itemsCopy.length; idx += 1) {
+        const bridgeKey = extractStableBridgeKey(itemsCopy[idx]);
+        if (!bridgeKey) continue;
+        if (!byBridgeKey.has(bridgeKey)) byBridgeKey.set(bridgeKey, []);
+        byBridgeKey.get(bridgeKey).push(idx);
+      }
+      byBridgeKey.forEach(indexes => {
+        if (indexes.length < 2) return;
+        const root = indexes[0];
+        for (let i = 1; i < indexes.length; i += 1) {
+          union(root, indexes[i]);
+        }
+      });
+
+      // Strict fuzzy pass: price+surface, then floor, then description similarity.
+      const candidates = itemsCopy
+        .map((item, idx) => ({
+          idx,
+          price: Number(item.price_eur),
+          surface: Number(item.surface_m2),
+          rooms: Number(item.rooms),
+          floor: Number(item.building?.floor),
+          text: normalizeComparableText(`${item.title || ''} ${item.description || ''}`),
+          textLen: (`${item.title || ''} ${item.description || ''}`).trim().length,
+          address: normalizeComparableText(item.location_hint?.address_text || item.location_hint?.arrondissement_text || ''),
+          lat: Number(item.geo?.lat),
+          lon: Number(item.geo?.lon),
+        }))
+        .filter(meta => Number.isFinite(meta.price) && Number.isFinite(meta.surface))
+        .sort((a, b) => a.price - b.price);
+
       for (let i = 0; i < candidates.length; i += 1) {
         const a = candidates[i];
-        const maxPrice = a.price * 1.07;
+        const maxPrice = a.price * 1.03;
         for (let j = i + 1; j < candidates.length && candidates[j].price <= maxPrice; j += 1) {
           const b = candidates[j];
           if (likelySameListing(a, b)) {
