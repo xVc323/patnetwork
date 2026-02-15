@@ -497,6 +497,23 @@
     const METRO_LINE_OPACITY_MUTED = 0.04;
     const METRO_M_ICON_URL = 'https://commons.wikimedia.org/wiki/Special:FilePath/Metro-M.svg?width=24';
     const BUS_ICON_URL = 'https://upload.wikimedia.org/wikipedia/commons/2/22/Paris_transit_icons_-_Bus.svg';
+    const BLOCKED_PHOTO_HOSTS = new Set();
+    const BIENICI_PROXY_DENY_HOSTS = new Set(['photos.ubiflow.net']);
+    const BIENICI_PROXY_PHOTO_QUERY = 'width=600&height=370&fit=cover';
+    const EXCLUDED_TEXT_SNIPPETS = [
+      'residence senior',
+      'residence seniors',
+      'residence pour senior',
+      'residence pour seniors',
+      'residence services senior',
+      'residence services seniors',
+      'services senior',
+      'services seniors',
+      'senior autonome',
+      'seniors autonomes',
+      'senioriales',
+      'ehpad'
+    ];
     const ROUTE_ICON_SVGS = {
       'route-label-pill': 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCAyMDAgNDAiPgogIDxyZWN0IHg9IjEiIHk9IjEiIHdpZHRoPSIxOTgiIGhlaWdodD0iMzgiIHJ4PSIxOCIgZmlsbD0iI2ZmZmZmZiIgc3Ryb2tlPSIjZTJlOGYwIiBzdHJva2Utd2lkdGg9IjIiLz4KPC9zdmc+Cg==',
       'route-label-pill-dark': 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCAyMDAgNDAiPgogIDxyZWN0IHg9IjEiIHk9IjEiIHdpZHRoPSIxOTgiIGhlaWdodD0iMzgiIHJ4PSIxOCIgZmlsbD0iIzBmMTcyYSIgc3Ryb2tlPSIjMzM0MTU1IiBzdHJva2Utd2lkdGg9IjIiLz4KPC9zdmc+Cg==',
@@ -742,8 +759,490 @@
       }
     }
 
+    function normalizeComparableText(text) {
+      if (!text) return '';
+      return text
+        .toString()
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .replace(/[^a-zA-Z0-9\s]/g, ' ')
+        .replace(/\s+/g, ' ')
+        .trim()
+        .toLowerCase();
+    }
+
+    function tokenSimilarity(a, b) {
+      if (!a || !b) return 0;
+      const ta = new Set(a.split(' ').filter(Boolean));
+      const tb = new Set(b.split(' ').filter(Boolean));
+      if (!ta.size || !tb.size) return 0;
+      let inter = 0;
+      ta.forEach(tok => {
+        if (tb.has(tok)) inter += 1;
+      });
+      return inter / Math.max(ta.size, tb.size);
+    }
+
+    function haversineMeters(lat1, lon1, lat2, lon2) {
+      if (![lat1, lon1, lat2, lon2].every(v => Number.isFinite(v))) return null;
+      const toRad = v => (v * Math.PI) / 180;
+      const r = 6371000;
+      const dLat = toRad(lat2 - lat1);
+      const dLon = toRad(lon2 - lon1);
+      const a = Math.sin(dLat / 2) ** 2 +
+        Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLon / 2) ** 2;
+      return 2 * r * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    }
+
+    function withinPct(a, b, pct) {
+      if (!Number.isFinite(a) || !Number.isFinite(b)) return false;
+      return Math.abs(a - b) <= Math.max(Math.abs(a), Math.abs(b)) * pct;
+    }
+
+    function getListingSources(item) {
+      const defaults = [{ source: item.source, listing_url: item.listing_url, favicon_url: item.favicon_url }];
+      const raw = Array.isArray(item.sources) && item.sources.length ? item.sources : defaults;
+      const out = [];
+      const seen = new Set();
+      raw.forEach(src => {
+        const url = src?.listing_url || item.listing_url;
+        if (!url || seen.has(url)) return;
+        seen.add(url);
+        out.push({
+          source: src?.source || item.source,
+          listing_url: url,
+          favicon_url: src?.favicon_url || null
+        });
+      });
+      if (item.listing_url && !seen.has(item.listing_url)) {
+        out.unshift({
+          source: item.source,
+          listing_url: item.listing_url,
+          favicon_url: item.favicon_url || null
+        });
+      }
+      return out;
+    }
+
+    function mergeUniqueUrls(urls) {
+      const out = [];
+      const seen = new Set();
+      (urls || []).forEach(url => {
+        if (!url || typeof url !== 'string') return;
+        const clean = url.trim();
+        if (!clean || seen.has(clean)) return;
+        seen.add(clean);
+        out.push(clean);
+      });
+      return out;
+    }
+
+    function isBlockedPhotoUrl(url) {
+      if (!url) return true;
+      try {
+        const host = new URL(url, window.location.href).hostname.toLowerCase();
+        return BLOCKED_PHOTO_HOSTS.has(host);
+      } catch (err) {
+        return false;
+      }
+    }
+
+    function extractBieniciReference(listingUrl) {
+      if (!listingUrl) return '';
+      try {
+        const parsed = new URL(listingUrl);
+        if (!parsed.hostname.toLowerCase().includes('bienici.com')) return '';
+        const parts = parsed.pathname.split('/').filter(Boolean);
+        return parts.length ? parts[parts.length - 1] : '';
+      } catch (err) {
+        return '';
+      }
+    }
+
+    function getBieniciReferences(item) {
+      const refs = [];
+      const seen = new Set();
+      const pushRef = (url) => {
+        const ref = extractBieniciReference(url);
+        if (!ref || seen.has(ref)) return;
+        seen.add(ref);
+        refs.push(ref);
+      };
+      pushRef(item?.listing_url);
+      (item?.sources || []).forEach(src => pushRef(src?.listing_url));
+      return refs;
+    }
+
+    function toBieniciProxyPhotoUrl(photoUrl, bieniciRef) {
+      if (!photoUrl || !bieniciRef) return photoUrl;
+      try {
+        const parsed = new URL(photoUrl, window.location.href);
+        const host = parsed.hostname.toLowerCase();
+        if (!host || BIENICI_PROXY_DENY_HOSTS.has(host)) return photoUrl;
+        if (host === 'file.bienici.com' || host.includes('storage.gra.cloud.ovh.net')) return photoUrl;
+        const proxyPath = `${bieniciRef}_${host}${parsed.pathname}`.replace(/\//g, '_');
+        return `https://file.bienici.com/photo/${proxyPath}?${BIENICI_PROXY_PHOTO_QUERY}`;
+      } catch (err) {
+        return photoUrl;
+      }
+    }
+
+    function getDisplayPhotos(item) {
+      const merged = mergeUniqueUrls([...(item.photos || []), ...(item.images || [])]);
+      return merged.filter(url => !isBlockedPhotoUrl(url));
+    }
+
+    function shouldExcludeByText(item) {
+      if (!item) return false;
+      if (typeof item._excludedByText === 'boolean') return item._excludedByText;
+      const haystack = normalizeComparableText([item.title, item.description, item.raw_text].filter(Boolean).join(' '));
+      let excluded = EXCLUDED_TEXT_SNIPPETS.some(kw => haystack.includes(kw));
+      if (!excluded && /\bresidence\b.{0,28}\bseni?or(?:s|e?s)?\b/.test(haystack)) {
+        excluded = true;
+      }
+      item._excludedByText = excluded;
+      return excluded;
+    }
+
+    function parseCarouselPhotos(img) {
+      if (!img?.dataset?.photos) return [];
+      try {
+        const parsed = JSON.parse(img.dataset.photos);
+        return Array.isArray(parsed) ? parsed : [];
+      } catch (err) {
+        return [];
+      }
+    }
+
+    function parseBieniciRefs(img) {
+      if (!img?.dataset?.bieniciRefs) return [];
+      try {
+        const parsed = JSON.parse(img.dataset.bieniciRefs);
+        return Array.isArray(parsed) ? parsed.filter(Boolean) : [];
+      } catch (err) {
+        return [];
+      }
+    }
+
+    function parseProxyAttempts(img) {
+      if (!img?.dataset?.proxyAttempts) return {};
+      try {
+        const parsed = JSON.parse(img.dataset.proxyAttempts);
+        return parsed && typeof parsed === 'object' ? parsed : {};
+      } catch (err) {
+        return {};
+      }
+    }
+
+    function getNextBieniciProxyCandidate(img, photoUrl, photoIndex) {
+      const refs = parseBieniciRefs(img);
+      if (!refs.length || !photoUrl) return null;
+      const candidates = mergeUniqueUrls(
+        refs.map(ref => toBieniciProxyPhotoUrl(photoUrl, ref)).filter(url => url && url !== photoUrl)
+      );
+      if (!candidates.length) return null;
+      const attempts = parseProxyAttempts(img);
+      const key = String(photoIndex);
+      const used = new Set(Array.isArray(attempts[key]) ? attempts[key] : []);
+      const next = candidates.find(url => !used.has(url));
+      if (!next) return null;
+      used.add(next);
+      attempts[key] = Array.from(used);
+      img.dataset.proxyAttempts = JSON.stringify(attempts);
+      return next;
+    }
+
+    function parseFailedPhotoIndexes(img) {
+      const raw = img?.dataset?.failed || '';
+      return new Set(
+        raw.split(',')
+          .map(v => parseInt(v, 10))
+          .filter(Number.isInteger)
+      );
+    }
+
+    function updateCarouselCounter(carousel, current, total) {
+      const counter = carousel?.querySelector('.carousel-counter');
+      if (!counter) return;
+      counter.textContent = `${current + 1}/${total}`;
+    }
+
+    function setCarouselPhotoIndex(carousel, img, photos, index) {
+      if (!img || !Array.isArray(photos) || !photos.length) return;
+      const safeIndex = ((index % photos.length) + photos.length) % photos.length;
+      img.style.display = '';
+      const fallback = carousel?.querySelector('.carousel-fallback');
+      if (fallback) fallback.remove();
+      img.dataset.current = String(safeIndex);
+      img.src = photos[safeIndex];
+      updateCarouselCounter(carousel, safeIndex, photos.length);
+    }
+
+    function showCarouselFallback(carousel, img) {
+      if (!carousel || !img) return;
+      img.style.display = 'none';
+      carousel.querySelectorAll('.carousel-prev, .carousel-next, .carousel-counter').forEach(el => el.remove());
+      if (carousel.querySelector('.carousel-fallback')) return;
+      const fallback = document.createElement('div');
+      fallback.className = 'carousel-fallback absolute inset-0 flex items-center justify-center bg-slate-200/80 dark:bg-slate-700/70 text-slate-500 dark:text-slate-300 text-xs';
+      fallback.textContent = 'Photo indisponible';
+      carousel.appendChild(fallback);
+    }
+
+    function handleCarouselImageError(img) {
+      const carousel = img?.closest('.carousel');
+      const photos = parseCarouselPhotos(img);
+      if (!carousel || !photos.length) {
+        if (carousel) showCarouselFallback(carousel, img);
+        return;
+      }
+      const current = parseInt(img.dataset.current || '0', 10) || 0;
+      const currentUrl = photos[current];
+      const proxyCandidate = getNextBieniciProxyCandidate(img, currentUrl, current);
+      if (proxyCandidate) {
+        photos[current] = proxyCandidate;
+        img.dataset.photos = JSON.stringify(photos);
+        img.src = proxyCandidate;
+        return;
+      }
+      const failed = parseFailedPhotoIndexes(img);
+      failed.add(current);
+      img.dataset.failed = Array.from(failed).join(',');
+      let next = -1;
+      for (let step = 1; step <= photos.length; step += 1) {
+        const idx = (current + step) % photos.length;
+        if (!failed.has(idx)) {
+          next = idx;
+          break;
+        }
+      }
+      if (next === -1) {
+        showCarouselFallback(carousel, img);
+        return;
+      }
+      setCarouselPhotoIndex(carousel, img, photos, next);
+    }
+
+    function toMillis(dateStr) {
+      if (!dateStr) return null;
+      const ts = Date.parse(dateStr);
+      return Number.isNaN(ts) ? null : ts;
+    }
+
+    function minDateStr(a, b) {
+      const ta = toMillis(a);
+      const tb = toMillis(b);
+      if (ta == null) return b || a || null;
+      if (tb == null) return a;
+      return ta <= tb ? a : b;
+    }
+
+    function maxDateStr(a, b) {
+      const ta = toMillis(a);
+      const tb = toMillis(b);
+      if (ta == null) return b || a || null;
+      if (tb == null) return a;
+      return ta >= tb ? a : b;
+    }
+
+    function likelySameListing(metaA, metaB) {
+      if (!withinPct(metaA.price, metaB.price, 0.06)) return false;
+      if (!withinPct(metaA.surface, metaB.surface, 0.08)) return false;
+      if (Number.isFinite(metaA.rooms) && Number.isFinite(metaB.rooms) && Math.abs(metaA.rooms - metaB.rooms) > 0.6) return false;
+      if (Number.isFinite(metaA.floor) && Number.isFinite(metaB.floor) && Math.abs(metaA.floor - metaB.floor) > 1) return false;
+      const textSim = tokenSimilarity(metaA.text, metaB.text);
+      const addrSim = tokenSimilarity(metaA.address, metaB.address);
+      const geoDist = haversineMeters(metaA.lat, metaA.lon, metaB.lat, metaB.lon);
+      const geoClose = geoDist != null && geoDist <= 140;
+      const commuteClose = Number.isFinite(metaA.commute) && Number.isFinite(metaB.commute)
+        ? Math.abs(metaA.commute - metaB.commute) <= 3
+        : false;
+      if (textSim >= 0.84) return true;
+      if (addrSim >= 0.9 && (geoClose || commuteClose)) return true;
+      if (geoClose && (addrSim >= 0.72 || textSim >= 0.72)) return true;
+      if (addrSim >= 0.78 && textSim >= 0.65) return true;
+      return false;
+    }
+
+    function mergeListings(primary, secondary) {
+      const merged = JSON.parse(JSON.stringify(primary));
+      merged.canonical_id = merged.canonical_id || secondary.canonical_id || null;
+      const mergedSources = [...getListingSources(primary), ...getListingSources(secondary)];
+      merged.sources = getListingSources({ ...merged, sources: mergedSources });
+      merged.photos = mergeUniqueUrls([...(primary.photos || []), ...(secondary.photos || [])]);
+      merged.images = mergeUniqueUrls([...(primary.images || []), ...(secondary.images || [])]);
+
+      if ((secondary.description || '').length > (merged.description || '').length) merged.description = secondary.description;
+      if ((secondary.raw_text || '').length > (merged.raw_text || '').length) merged.raw_text = secondary.raw_text;
+      if ((secondary.title || '').length > (merged.title || '').length) merged.title = secondary.title;
+
+      merged.first_seen_at = minDateStr(merged.first_seen_at, secondary.first_seen_at);
+      merged.last_seen_at = maxDateStr(merged.last_seen_at, secondary.last_seen_at);
+
+      merged.building = merged.building || {};
+      secondary.building = secondary.building || {};
+      if (merged.building.floor == null && secondary.building.floor != null) merged.building.floor = secondary.building.floor;
+      if (merged.building.has_elevator == null && secondary.building.has_elevator != null) merged.building.has_elevator = secondary.building.has_elevator;
+      if (merged.building.is_ground_floor == null && secondary.building.is_ground_floor != null) merged.building.is_ground_floor = secondary.building.is_ground_floor;
+
+      merged.energy = merged.energy || {};
+      if (!merged.energy.dpe_letter && secondary.energy?.dpe_letter) merged.energy.dpe_letter = secondary.energy.dpe_letter;
+
+      merged.heating = merged.heating || {};
+      if (merged.heating.is_collective == null && secondary.heating?.is_collective != null) merged.heating.is_collective = secondary.heating.is_collective;
+      if (!merged.heating.type && secondary.heating?.type) merged.heating.type = secondary.heating.type;
+
+      merged.location_hint = merged.location_hint || {};
+      if (!merged.location_hint.address_text && secondary.location_hint?.address_text) merged.location_hint.address_text = secondary.location_hint.address_text;
+      if (!merged.location_hint.arrondissement_text && secondary.location_hint?.arrondissement_text) merged.location_hint.arrondissement_text = secondary.location_hint.arrondissement_text;
+      if (!merged.location_hint.quartier_text && secondary.location_hint?.quartier_text) merged.location_hint.quartier_text = secondary.location_hint.quartier_text;
+      if (!merged.location_hint.poi_or_station && secondary.location_hint?.poi_or_station) merged.location_hint.poi_or_station = secondary.location_hint.poi_or_station;
+      if (merged.location_hint.walk_minutes_to_poi == null && secondary.location_hint?.walk_minutes_to_poi != null) merged.location_hint.walk_minutes_to_poi = secondary.location_hint.walk_minutes_to_poi;
+
+      merged.geo = merged.geo || {};
+      if ((merged.geo.lat == null || merged.geo.lon == null) && secondary.geo?.lat != null && secondary.geo?.lon != null) {
+        merged.geo = { ...secondary.geo };
+      }
+
+      merged.commute = merged.commute || {};
+      if (merged.commute.minutes_total == null && secondary.commute?.minutes_total != null) merged.commute.minutes_total = secondary.commute.minutes_total;
+      if (merged.commute.minutes_transit_only == null && secondary.commute?.minutes_transit_only != null) merged.commute.minutes_transit_only = secondary.commute.minutes_transit_only;
+      if (!merged.commute.route_details && secondary.commute?.route_details) merged.commute.route_details = secondary.commute.route_details;
+      if (!merged.commute.mode && secondary.commute?.mode) merged.commute.mode = secondary.commute.mode;
+      if (!merged.commute.computed_from && secondary.commute?.computed_from) merged.commute.computed_from = secondary.commute.computed_from;
+
+      merged.derived = merged.derived || {};
+      if (merged.derived.price_per_m2 == null && secondary.derived?.price_per_m2 != null) merged.derived.price_per_m2 = secondary.derived.price_per_m2;
+      if (!merged.derived.arrondissement && secondary.derived?.arrondissement) merged.derived.arrondissement = secondary.derived.arrondissement;
+      if (!merged.derived.quartier && secondary.derived?.quartier) merged.derived.quartier = secondary.derived.quartier;
+
+      merged.dvf_bonus = merged.dvf_bonus || {};
+      if (merged.dvf_bonus.delta_vs_ref_pct == null && secondary.dvf_bonus?.delta_vs_ref_pct != null) merged.dvf_bonus.delta_vs_ref_pct = secondary.dvf_bonus.delta_vs_ref_pct;
+      if (merged.dvf_bonus.price_m2_ref == null && secondary.dvf_bonus?.price_m2_ref != null) merged.dvf_bonus.price_m2_ref = secondary.dvf_bonus.price_m2_ref;
+      if (!merged.dvf_bonus.ref_level && secondary.dvf_bonus?.ref_level) merged.dvf_bonus.ref_level = secondary.dvf_bonus.ref_level;
+
+      return merged;
+    }
+
+    function consolidateListings(rawItems) {
+      if (!Array.isArray(rawItems) || rawItems.length < 2) {
+        return (rawItems || []).map(item => ({
+          ...item,
+          sources: getListingSources(item),
+          photos: getDisplayPhotos(item)
+        }));
+      }
+
+      const itemsCopy = rawItems.map(item => ({
+        ...item,
+        sources: getListingSources(item),
+      }));
+      const parents = itemsCopy.map((_, idx) => idx);
+      const ranks = itemsCopy.map(() => 0);
+      const find = x => {
+        let node = x;
+        while (parents[node] !== node) {
+          parents[node] = parents[parents[node]];
+          node = parents[node];
+        }
+        return node;
+      };
+      const union = (a, b) => {
+        const ra = find(a);
+        const rb = find(b);
+        if (ra === rb) return;
+        if (ranks[ra] < ranks[rb]) {
+          parents[ra] = rb;
+        } else if (ranks[ra] > ranks[rb]) {
+          parents[rb] = ra;
+        } else {
+          parents[rb] = ra;
+          ranks[ra] += 1;
+        }
+      };
+
+      const candidates = itemsCopy
+        .map((item, idx) => ({
+          idx,
+          price: Number(item.price_eur),
+          surface: Number(item.surface_m2),
+          rooms: Number(item.rooms),
+          floor: Number(item.building?.floor),
+          commute: Number(item.commute?.minutes_total),
+          text: normalizeComparableText(`${item.title || ''} ${item.description || ''}`),
+          address: normalizeComparableText(item.location_hint?.address_text || item.location_hint?.arrondissement_text || ''),
+          lat: Number(item.geo?.lat),
+          lon: Number(item.geo?.lon),
+        }))
+        .filter(meta => Number.isFinite(meta.price) && Number.isFinite(meta.surface))
+        .sort((a, b) => a.price - b.price);
+
+      // Strong link: same canonical stable id means same listing across URL churn.
+      const byCanonical = new Map();
+      for (let idx = 0; idx < itemsCopy.length; idx += 1) {
+        const canonicalId = String(itemsCopy[idx]?.canonical_id || '').trim().toLowerCase();
+        if (!canonicalId.includes(':id:')) continue;
+        if (!canonicalId) continue;
+        if (!byCanonical.has(canonicalId)) byCanonical.set(canonicalId, []);
+        byCanonical.get(canonicalId).push(idx);
+      }
+      byCanonical.forEach(indexes => {
+        if (indexes.length < 2) return;
+        const root = indexes[0];
+        for (let i = 1; i < indexes.length; i += 1) {
+          union(root, indexes[i]);
+        }
+      });
+
+      for (let i = 0; i < candidates.length; i += 1) {
+        const a = candidates[i];
+        const maxPrice = a.price * 1.07;
+        for (let j = i + 1; j < candidates.length && candidates[j].price <= maxPrice; j += 1) {
+          const b = candidates[j];
+          if (likelySameListing(a, b)) {
+            union(a.idx, b.idx);
+          }
+        }
+      }
+
+      const groups = new Map();
+      for (let idx = 0; idx < itemsCopy.length; idx += 1) {
+        const root = find(idx);
+        if (!groups.has(root)) groups.set(root, []);
+        groups.get(root).push(idx);
+      }
+
+      const merged = [];
+      groups.forEach(groupIdxs => {
+        if (!groupIdxs.length) return;
+        let primary = itemsCopy[groupIdxs[0]];
+        for (let k = 1; k < groupIdxs.length; k += 1) {
+          const candidate = itemsCopy[groupIdxs[k]];
+          const primaryScore = ((primary.description || '').length * 2) + ((primary.photos || []).length * 12) + (getListingSources(primary).length * 8);
+          const candidateScore = ((candidate.description || '').length * 2) + ((candidate.photos || []).length * 12) + (getListingSources(candidate).length * 8);
+          if (candidateScore > primaryScore) primary = candidate;
+        }
+        let combined = primary;
+        const seenUrls = new Set([primary.listing_url]);
+        groupIdxs.forEach(idx => {
+          const current = itemsCopy[idx];
+          if (!current?.listing_url || seenUrls.has(current.listing_url)) return;
+          combined = mergeListings(combined, current);
+          seenUrls.add(current.listing_url);
+        });
+        combined.sources = getListingSources(combined);
+        combined.photos = getDisplayPhotos(combined);
+        merged.push(combined);
+      });
+
+      return merged;
+    }
+
     async function loadItems() {
-      if (items.length) return;
+      if (items.length) {
+        items = consolidateListings(items);
+        return;
+      }
       const container = document.getElementById('cardsGrid');
       if (container) {
         container.innerHTML = '<div class="text-center text-slate-500 py-12">Chargement des annonces…</div>';
@@ -751,7 +1250,7 @@
       try {
         const response = await fetch(ITEMS_URL, { cache: 'no-store' });
         if (!response.ok) throw new Error(`HTTP ${response.status}`);
-        items = await response.json();
+        items = consolidateListings(await response.json());
       } catch (err) {
         const emptyState = document.getElementById('emptyState');
         if (emptyState) {
@@ -866,6 +1365,7 @@
       const recentDaysLimit = getRecentDaysLimit();
 
       return items
+        .filter(i => !shouldExcludeByText(i))
         .filter(i => (i.surface_m2 || 0) >= surfaceMin)
         .filter(i => (i.rooms || 0) >= roomsMin)
         .filter(i => priceMin === 0 || (i.price_eur || 0) >= priceMin)
@@ -873,7 +1373,7 @@
         .filter(i => selectedArrs.length === 0 || selectedArrs.includes(i._arr))
         .filter(i => {
           if (!recentDaysLimit) return true;
-          const days = daysSince(i.first_seen_at);
+          const days = daysSince(recencyDate(i));
           if (days == null) return false;
           return days <= recentDaysLimit;
         })
@@ -885,8 +1385,8 @@
             case 'surface_desc': return (b.surface_m2||0) - (a.surface_m2||0);
             case 'commute_asc': return (a.commute?.minutes_total||999) - (b.commute?.minutes_total||999);
             case 'recent_desc': {
-              const aDays = daysSince(a.first_seen_at);
-              const bDays = daysSince(b.first_seen_at);
+              const aDays = daysSince(recencyDate(a));
+              const bDays = daysSince(recencyDate(b));
               const aVal = aDays == null ? Number.POSITIVE_INFINITY : aDays;
               const bVal = bDays == null ? Number.POSITIVE_INFINITY : bDays;
               return aVal - bVal;
@@ -955,6 +1455,11 @@
       return days < 0 ? 0 : days;
     }
 
+    function recencyDate(item) {
+      if (!item) return null;
+      return item.last_seen_at || item.first_seen_at || null;
+    }
+
     function formatHour(dateStr) {
       if (!dateStr) return null;
       const ts = Date.parse(dateStr);
@@ -975,13 +1480,13 @@
     }
 
     function publishedLabel(item) {
-      const dateStr = item.first_seen_at || item.last_seen_at;
+      const dateStr = recencyDate(item);
       const days = daysSince(dateStr);
       const hour = formatHour(dateStr);
       if (days == null) return null;
-      if (days === 0) return hour ? `Publié aujourd'hui à ${hour}` : "Publié aujourd'hui";
-      if (days === 1) return hour ? `Publié hier à ${hour}` : "Publié hier";
-      return hour ? `Publié il y a ${days} j à ${hour}` : `Publié il y a ${days} j`;
+      if (days === 0) return hour ? `Vu aujourd'hui à ${hour}` : "Vu aujourd'hui";
+      if (days === 1) return hour ? `Vu hier à ${hour}` : "Vu hier";
+      return hour ? `Vu il y a ${days} j à ${hour}` : `Vu il y a ${days} j`;
     }
 
     function parseAmount(text, regex) {
@@ -1060,16 +1565,15 @@
       
       container.innerHTML = visible.map((item, idx) => {
         const sc = scoreColor(item._score);
-        const photos = item.photos || [];
+        const photos = getDisplayPhotos(item);
+        const bieniciRefs = getBieniciReferences(item);
         const hasMultiple = photos.length > 1;
         const infoItems = extraInfoItems(item);
         const favicon = faviconUrl(item);
         const addressText = item.location_hint?.address_text || item.location_hint?.arrondissement_text || item._arr || 'Paris';
         const routeDetails = item.commute?.route_details;
         const routeSummary = routeDetails ? formatRouteSummary(routeDetails) : null;
-        const sources = Array.isArray(item.sources) && item.sources.length
-          ? item.sources
-          : [{ source: item.source, listing_url: item.listing_url, favicon_url: item.favicon_url }];
+        const sources = getListingSources(item);
         const faviconHtml = favicon
           ? `<span class="inline-flex items-center justify-center w-5 h-5 rounded-md bg-white/90 dark:bg-slate-900/80 border border-white/70 dark:border-slate-700/70 shadow-sm">
                <img src="${favicon}" alt="" class="w-4 h-4 rounded-sm" loading="lazy" referrerpolicy="no-referrer" onerror="this.style.display='none'">
@@ -1078,7 +1582,7 @@
         const sourceButtonsHtml = sources.map(src => {
           const url = src.listing_url || item.listing_url;
           const srcFavicon = faviconUrl({ listing_url: url, favicon_url: src.favicon_url });
-          const srcFaviconHtml = srcFavicon ? `<img src="${srcFavicon}" class="w-4 h-4 rounded-sm" alt="">` : '';
+          const srcFaviconHtml = srcFavicon ? `<img src="${srcFavicon}" class="w-4 h-4 rounded-sm" alt="" onerror="this.style.display='none'">` : '';
           const label = formatSourceLabel(src.source || item.source);
           return `
             <a href="${url}" target="_blank" rel="noopener"
@@ -1108,7 +1612,7 @@
         
         const carouselHtml = photos.length > 0 
           ? `<div class="carousel relative w-full" data-idx="${idx}">
-               <img src="${photos[0]}" alt="" loading="lazy" class="carousel-img card-img w-full h-full object-cover rounded-t-xl cursor-zoom-in" data-photos='${JSON.stringify(photos)}' data-current="0">
+               <img src="${photos[0]}" alt="" loading="lazy" class="carousel-img card-img w-full h-full object-cover rounded-t-xl cursor-zoom-in" data-photos='${JSON.stringify(photos)}' data-bienici-refs='${JSON.stringify(bieniciRefs)}' data-current="0" data-failed="" data-proxy-attempts='{}'>
                ${hasMultiple ? `
                  <button class="carousel-prev absolute left-3 top-1/2 -translate-y-1/2 bg-white/90 dark:bg-slate-900/80 text-slate-900 dark:text-slate-100 rounded-full w-10 h-10 flex items-center justify-center shadow-lg border border-white/60 dark:border-slate-700/60 hover:scale-105 transition" aria-label="Photo précédente">
                    <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -1181,12 +1685,9 @@
           e.stopPropagation();
           const carousel = btn.closest('.carousel');
           const img = carousel.querySelector('.carousel-img');
-          const photos = JSON.parse(img.dataset.photos);
-          let current = parseInt(img.dataset.current);
-          current = (current - 1 + photos.length) % photos.length;
-          img.src = photos[current];
-          img.dataset.current = current;
-          carousel.querySelector('.carousel-counter').textContent = `${current + 1}/${photos.length}`;
+          const photos = parseCarouselPhotos(img);
+          const current = parseInt(img.dataset.current || '0', 10) || 0;
+          setCarouselPhotoIndex(carousel, img, photos, current - 1);
         });
       });
       
@@ -1195,19 +1696,19 @@
           e.stopPropagation();
           const carousel = btn.closest('.carousel');
           const img = carousel.querySelector('.carousel-img');
-          const photos = JSON.parse(img.dataset.photos);
-          let current = parseInt(img.dataset.current);
-          current = (current + 1) % photos.length;
-          img.src = photos[current];
-          img.dataset.current = current;
-          carousel.querySelector('.carousel-counter').textContent = `${current + 1}/${photos.length}`;
+          const photos = parseCarouselPhotos(img);
+          const current = parseInt(img.dataset.current || '0', 10) || 0;
+          setCarouselPhotoIndex(carousel, img, photos, current + 1);
         });
       });
 
       container.querySelectorAll('.carousel-img').forEach(img => {
+        img.addEventListener('error', () => {
+          handleCarouselImageError(img);
+        });
         img.addEventListener('click', (e) => {
           e.stopPropagation();
-          const photos = JSON.parse(img.dataset.photos);
+          const photos = parseCarouselPhotos(img);
           const current = parseInt(img.dataset.current) || 0;
           openLightbox(photos, current);
         });
@@ -1704,7 +2205,7 @@
       const hasRoute = routeDetails && routeDetails.polyline;
       const routeSummary = hasRoute ? formatRouteSummary(routeDetails) : null;
       const isRouteVisible = activeRouteUrl === item.listing_url;
-      const photo = item.photos?.[0];
+      const photo = getDisplayPhotos(item)[0];
       const photoHtml = photo
         ? `<img src="${photo}" alt="" style="width:100%;height:80px;object-fit:cover;border-radius:6px;margin-bottom:6px">`
         : '';
