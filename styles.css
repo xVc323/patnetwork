@@ -745,6 +745,64 @@ h1, h2, h3, h4, h5, h6 {
     text-align: center;
 }
 
+/* Strudel Section */
+.strudel {
+    padding: 6rem 0;
+    background: var(--section-bg);
+}
+
+.strudel-layout {
+    display: grid;
+    grid-template-columns: 1.8fr 1fr;
+    gap: 2rem;
+    align-items: start;
+}
+
+.strudel-player-card,
+.strudel-info-card {
+    background: var(--card-bg);
+    border-radius: 20px;
+    padding: 1.5rem;
+    backdrop-filter: blur(10px);
+    border: 1px solid var(--border-color);
+}
+
+.strudel-player-card {
+    overflow: hidden;
+}
+
+.strudel-iframe-shell {
+    width: 100%;
+    height: 430px;
+    overflow: hidden;
+    border-radius: 14px;
+    background: #050505;
+}
+
+.strudel-iframe {
+    --strudel-scale: 0.9;
+    width: calc(100% / var(--strudel-scale));
+    height: calc(100% / var(--strudel-scale));
+    border: 0;
+    transform: scale(var(--strudel-scale));
+    transform-origin: top left;
+}
+
+.strudel-info-card h3 {
+    margin-bottom: 1rem;
+}
+
+.strudel-info-card p {
+    color: var(--text-secondary);
+    margin-bottom: 1rem;
+}
+
+.strudel-license-note {
+    margin-top: 1rem;
+    color: var(--text-tertiary);
+    font-size: 0.9rem;
+}
+
 /* Skills Section */
 .skills {
     padding: 6rem 0;
@@ -1050,6 +1108,14 @@ h1, h2, h3, h4, h5, h6 {
         grid-template-columns: 1fr;
     }
 
+    .strudel-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .strudel-iframe-shell {
+        height: 360px;
+    }
+
     .skill-category {
         text-align: center;
     }
@@ -1110,6 +1176,10 @@ h1, h2, h3, h4, h5, h6 {
     .floating-element.github { bottom: 4%; left: 45%; }
     .floating-element.linkedin { bottom: 4%; right: 0%; }
     .floating-element.salesforce { top: 60%; right: 50%; }
+
+    .strudel-iframe-shell {
+        height: 300px;
+    }
 }
 
 /* Animations */
