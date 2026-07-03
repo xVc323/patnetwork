@@ -208,19 +208,19 @@ p {
 }
 
 h1 {
-  max-width: 11ch;
+  max-width: 12ch;
   margin-bottom: 1.25rem;
   font-size: clamp(3.4rem, 10vw, 7.9rem);
-  line-height: 0.88;
-  letter-spacing: -0.085em;
+  line-height: 0.94;
+  letter-spacing: -0.06em;
 }
 
 h2 {
   max-width: 12ch;
   margin-bottom: 1rem;
   font-size: clamp(2.15rem, 5vw, 4.8rem);
-  line-height: 0.95;
-  letter-spacing: -0.06em;
+  line-height: 1;
+  letter-spacing: -0.045em;
 }
 
 h3 {
@@ -445,6 +445,10 @@ h3 {
   padding: clamp(1.4rem, 4vw, 2.2rem);
 }
 
+.contact-card h2 {
+  max-width: 16ch;
+}
+
 .footer {
   padding: 2rem 0;
   color: var(--muted);
@@ -518,6 +522,18 @@ h3 {
     align-items: flex-start;
   }
 
+  .contact-card {
+    flex-direction: column;
+  }
+
+  .contact-links {
+    width: 100%;
+  }
+
+  .contact-links .button {
+    flex: 1 1 100%;
+  }
+
   .timeline-item {
     gap: 0.35rem;
   }
@@ -534,7 +550,7 @@ h3 {
   }
 
   h1 {
-    font-size: clamp(3rem, 18vw, 4.6rem);
+    font-size: clamp(2.85rem, 16vw, 4.25rem);
   }
 
   .project-card {
