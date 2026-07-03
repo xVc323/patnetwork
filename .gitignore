@@ -1,0 +1,6 @@
+# Local agent/workflow artifacts
+.superpowers/
+.omx/
+
+# OS/editor noise
+.DS_Store
