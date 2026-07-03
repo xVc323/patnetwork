@@ -1,3 +1,12 @@
-# Personal Website
+# pat.network
 
-My personal portfolio website showcasing my projects and experience in AI and business-tech strategy. 
+Pseudonymous project archive for Pat / xVc323.
+
+This is a static GitHub Pages site for experiments, tools, demos, and small web artifacts. The public site is intentionally focused on builds rather than biography.
+
+## Privacy boundary
+
+- Public identity: Pat / xVc323 / pat.network.
+- No real full name.
+- No private workplace or organization details.
+- Some utility pages remain available by direct URL and are intentionally kept out of the main navigation.
