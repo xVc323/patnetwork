@@ -16,7 +16,7 @@ The website must not leak Pat's private identity or employment context.
 
 Required constraints:
 
-- Use only the public identity `Pat`, `xVc323`, and `pat.network`.
+- Use only the public identity `Pat` and `pat.network`.
 - Do not include a real full name anywhere in visible copy, metadata, alt text, comments, docs intended for publication, or structured data.
 - Do not include employer names, company names, client names, internal project names, office/location hints tied to employment, or any identifying work details.
 - Project descriptions must describe the artifact and capability, not the organization or professional context where similar work happened.
@@ -50,7 +50,7 @@ The homepage should position the site as a personal archive of builds. Suggested
 
 1. **Hero**
    - Minimal intro.
-   - Public identity only: Pat / xVc323.
+   - Public identity only: Pat.
    - One-line description of the archive.
    - Primary actions: view featured work, open GitHub.
 

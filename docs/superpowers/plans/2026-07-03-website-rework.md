@@ -2,7 +2,7 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Rebuild `pat.network` into a clean, pseudonymous project archive for Pat/xVc323 while preserving GitHub Pages compatibility and hidden direct utility pages.
+**Goal:** Rebuild `pat.network` into a clean, pseudonymous project archive for Pat while preserving GitHub Pages compatibility and hidden direct utility pages.
 
 **Architecture:** Keep the site as plain static HTML/CSS/JS. Replace the homepage with a light-first gallery and chronological archive, remove resume/corporate framing, and add a Node-based validation script that enforces privacy and static-site integrity before manual/browser checks.
 
@@ -111,8 +111,7 @@ if (exists('index.html')) {
   }
 
   if (!/Pat/.test(html)) failures.push('index.html must use the public identity Pat');
-  if (!/xVc323/.test(html)) failures.push('index.html must include xVc323');
-  if (!/pat\.network/.test(html)) failures.push('index.html must mention pat.network');
+    if (!/pat\.network/.test(html)) failures.push('index.html must mention pat.network');
   if (/<form\b/i.test(html)) failures.push('index.html must not include a fake/nonfunctional contact form');
 
   const anchorTargets = new Set(
@@ -174,7 +173,7 @@ Write this exact content to `index.html`:
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Pat — Project Archive</title>
-  <meta name="description" content="A pseudonymous archive of projects, experiments, tools, and demos by Pat / xVc323.">
+  <meta name="description" content="A pseudonymous archive of projects, experiments, tools, and demos by Pat.">
   <meta name="theme-color" content="#f7f3eb">
   <link rel="icon" type="image/svg+xml" href="favicon.svg">
   <link rel="stylesheet" href="styles.css">
@@ -208,7 +207,7 @@ Write this exact content to `index.html`:
     <section class="hero" id="top" aria-labelledby="hero-title">
       <div class="container hero-grid">
         <div class="hero-copy">
-          <p class="eyebrow">Pat / xVc323 · project archive</p>
+          <p class="eyebrow">Pat · project archive</p>
           <h1 id="hero-title">Selected experiments, tools, and things I made.</h1>
           <p class="hero-text">
             A clean, pseudonymous build log for AI utilities, automation helpers,
@@ -230,7 +229,7 @@ Write this exact content to `index.html`:
             </div>
             <div>
               <dt>Identity</dt>
-              <dd>Pat / xVc323</dd>
+              <dd>Pat</dd>
             </div>
             <div>
               <dt>Focus</dt>
@@ -387,7 +386,7 @@ Write this exact content to `index.html`:
         </div>
         <div class="about-copy">
           <p>
-            I’m Pat, also around the web as xVc323. This site is where I keep a public trail
+            I’m Pat. This site is where I keep a public trail
             of tools, experiments, demos, and odd little builds that are worth keeping online.
           </p>
           <p>
@@ -406,7 +405,7 @@ Write this exact content to `index.html`:
           <p>GitHub is the best place to follow or inspect the projects behind this archive.</p>
         </div>
         <div class="contact-links" aria-label="Contact and profile links">
-          <a class="button primary" href="https://github.com/xVc323" target="_blank" rel="noopener">github.com/xVc323</a>
+          <a class="button primary" href="https://github.com/xVc323" target="_blank" rel="noopener">GitHub</a>
           <a class="button secondary" href="https://pat.network">pat.network</a>
         </div>
       </div>
@@ -415,7 +414,7 @@ Write this exact content to `index.html`:
 
   <footer class="footer">
     <div class="container footer-inner">
-      <p>© <span id="year">2026</span> Pat / xVc323. Built as static files.</p>
+      <p>© <span id="year">2026</span> Pat. Built as static files.</p>
       <a href="#top">Back to top</a>
     </div>
   </footer>
@@ -1105,13 +1104,13 @@ Write this exact content to `README.md`:
 ```markdown
 # pat.network
 
-Pseudonymous project archive for Pat / xVc323.
+Pseudonymous project archive for Pat.
 
 This is a static GitHub Pages site for experiments, tools, demos, and small web artifacts. The public site is intentionally focused on builds rather than biography.
 
 ## Privacy boundary
 
-- Public identity: Pat / xVc323 / pat.network.
+- Public identity: Pat / pat.network.
 - No real full name.
 - No private workplace or organization details.
 - Some utility pages remain available by direct URL and are intentionally kept out of the main navigation.

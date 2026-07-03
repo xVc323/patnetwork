@@ -68,8 +68,12 @@ if (exists('index.html')) {
   }
 
   if (!/Pat/.test(html)) failures.push('index.html must use the public identity Pat');
-  if (!/xVc323/.test(html)) failures.push('index.html must include xVc323');
   if (!/pat\.network/.test(html)) failures.push('index.html must mention pat.network');
+
+  const htmlWithoutHrefTargets = html.replace(/href=["'][^"']*["']/g, 'href=""');
+  if (/xVc323/i.test(htmlWithoutHrefTargets)) {
+    failures.push('index.html must not expose xVc323 in visible or metadata copy');
+  }
   if (/<form\b/i.test(html)) failures.push('index.html must not include a fake/nonfunctional contact form');
 
   const anchorTargets = new Set(
