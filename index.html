@@ -1,600 +1,255 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pat | AI Enthusiast & Business-Tech Strategist</title>
-    <meta name="description" content="Pat's portfolio - Business-tech hybrid passionate about AI innovation and strategic technology solutions">
-    
-    <!-- External CSS -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="styles.css">
-    
-    <!-- Favicon -->
-    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pat — Project Archive</title>
+  <meta name="description" content="A pseudonymous archive of projects, experiments, tools, and demos by Pat / xVc323.">
+  <meta name="theme-color" content="#f7f3eb">
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <!-- Navigation -->
-    <nav class="navbar">
-        <div class="nav-container">
-            <div class="nav-logo">
-                <span class="logo-text">Pat</span>
-                <span class="logo-dot">.</span>
-            </div>
-            <div class="nav-menu" id="nav-menu">
-                <a href="#hero" class="nav-link">Home</a>
-                <a href="#about" class="nav-link">About</a>
-                <a href="#projects" class="nav-link">Projects</a>
-                <a href="#music" class="nav-link">Music</a>
-                <a href="#skills" class="nav-link">Skills</a>
-                <a href="#contact" class="nav-link">Contact</a>
-            </div>
-            <div class="nav-actions">
-                <button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme">
-                    <i class="fas fa-moon" id="theme-icon"></i>
-                </button>
-                <div class="nav-toggle" id="nav-toggle">
-                    <span class="bar"></span>
-                    <span class="bar"></span>
-                    <span class="bar"></span>
-                </div>
-            </div>
-        </div>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <header class="site-header">
+    <nav class="nav" aria-label="Primary navigation">
+      <a class="brand" href="#top" aria-label="pat.network home">
+        <span class="brand-mark">p</span>
+        <span class="brand-text">pat.network</span>
+      </a>
+
+      <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="nav-menu">
+        <span class="sr-only">Toggle navigation</span>
+        <span aria-hidden="true"></span>
+        <span aria-hidden="true"></span>
+      </button>
+
+      <div class="nav-menu" id="nav-menu">
+        <a href="#featured">Featured</a>
+        <a href="#archive">Archive</a>
+        <a href="#about">About</a>
+        <a href="https://github.com/xVc323" target="_blank" rel="noopener">GitHub</a>
+      </div>
     </nav>
+  </header>
 
-    <!-- Hero Section -->
-    <section id="hero" class="hero">
-        <div class="hero-container">
-            <div class="hero-content">
-                <div class="hero-text">
-                    <h1 class="hero-title">
-                        <span class="greeting">Hi, I'm</span>
-                        <span class="name">Pat</span>
-                        <span class="wave">👋</span>
-                    </h1>
-                    <h2 class="hero-subtitle">
-                        AI Enthusiast & <span class="highlight">Business-Tech Hybrid</span>
-                    </h2>
-                    <p class="hero-description">
-                        I bridge the gap between business strategy and cutting-edge AI technology. 
-                        Passionate about leveraging AI to solve real-world problems and create innovative solutions.
-                    </p>
-                    <div class="hero-buttons">
-                        <a href="#projects" class="btn btn-primary">
-                            <i class="fas fa-rocket"></i>
-                            View My Work
-                        </a>
-                        <a href="#contact" class="btn btn-secondary">
-                            <i class="fas fa-envelope"></i>
-                            Get In Touch
-                        </a>
-                    </div>
-                </div>
-                <div class="hero-image">
-                    <div class="floating-elements">
-                        <div class="floating-element python">
-                            <i class="fab fa-python"></i>
-                        </div>
-                        <div class="floating-element ai">
-                            <i class="fas fa-brain"></i>
-                        </div>
-                        <div class="floating-element code">
-                            <i class="fas fa-code"></i>
-                        </div>
-                        <div class="floating-element robot">
-                            <i class="fas fa-robot"></i>
-                        </div>
-                        <div class="floating-element sap" title="SAP">
-                            <i class="fas fa-industry"></i>
-                        </div>
-                        <div class="floating-element linkedin" title="LinkedIn">
-                            <i class="fab fa-linkedin"></i>
-                        </div>
-                        <div class="floating-element fastapi" title="FastAPI">
-                            <i class="fas fa-bolt"></i>
-                        </div>
-                        <div class="floating-element power-automate" title="Power Automate">
-                            <i class="fas fa-gears"></i>
-                        </div>
-                        <div class="floating-element copilot" title="Copilot Studio">
-                            <i class="fas fa-wand-magic-sparkles"></i>
-                        </div>
-                        <div class="floating-element jira" title="Jira">
-                            <i class="fab fa-atlassian"></i>
-                        </div>
-                        <div class="floating-element servicenow" title="ServiceNow">
-                            <i class="fab fa-servicestack"></i>
-                        </div>
-                        <div class="floating-element github" title="GitHub">
-                            <i class="fab fa-github"></i>
-                        </div>
-                        <div class="floating-element salesforce" title="Salesforce">
-                            <i class="fab fa-salesforce"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="hero-stats">
-                <div class="stat">
-                    <span class="stat-number">20+</span>
-                    <span class="stat-label">Projects</span>
-                </div>
-                <div class="stat">
-                    <span class="stat-number">5+</span>
-                    <span class="stat-label">AI Tools</span>
-                </div>
-                <div class="stat">
-                    <span class="stat-number">100%</span>
-                    <span class="stat-label">Open Source</span>
-                </div>
-            </div>
+  <main id="main">
+    <section class="hero" id="top" aria-labelledby="hero-title">
+      <div class="container hero-grid">
+        <div class="hero-copy">
+          <p class="eyebrow">Pat / xVc323 · project archive</p>
+          <h1 id="hero-title">Selected experiments, tools, and things I made.</h1>
+          <p class="hero-text">
+            A clean, pseudonymous build log for AI utilities, automation helpers,
+            web experiments, and small side quests living on pat.network.
+          </p>
+          <div class="hero-actions" aria-label="Primary actions">
+            <a class="button primary" href="#featured">View featured work</a>
+            <a class="button secondary" href="https://github.com/xVc323" target="_blank" rel="noopener">Open GitHub</a>
+          </div>
         </div>
+
+        <aside class="archive-card" aria-label="Archive summary">
+          <div class="archive-card-topline">Static / public / evolving</div>
+          <p class="archive-card-title">A small web shelf for projects worth remembering.</p>
+          <dl class="quick-stats">
+            <div>
+              <dt>Format</dt>
+              <dd>GitHub Pages</dd>
+            </div>
+            <div>
+              <dt>Identity</dt>
+              <dd>Pat / xVc323</dd>
+            </div>
+            <div>
+              <dt>Focus</dt>
+              <dd>Builds over biography</dd>
+            </div>
+          </dl>
+        </aside>
+      </div>
     </section>
 
-    <!-- About Section -->
-    <section id="about" class="about">
-        <div class="container">
-            <h2 class="section-title">About Me</h2>
-            <div class="about-content">
-                <div class="about-text">
-                    <p>
-                        I work on AI and automation projects that help teams reduce manual work and make day-to-day operations a bit smoother.
-                        My role usually sits between tech and business: understanding real needs, translating them into workable solutions,
-                        and making sure things actually run in production.
-                    </p>
-                    <p>
-                        Lately, I’ve been involved in enterprise automation and monitoring initiatives, from use case exploration and specs to
-                        proof-of-concepts, testing, and deployment. I work hands-on with copilots, workflow tools, RPA and service platforms, SAP,
-                        mostly trying to make existing systems more reliable and less boring to use.
-                    </p>
-                    <p>
-                        Outside of project work, I like to automate repetitive tasks and make things more efficient. I’m curious about the broader tech ecosystem: AI regulation, platform dependencies, and digital sovereignty.
-                        I like understanding how technical choices connect to long-term business and societal impact, even if it means reading slightly too many policy reports for fun. Oh, and, I'm a vibe coding lord.
-                    </p>
-                    <div class="about-highlights">
-                        <div class="highlight-item">
-                            <i class="fas fa-brain"></i>
-                            <span>AI Innovation & Strategy</span>
-                        </div>
-                        <div class="highlight-item">
-                            <i class="fas fa-chart-line"></i>
-                            <span>Business & Tech Strategy</span>
-                        </div>
-                        <div class="highlight-item">
-                            <i class="fas fa-cogs"></i>
-                            <span>Automation Solutions</span>
-                        </div>
-                        <div class="highlight-item">
-                            <i class="fas fa-lightbulb"></i>
-                            <span>Product Innovation</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="about-image">
-                    <div class="profile-card">
-                        <div class="profile-avatar">
-                            <i class="fas fa-user-astronaut"></i>
-                        </div>
-                        <div class="profile-info">
-                            <h3>Pat (xVc323)</h3>
-                            <p>AI Strategist & Tech Innovator</p>
-                            <div class="social-links">
-                                <a href="https://github.com/xVc323" target="_blank" rel="noopener">
-                                    <i class="fab fa-github"></i>
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+    <section class="section" id="featured" aria-labelledby="featured-title">
+      <div class="container section-heading">
+        <p class="eyebrow">Featured</p>
+        <h2 id="featured-title">A few artifacts from the shelf.</h2>
+        <p>
+          These are the entries that best capture the site: practical tools,
+          AI experiments, and small systems that turned into something usable.
+        </p>
+      </div>
+
+      <div class="container project-grid">
+        <article class="project-card feature-card">
+          <div class="card-meta">AI app</div>
+          <h3>QuizForge AI</h3>
+          <p>Turns source material into quiz-style learning flows with an AI-assisted generation pipeline.</p>
+          <ul class="tag-list" aria-label="QuizForge tags">
+            <li>Python</li>
+            <li>Streamlit</li>
+            <li>AI</li>
+          </ul>
+          <div class="card-links">
+            <a href="https://quizforge-ai.streamlit.app/" target="_blank" rel="noopener">Live demo</a>
+            <a href="https://github.com/xVc323/quizforge" target="_blank" rel="noopener">Source</a>
+          </div>
+        </article>
+
+        <article class="project-card feature-card">
+          <div class="card-meta">Document tool</div>
+          <h3>OmniDocs</h3>
+          <p>A document-focused experiment for making files easier to inspect, transform, and reason about.</p>
+          <ul class="tag-list" aria-label="OmniDocs tags">
+            <li>Documents</li>
+            <li>Automation</li>
+            <li>Web</li>
+          </ul>
+          <div class="card-links">
+            <a href="https://omnidocs.pat.network" target="_blank" rel="noopener">Live site</a>
+            <a href="https://github.com/xVc323/omnidocs" target="_blank" rel="noopener">Source</a>
+          </div>
+        </article>
+
+        <article class="project-card feature-card">
+          <div class="card-meta">Utility</div>
+          <h3>PDF2txt</h3>
+          <p>A small extraction utility for turning PDF content into plain text that is easier to process.</p>
+          <ul class="tag-list" aria-label="PDF2txt tags">
+            <li>PDF</li>
+            <li>CLI</li>
+            <li>Text</li>
+          </ul>
+          <div class="card-links">
+            <a href="https://github.com/xVc323/PDF2txt" target="_blank" rel="noopener">Source</a>
+          </div>
+        </article>
+
+        <article class="project-card feature-card">
+          <div class="card-meta">Developer tool</div>
+          <h3>Codebase Merger</h3>
+          <p>A helper for collecting project files into a single reviewable context when exploring codebases.</p>
+          <ul class="tag-list" aria-label="Codebase Merger tags">
+            <li>Code</li>
+            <li>Context</li>
+            <li>Tooling</li>
+          </ul>
+          <div class="card-links">
+            <a href="https://github.com/xVc323/codebase-merger" target="_blank" rel="noopener">Source</a>
+          </div>
+        </article>
+      </div>
     </section>
 
-    <!-- Featured Projects Section -->
-    <section id="projects" class="projects">
-        <div class="container">
-            <h2 class="section-title">Featured Projects</h2>
-            <p class="section-subtitle">Here are some of my recent AI and automation projects</p>
-            
-            <div class="projects-grid">
-                <!-- QuizForge AI -->
-                <div class="project-card featured">
-                    <div class="project-header">
-                        <div class="project-icon">
-                            <i class="fas fa-graduation-cap"></i>
-                        </div>
-                        <div class="project-meta">
-                            <h3>QuizForge AI</h3>
-                            <span class="project-type">AI Application</span>
-                        </div>
-                    </div>
-                    <p class="project-description">
-                        Transform any document into intelligent quizzes using Google's Gemini AI. 
-                        Supports multiple file formats and difficulty levels.
-                    </p>
-                    <div class="project-tech">
-                        <span class="tech-tag">Python</span>
-                        <span class="tech-tag">Streamlit</span>
-                        <span class="tech-tag">Gemini AI</span>
-                        <span class="tech-tag">PDF Processing</span>
-                    </div>
-                    <div class="project-links">
-                        <a href="https://github.com/xVc323/quizforge" target="_blank" class="project-link">
-                            <i class="fab fa-github"></i>
-                            View Code
-                        </a>
-                        <a href="https://quizforge-ai.streamlit.app/" class="project-link primary">
-                            <i class="fas fa-external-link-alt"></i>
-                            Live Demo
-                        </a>
-                    </div>
-                </div>
+    <section class="section archive-section" id="archive" aria-labelledby="archive-title">
+      <div class="container section-heading">
+        <p class="eyebrow">Archive</p>
+        <h2 id="archive-title">Build log, newest first.</h2>
+        <p>
+          A lightweight timeline for projects, experiments, and useful fragments.
+          Dates stay intentionally broad until the archive moves to structured entries.
+        </p>
+      </div>
 
-                <!-- OmniDocs -->
-                <div class="project-card featured">
-                    <div class="project-header">
-                        <div class="project-icon">
-                            <i class="fas fa-file-alt"></i>
-                        </div>
-                        <div class="project-meta">
-                            <h3>OmniDocs</h3>
-                            <span class="project-type">Documentation Tool</span>
-                        </div>
-                    </div>
-                    <p class="project-description">
-                        Automated documentation crawler that generates LLM-friendly Markdown from any docs site. 
-                        Perfect for AI ingestion and knowledge bases.
-                    </p>
-                    <div class="project-tech">
-                        <span class="tech-tag">Python</span>
-                        <span class="tech-tag">FastAPI</span>
-                        <span class="tech-tag">Next.js</span>
-                        <span class="tech-tag">Redis</span>
-                        <span class="tech-tag">Docker</span>
-                    </div>
-                    <div class="project-links">
-                        <a href="https://github.com/xVc323/omnidocs" target="_blank" class="project-link">
-                            <i class="fab fa-github"></i>
-                            View Code
-                        </a>
-                        <a href="https://omnidocs.pat.network" target="_blank" class="project-link primary">
-                            <i class="fas fa-external-link-alt"></i>
-                            Live Demo
-                        </a>
-                    </div>
-                </div>
+      <div class="container timeline" aria-label="Project archive timeline">
+        <article class="timeline-item">
+          <time datetime="2026">2026</time>
+          <div>
+            <h3>OmniDocs</h3>
+            <p>Document workflow experiment published as a standalone web project.</p>
+            <a href="https://omnidocs.pat.network" target="_blank" rel="noopener">Open project</a>
+          </div>
+        </article>
 
-                <!-- RaspAI -->
-                <div class="project-card">
-                    <div class="project-header">
-                        <div class="project-icon">
-                            <i class="fas fa-microphone"></i>
-                        </div>
-                        <div class="project-meta">
-                            <h3>RaspAI</h3>
-                            <span class="project-type">IoT Assistant</span>
-                        </div>
-                    </div>
-                    <p class="project-description">
-                        Voice assistant powered by Google's Gemini AI, designed for Raspberry Pi. 
-                        Features voice activation and GPIO controls.
-                    </p>
-                    <div class="project-tech">
-                        <span class="tech-tag">Python</span>
-                        <span class="tech-tag">Raspberry Pi</span>
-                        <span class="tech-tag">Gemini AI</span>
-                        <span class="tech-tag">GPIO</span>
-                    </div>
-                    <div class="project-links">
-                        <a href="https://github.com/xVc323/raspai" target="_blank" class="project-link">
-                            <i class="fab fa-github"></i>
-                            View Code
-                        </a>
-                    </div>
-                </div>
+        <article class="timeline-item">
+          <time datetime="2026">2026</time>
+          <div>
+            <h3>QuizForge AI</h3>
+            <p>AI-assisted quiz generation from source material.</p>
+            <a href="https://github.com/xVc323/quizforge" target="_blank" rel="noopener">View source</a>
+          </div>
+        </article>
 
-                <!-- PDF2txt -->
-                <div class="project-card">
-                    <div class="project-header">
-                        <div class="project-icon">
-                            <i class="fas fa-file-pdf"></i>
-                        </div>
-                        <div class="project-meta">
-                            <h3>PDF2txt</h3>
-                            <span class="project-type">Document Tool</span>
-                        </div>
-                    </div>
-                    <p class="project-description">
-                        PDF to text converter with GUI and generative AI image analysis. 
-                        Perfect for extracting content from complex documents.
-                    </p>
-                    <div class="project-tech">
-                        <span class="tech-tag">Python</span>
-                        <span class="tech-tag">GUI</span>
-                        <span class="tech-tag">AI Vision</span>
-                        <span class="tech-tag">PDF Processing</span>
-                    </div>
-                    <div class="project-links">
-                        <a href="https://github.com/xVc323/PDF2txt" target="_blank" class="project-link">
-                            <i class="fab fa-github"></i>
-                            View Code
-                        </a>
-                    </div>
-                </div>
+        <article class="timeline-item">
+          <time datetime="2025">2025</time>
+          <div>
+            <h3>RaspAI</h3>
+            <p>Small hardware-and-AI exploration around running useful intelligence close to the edge.</p>
+            <a href="https://github.com/xVc323/raspai" target="_blank" rel="noopener">View source</a>
+          </div>
+        </article>
 
-                <!-- Codebase Merger -->
-                <div class="project-card">
-                    <div class="project-header">
-                        <div class="project-icon">
-                            <i class="fas fa-code-branch"></i>
-                        </div>
-                        <div class="project-meta">
-                            <h3>Codebase Merger</h3>
-                            <span class="project-type">Developer Tool</span>
-                        </div>
-                    </div>
-                    <p class="project-description">
-                        Clones GitHub repositories and merges all code files into a single large file 
-                        with path comments for AI analysis.
-                    </p>
-                    <div class="project-tech">
-                        <span class="tech-tag">Python</span>
-                        <span class="tech-tag">Git</span>
-                        <span class="tech-tag">File Processing</span>
-                        <span class="tech-tag">CLI</span>
-                    </div>
-                    <div class="project-links">
-                        <a href="https://github.com/xVc323/codebase-merger" target="_blank" class="project-link">
-                            <i class="fab fa-github"></i>
-                            View Code
-                        </a>
-                    </div>
-                </div>
+        <article class="timeline-item">
+          <time datetime="2025">2025</time>
+          <div>
+            <h3>PDF2txt</h3>
+            <p>Focused utility for extracting readable text from PDF files.</p>
+            <a href="https://github.com/xVc323/PDF2txt" target="_blank" rel="noopener">View source</a>
+          </div>
+        </article>
 
-                <!-- PopClip Humanizer -->
-                <div class="project-card">
-                    <div class="project-header">
-                        <div class="project-icon">
-                            <i class="fas fa-user-edit"></i>
-                        </div>
-                        <div class="project-meta">
-                            <h3>PopClip Humanizer</h3>
-                            <span class="project-type">macOS Extension</span>
-                        </div>
-                    </div>
-                    <p class="project-description">
-                        PopClip extension that humanizes text using fine-tuned Gemini API. 
-                        Makes AI-generated content sound more natural.
-                    </p>
-                    <div class="project-tech">
-                        <span class="tech-tag">JavaScript</span>
-                        <span class="tech-tag">macOS</span>
-                        <span class="tech-tag">Gemini API</span>
-                        <span class="tech-tag">PopClip</span>
-                    </div>
-                    <div class="project-links">
-                        <a href="https://github.com/xVc323/popclip-humanizer" target="_blank" class="project-link">
-                            <i class="fab fa-github"></i>
-                            View Code
-                        </a>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="projects-footer">
-                <a href="https://github.com/xVc323" target="_blank" class="btn btn-outline">
-                    <i class="fab fa-github"></i>
-                    View All Projects on GitHub
-                </a>
-            </div>
-        </div>
+        <article class="timeline-item">
+          <time datetime="2025">2025</time>
+          <div>
+            <h3>PopClip Humanizer</h3>
+            <p>Micro-tooling experiment for transforming selected text from the desktop.</p>
+            <a href="https://github.com/xVc323/popclip-humanizer" target="_blank" rel="noopener">View source</a>
+          </div>
+        </article>
+
+        <article class="timeline-item">
+          <time datetime="2025">2025</time>
+          <div>
+            <h3>Live music sketch</h3>
+            <p>A small creative-code detour using browser-based music tooling.</p>
+            <a href="https://strudel.cc/" target="_blank" rel="noopener">Explore Strudel</a>
+          </div>
+        </article>
+      </div>
     </section>
 
-    <!-- Strudel Section -->
-    <section id="music" class="strudel">
-        <div class="container">
-            <h2 class="section-title">Live Music Creation</h2>
-            <p class="section-subtitle">A generative music piece coded with Strudel</p>
-            <div class="strudel-layout">
-                <div class="strudel-player-card">
-                    <div class="strudel-iframe-shell">
-                        <iframe
-                            class="strudel-iframe"
-                            src="https://strudel.cc/#Ci8vIDEuIC0tIEJBU0UgRUxFTUVOVFMgLS0KbGV0IGFjY29yZHMgPSAiPFtjNCxlYjQsZzRdIFthYjMsYzQsZWI0XSBbZjMsYWIzLGM0XSBbZzMsYjMsZDRdPiI7CmxldCBiYXNzZXMgPSAiPGMxIGFiMCBmMCBnMD4iOwoKLy8gMi4gLS0gS0lDSyAoU2lkZWNoYWluIG9uIE9yYml0IDEpIC0tCmxldCBraWNrID0gcygiYmQqNCIpLmJhbmsoInRyOTA5IikuZGlzdG9ydCgyKQogIC5kdWNrb3JiaXQoMSkuZHVja2F0dGFjaygwLjEpLmR1Y2tkZXB0aCgwLjkpCiAgLmdhaW4oMC45KTsKCi8vIDMuIC0tIERST1AgSU5TVFJVTUVOVFMgKE9yYml0IDEpIC0tCmxldCByb2xsaW5nQmFzcyA9IG5vdGUoYmFzc2VzKS5zbG93KDIpLnN0cnVjdCgiW34geCB4IHhdKjQiKQogIC5zKCJzYXd0b290aCIpLmZ0eXBlKCJsYWRkZXIiKS5scGYoODAwKS5kcml2ZSg0KS5vcmJpdCgxKS5nYWluKDAuNyk7CgpsZXQgbGVhZCA9IG5vdGUoYWNjb3Jkcykuc2xvdygyKS5hcnAoIjAgMSAyIDEgMyAyIikuZmFzdCg4KQogIC5zKCJzdXBlcnNhdyIpLnVuaXNvbig1KS5kZXR1bmUoMC4zKS5kZWxheSgwLjUpLmRlbGF5dCgwLjM3NSkub3JiaXQoMSkuZ2FpbigwLjMpOwoKLy8gNC4gLS0gU01PT1RIIEJVSUxELVVQIC0tCi8vIFVzaW5nIHNhdy5yYW5nZSgpIHRvIGNvbnRpbnVvdXNseSBjb250cm9sIGZpbHRlciBtb3ZlbWVudApsZXQgYnVpbGRVcCA9IHN0YWNrKAogIC8vIE9wZW5pbmcgY2hvcmRzIChtdXNpY2FsIGNvcmUgb2YgdGhlIGJ1aWxkKQogIG5vdGUoYWNjb3Jkcykuc2xvdygyKQogICAgLnMoInN1cGVyc2F3IikudW5pc29uKDUpLmRldHVuZSgwLjMyKQogICAgLmxwZihzYXcucmFuZ2UoNDAwLCA4NTAwKS5zbG93KDgpKQogICAgLmdhaW4oc2F3LnJhbmdlKDAuMTAsIDAuMzgpLnNsb3coOCkpCiAgICAucm9vbSgwLjM1KS5zaXplKDAuOTUpCiAgICAub3JiaXQoMSksCgogIC8vIEdob3N0IGtpY2sgKHZlcnkgbG93KSB0byBtYWludGFpbiBlbmVyZ3kgd2l0aG91dCByZXZlYWxpbmcgdGhlIGRyb3AKICBzKCJiZCo0IikuZ2FpbigwLjIyKS5scGYoMTQwKS5vcmJpdCgxKSwKCiAgLy8gRmluYWwgcGl0Y2ggZmFsbCAocmV2ZXJzZSDigJx3aG9vcOKAnSBlZmZlY3QpCiAgbm90ZSgiYzUiKS5hZGQoc2F3LnJhbmdlKDAsIC0xMikuc2xvdygwLjUpKSAvLyBkcm9wcyBxdWlja2x5IGluIHRoZSBsYXN0IGhhbGYgYmFyCiAgICAucygic3F1YXJlMiIpCiAgICAubHBmKDIyMDApCiAgICAuZ2FpbigwLjE4KQogICAgLmxhdGUoNy84KQogICAgLm9yYml0KDEpCikKLmhwZihzYXcucmFuZ2UoMzAsIDI1MCkuc2xvdyg4KSkgICAvLyBHcmFkdWFsbHkgcmVtb3ZlIGxvdyBmcmVxdWVuY2llcwoucm9vbShzYXcucmFuZ2UoMC4xNSwgMC42KS5zbG93KDgpKSAvLyBBZGQgcmV2ZXJiIHByb2dyZXNzaXZlbHkgKHdhc2ggZWZmZWN0KQoub3JiaXQoMSk7CgovLyA1LiAtLSBBUlJBTkdFTUVOVCAtLQphcnJhbmdlKAogIFs4LCBzdGFjayhsZWFkLmxwZigxMjAwKSwgcm9sbGluZ0Jhc3MuZ2FpbigwLjQpKV0sIC8vIEludHJvCiAgWzgsIGJ1aWxkVXBdLCAvLyBCVUlMRC1VUAogIFswLjI1LCBzaWxlbmNlXSwgLy8gU2hvcnQgZ2FwIGZvciBpbXBhY3QKICBbMTYsIHN0YWNrKGtpY2ssIHJvbGxpbmdCYXNzLCBsZWFkLCBzKCJbfiBvaF0qNCIpLm9yYml0KDEpLmdhaW4oMC42KSldLCAvLyBEUk9QCiAgWzgsIGxlYWQubHBmKDgwMCldIC8vIE91dHJvCikKLmNwbSgzNSkgLy8gMTQwIEJQTQouX3NwZWN0cnVtKHtjb2xvcjogImN5YW4ifSkgLy8gVmlzdWFsaXplcg%3D%3D"
-                            title="Strudel live player"
-                            loading="lazy"
-                            allow="autoplay"
-                            referrerpolicy="strict-origin-when-cross-origin"
-                        ></iframe>
-                    </div>
-                </div>
-                <div class="strudel-info-card">
-                    <h3>My Strudel Track</h3>
-                    <p>
-                        An original piece you can play directly in the embedded player.
-                    </p>
-                    <div class="project-tech">
-                        <span class="tech-tag">Strudel</span>
-                        <span class="tech-tag">Live Coding</span>
-                        <span class="tech-tag">Embedded Player</span>
-                    </div>
-                    <div class="project-links">
-                        <a href="https://strudel.cc/" target="_blank" rel="noopener" class="project-link">
-                            <i class="fas fa-music"></i>
-                            Open Strudel
-                        </a>
-                        <a href="https://github.com/tidalcycles/strudel/blob/main/LICENSE" target="_blank" rel="noopener" class="project-link primary">
-                            <i class="fas fa-scale-balanced"></i>
-                            AGPL-3.0 License
-                        </a>
-                    </div>
-                    <p class="strudel-license-note">
-                        Built with Strudel (AGPL-3.0).
-                    </p>
-                </div>
-            </div>
+    <section class="section about-section" id="about" aria-labelledby="about-title">
+      <div class="container about-grid">
+        <div>
+          <p class="eyebrow">About</p>
+          <h2 id="about-title">Pseudonymous by design.</h2>
         </div>
+        <div class="about-copy">
+          <p>
+            I’m Pat, also around the web as xVc323. This site is where I keep a public trail
+            of tools, experiments, demos, and odd little builds that are worth keeping online.
+          </p>
+          <p>
+            The point is the work, not a résumé. Some projects are practical, some are playful,
+            and some are just snapshots of curiosity that made it far enough to deserve a URL.
+          </p>
+        </div>
+      </div>
     </section>
 
-    <!-- Skills Section -->
-    <section id="skills" class="skills">
-        <div class="container">
-            <h2 class="section-title">Skills & Technologies</h2>
-            <div class="skills-grid">
-                <div class="skill-category">
-                    <div class="category-header">
-                        <i class="fas fa-brain"></i>
-                        <h3>AI & Machine Learning</h3>
-                    </div>
-                    <div class="skill-items">
-                        <span class="skill-item">Google Gemini AI</span>
-                        <span class="skill-item">OpenAI GPT</span>
-                        <span class="skill-item">Computer Vision</span>
-                        <span class="skill-item">Natural Language Processing</span>
-                        <span class="skill-item">TensorFlow</span>
-                        <span class="skill-item">PyTorch</span>
-                    </div>
-                </div>
-
-                <div class="skill-category">
-                    <div class="category-header">
-                        <i class="fas fa-briefcase"></i>
-                        <h3>Business & Strategy</h3>
-                    </div>
-                    <div class="skill-items">
-                        <span class="skill-item">Product Strategy</span>
-                        <span class="skill-item">Market Analysis</span>
-                        <span class="skill-item">Tech Innovation</span>
-                        <span class="skill-item">Business Development</span>
-                        <span class="skill-item">Project Management</span>
-                        <span class="skill-item">Strategic Planning</span>
-                    </div>
-                </div>
-
-                <div class="skill-category">
-                    <div class="category-header">
-                        <i class="fas fa-laptop-code"></i>
-                        <h3>Tech & Platforms</h3>
-                    </div>
-                    <div class="skill-items">
-                        <span class="skill-item">Python Ecosystems</span>
-                        <span class="skill-item">Web Technologies</span>
-                        <span class="skill-item">API Integration</span>
-                        <span class="skill-item">Streamlit Apps</span>
-                        <span class="skill-item">Automation Tools</span>
-                        <span class="skill-item">No-Code Solutions</span>
-                    </div>
-                </div>
-
-                <div class="skill-category">
-                    <div class="category-header">
-                        <i class="fas fa-tools"></i>
-                        <h3>Tools & Technologies</h3>
-                    </div>
-                    <div class="skill-items">
-                        <span class="skill-item">Docker</span>
-                        <span class="skill-item">Redis</span>
-                        <span class="skill-item">Celery</span>
-                        <span class="skill-item">Git</span>
-                        <span class="skill-item">Raspberry Pi</span>
-                        <span class="skill-item">Linux</span>
-                        <span class="skill-item">SAP</span>
-                        <span class="skill-item">FastAPI</span>
-                        <span class="skill-item">Power Automate</span>
-                        <span class="skill-item">Copilot Studio</span>
-                    </div>
-                </div>
-            </div>
+    <section class="section contact-section" id="contact" aria-labelledby="contact-title">
+      <div class="container contact-card">
+        <div>
+          <p class="eyebrow">Links</p>
+          <h2 id="contact-title">Find the source trail.</h2>
+          <p>GitHub is the best place to follow or inspect the projects behind this archive.</p>
         </div>
+        <div class="contact-links" aria-label="Contact and profile links">
+          <a class="button primary" href="https://github.com/xVc323" target="_blank" rel="noopener">github.com/xVc323</a>
+          <a class="button secondary" href="https://pat.network">pat.network</a>
+        </div>
+      </div>
     </section>
+  </main>
 
-    <!-- Contact Section -->
-    <section id="contact" class="contact">
-        <div class="container">
-            <h2 class="section-title">Let's Build Something Amazing</h2>
-            <p class="section-subtitle">
-                Interested in collaborating or have a project in mind? I'd love to hear from you!<br>
-                <small style="color: #888; font-size: 0.9rem;">You can also reach out through GitHub or use the contact form below.</small>
-            </p>
-            
-            <div class="contact-content">
-                <div class="contact-info">
-                    <div class="contact-item">
-                        <i class="fab fa-github"></i>
-                        <div class="contact-details">
-                            <h4>GitHub</h4>
-                            <a href="https://github.com/xVc323" target="_blank">@xVc323</a>
-                        </div>
-                    </div>
-                    <div class="contact-item">
-                        <i class="fas fa-globe"></i>
-                        <div class="contact-details">
-                            <h4>Website</h4>
-                            <a href="https://pat.network" target="_blank">pat.network</a>
-                        </div>
-                    </div>
-                    <div class="contact-item">
-                        <i class="fas fa-comments"></i>
-                        <div class="contact-details">
-                            <h4>Let's Connect</h4>
-                            <p>Use the form or reach out via GitHub</p>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="contact-form">
-                    <form id="contactForm">
-                        <div class="form-group">
-                            <input type="text" id="name" name="name" placeholder="Your Name" required>
-                        </div>
-                        <div class="form-group">
-                            <input type="email" id="email" name="email" placeholder="Your Email" required>
-                        </div>
-                        <div class="form-group">
-                            <input type="text" id="subject" name="subject" placeholder="Subject" required>
-                        </div>
-                        <div class="form-group">
-                            <textarea id="message" name="message" placeholder="Your Message" rows="5" required></textarea>
-                        </div>
-                        <button type="submit" class="btn btn-primary">
-                            <i class="fas fa-paper-plane"></i>
-                            Send Message
-                        </button>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </section>
+  <footer class="footer">
+    <div class="container footer-inner">
+      <p>© <span id="year">2026</span> Pat / xVc323. Built as static files.</p>
+      <a href="#top">Back to top</a>
+    </div>
+  </footer>
 
-    <!-- Footer -->
-    <footer class="footer">
-        <div class="container">
-            <div class="footer-content">
-                <div class="footer-left">
-                    <div class="footer-logo">
-                        <span class="logo-text">Pat</span>
-                        <span class="logo-dot">.</span>
-                    </div>
-                    <p>Bridging business strategy and AI innovation.</p>
-                </div>
-                <div class="footer-right">
-                    <div class="footer-links">
-                        <a href="#projects">Projects</a>
-                        <a href="#music">Music</a>
-                        <a href="#skills">Skills</a>
-                        <a href="#contact">Contact</a>
-                        <a href="https://github.com/xVc323" target="_blank">GitHub</a>
-                    </div>
-                </div>
-            </div>
-            <div class="footer-bottom">
-                <p>&copy; 2025 Pat. All rights reserved. Built with ❤️ and AI.</p>
-            </div>
-        </div>
-    </footer>
-
-    <!-- Scripts -->
-    <script src="script.js"></script>
+  <script src="script.js"></script>
 </body>
-</html> 
+</html>
