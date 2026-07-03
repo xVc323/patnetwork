@@ -1,7 +1,7 @@
 # Website Rework Design: Pseudonymous Project Archive
 
-Date: 2026-07-03  
-Site: `pat.network`  
+Date: 2026-07-03
+Site: `pat.network`
 Status: Approved for implementation planning
 
 ## Goal

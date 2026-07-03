@@ -1,4 +1,7 @@
 (() => {
+  document.documentElement.classList.remove('no-js');
+  document.documentElement.classList.add('js');
+
   const body = document.body;
   const navToggle = document.querySelector('.nav-toggle');
   const navMenu = document.getElementById('nav-menu');

@@ -28,6 +28,9 @@ if (exists('CNAME')) {
   if (cname !== 'pat.network') failures.push(`CNAME must remain pat.network, got: ${cname}`);
 }
 
+// Direct utility pages are intentionally preserved as legacy/off-nav public URLs.
+// Keep the landing surface strict while treating those direct pages as explicit
+// exceptions unless Pat asks to rework or publish them in the main archive.
 const scannedFiles = ['index.html', 'README.md', 'script.js', 'styles.css'];
 const forbiddenPatterns = [
   { pattern: /Business-Tech/gi, reason: 'old corporate title' },

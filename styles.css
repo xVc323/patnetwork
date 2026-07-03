@@ -480,7 +480,7 @@ h3 {
     place-items: center;
   }
 
-  .nav-menu {
+  .js .nav-menu {
     position: fixed;
     inset: 72px 1rem auto 1rem;
     display: none;
@@ -493,8 +493,12 @@ h3 {
     box-shadow: var(--shadow);
   }
 
-  body.nav-open .nav-menu {
+  .js body.nav-open .nav-menu {
     display: flex;
+  }
+
+  .no-js .nav-toggle {
+    display: none;
   }
 
   .nav-menu a {
@@ -520,6 +524,10 @@ h3 {
   .contact-card,
   .footer-inner {
     align-items: flex-start;
+  }
+
+  .footer-inner {
+    flex-direction: column;
   }
 
   .contact-card {
