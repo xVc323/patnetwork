@@ -31,3 +31,295 @@
     });
   }
 })();
+
+(() => {
+  const panel = document.querySelector('.hero-signal');
+  const field = document.querySelector('.ascii-field');
+  const baseLayer = document.querySelector('.ascii-base');
+  const accentLayer = document.querySelector('.ascii-accent');
+  const glyphLayer = document.querySelector('.ascii-glyph');
+  if (!panel || !field || !baseLayer || !accentLayer || !glyphLayer) return;
+
+  const BASE_RAMP = '  ..::--=+*';
+  const GLYPH_RAMP = 'pppPP@';
+  const P_BITMAP = [
+    '1111111100',
+    '1111111110',
+    '1100000111',
+    '1100000011',
+    '1100000111',
+    '1111111110',
+    '1111111100',
+    '1100000000',
+    '1100000000',
+    '1100000000',
+    '1100000000',
+    '1100000000',
+  ];
+
+  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+  let cols = 0;
+  let rows = 0;
+  let charW = 8;
+  let charH = 15;
+  let maskBox = null;
+
+  const mouse = { x: -1, y: -1, strength: 0, target: 0 };
+  // Char cells only visibly move when a threshold is crossed, so the field
+  // clock has to run well above real time to read as fluid.
+  const BASE_SPEED = 2.6;
+  let speed = BASE_SPEED;
+  let speedTarget = BASE_SPEED;
+  // Irregular tempo: mostly calm, with random surges of acceleration.
+  let tempo = 1;
+  let tempoTarget = 1;
+  let tempoTimer = 0;
+  // Cohesion drives the dissolve/reform cycle: at 1 the P is whole; lower
+  // values let cells escape into the field as loose particles.
+  let cohesion = 1;
+  let cohesionTarget = 1;
+  let cohesionTimer = 6;
+  let visible = true;
+  let rafId = 0;
+  let lastFrame = 0;
+  let clock = 0;
+  let lastTick = 0;
+
+  const measure = () => {
+    const probe = document.createElement('span');
+    probe.textContent = '0'.repeat(10);
+    probe.style.whiteSpace = 'pre';
+    baseLayer.textContent = '';
+    baseLayer.appendChild(probe);
+    const rect = probe.getBoundingClientRect();
+    charW = rect.width / 10 || 8;
+    charH = parseFloat(getComputedStyle(baseLayer).lineHeight) || 15;
+    baseLayer.textContent = '';
+
+    cols = Math.max(20, Math.floor(field.clientWidth / charW));
+    rows = Math.max(12, Math.floor(field.clientHeight / charH));
+
+    // The P keeps its 7:8 shape in pixels despite cells being taller than wide.
+    const maskRows = Math.round(rows * 0.66);
+    const maskCols = Math.min(cols - 4, Math.round(maskRows * (10 / 12) * (charH / charW)));
+    maskBox = {
+      top: Math.floor((rows - maskRows) / 2),
+      left: Math.floor((cols - maskCols) / 2),
+      cols: maskCols,
+      rows: maskRows,
+    };
+  };
+
+  // Samples the P bitmap with a time-varying warp so the glyph undulates,
+  // and a repulsion term so it dents away from the cursor.
+  const inGlyph = (x, y, t, warpAmp) => {
+    if (!maskBox) return false;
+    let wx = Math.sin(y * 0.31 + t * 0.9) * warpAmp + Math.sin(y * 0.09 - t * 0.43) * warpAmp * 0.7;
+    let wy = Math.cos(x * 0.17 + t * 0.53) * warpAmp * 0.5;
+    if (mouse.strength > 0.01) {
+      const mdx = x - mouse.x;
+      const mdy = (y - mouse.y) * (charH / charW);
+      const d2 = mdx * mdx + mdy * mdy;
+      const push = mouse.strength * 30 / (14 + d2);
+      wx += mdx * push;
+      wy += mdy * push;
+    }
+    const u = (x + wx - maskBox.left) / maskBox.cols;
+    const v = (y + wy - maskBox.top) / maskBox.rows;
+    if (u < 0 || u >= 1 || v < 0 || v >= 1) return false;
+    const row = P_BITMAP[Math.floor(v * P_BITMAP.length)];
+    return row[Math.floor(u * row.length)] === '1';
+  };
+
+  const cellHash = (x, y) => {
+    const s = Math.sin(x * 12.9898 + y * 78.233) * 43758.5453;
+    return s - Math.floor(s);
+  };
+
+  const render = (t) => {
+    const aspect = charW / charH;
+    const cx = cols / 2;
+    const cy = rows / 2;
+    // Undulation amplitude follows the tempo surges, so accelerations twist
+    // the glyph harder.
+    const warpAmp = (0.7 + Math.abs(Math.sin(t * 0.37) * Math.sin(t * 0.13 + 2)) * 1.6) * (0.4 + tempo * 0.5);
+    let base = '';
+    let accent = '';
+    let glyph = '';
+    for (let y = 0; y < rows; y++) {
+      for (let x = 0; x < cols; x++) {
+        const dx = (x - cx) * aspect;
+        const dy = y - cy;
+        let v = Math.sin(x * aspect * 0.32 + t * 0.9)
+          + Math.sin(y * 0.34 - t * 0.6)
+          + Math.sin((x * aspect + y) * 0.21 + t * 0.4)
+          + Math.sin(Math.hypot(dx, dy) * 0.5 - t * 1.4) * 0.9;
+        if (mouse.strength > 0.01) {
+          const mdx = (x - mouse.x) * aspect;
+          const mdy = y - mouse.y;
+          const d2 = mdx * mdx + mdy * mdy;
+          v += mouse.strength * 2.4 * Math.exp(-d2 / 26) * Math.sin(Math.sqrt(d2) * 0.9 - t * 3.2);
+        }
+        let n = Math.min(1, Math.max(0, (v + 3.9) / 7.8));
+        const h = cellHash(x, y);
+        if (inGlyph(x, y, t, warpAmp)) {
+          // Below full cohesion, high-hash cells escape the glyph and the
+          // field shows through the gap.
+          if (cohesion >= 0.99 || h <= cohesion) {
+            base += ' ';
+            accent += ' ';
+            glyph += GLYPH_RAMP[Math.min(GLYPH_RAMP.length - 1, Math.floor(n * GLYPH_RAMP.length))];
+            continue;
+          }
+        } else if (cohesion < 0.97 && h > cohesion && h < cohesion + 0.07 && n > 0.3 && maskBox
+          && x > maskBox.left - 9 && x < maskBox.left + maskBox.cols + 9
+          && y > maskBox.top - 5 && y < maskBox.top + maskBox.rows + 5) {
+          // The escaped cells wander as loose acid particles around the P.
+          base += ' ';
+          accent += ' ';
+          glyph += n > 0.6 ? 'p' : '·';
+          continue;
+        }
+        // The cloud thins toward the edges like a nebula rather than filling the box.
+        const r = Math.hypot(dx / (cols * aspect * 0.5), dy / (rows * 0.5));
+        n *= Math.min(1, Math.max(0, 1.35 - r * 1.25));
+        // Independent per-cell twinkle so the sparse outskirts never look frozen.
+        n = Math.min(1, Math.max(0, n + Math.sin(t * 1.2 + h * 6.283) * 0.12));
+        if (h > 0.982 && n > 0.42) {
+          base += ' ';
+          accent += h > 0.994 ? '*' : 'p';
+        } else {
+          base += BASE_RAMP[Math.min(BASE_RAMP.length - 1, Math.floor(n * BASE_RAMP.length))];
+          accent += ' ';
+        }
+        glyph += ' ';
+      }
+      base += '\n';
+      accent += '\n';
+      glyph += '\n';
+    }
+    baseLayer.textContent = base;
+    accentLayer.textContent = accent;
+    glyphLayer.textContent = glyph;
+  };
+
+  const frame = (now) => {
+    rafId = requestAnimationFrame(frame);
+    const dt = Math.min(0.1, (now - lastTick) / 1000);
+    lastTick = now;
+    lastFrame = now;
+    tempoTimer -= dt;
+    if (tempoTimer <= 0) {
+      // Mostly calm phases; the power curve makes strong surges rare.
+      tempoTarget = 0.5 + Math.pow(Math.random(), 2.5) * 2.4;
+      tempoTimer = 2 + Math.random() * 4;
+    }
+    tempo += (tempoTarget - tempo) * Math.min(1, dt * 1.6);
+    cohesionTimer -= dt;
+    if (cohesionTimer <= 0) {
+      const dissolve = Math.random() < 0.45;
+      cohesionTarget = dissolve ? 0.5 + Math.random() * 0.35 : 1;
+      cohesionTimer = dissolve ? 2.5 + Math.random() * 3 : 5 + Math.random() * 7;
+    }
+    cohesion += (cohesionTarget - cohesion) * Math.min(1, dt * 1.1);
+    speed += (speedTarget - speed) * 0.04;
+    mouse.strength += (mouse.target - mouse.strength) * 0.05;
+    clock += dt * speed * tempo;
+    render(clock);
+  };
+
+  const start = () => {
+    if (rafId || reducedMotion.matches || document.hidden || !visible) return;
+    lastTick = performance.now();
+    lastFrame = 0;
+    rafId = requestAnimationFrame(frame);
+  };
+
+  const stop = () => {
+    if (rafId) cancelAnimationFrame(rafId);
+    rafId = 0;
+  };
+
+  const rebuild = () => {
+    measure();
+    render(clock);
+  };
+
+  panel.addEventListener('pointermove', (event) => {
+    const rect = field.getBoundingClientRect();
+    mouse.x = (event.clientX - rect.left) / charW;
+    mouse.y = (event.clientY - rect.top) / charH;
+    mouse.target = 1;
+    speedTarget = BASE_SPEED * 1.8;
+  });
+  panel.addEventListener('pointerleave', () => {
+    mouse.target = 0;
+    speedTarget = BASE_SPEED;
+  });
+
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) stop();
+    else start();
+  });
+
+  if ('IntersectionObserver' in window) {
+    new IntersectionObserver((entries) => {
+      visible = entries[0].isIntersecting;
+      if (visible) start();
+      else stop();
+    }).observe(panel);
+  }
+
+  if ('ResizeObserver' in window) {
+    let resizeTimer = 0;
+    new ResizeObserver(() => {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(rebuild, 120);
+    }).observe(field);
+  }
+
+  reducedMotion.addEventListener?.('change', () => {
+    if (reducedMotion.matches) {
+      stop();
+      render(2.4);
+    } else {
+      start();
+    }
+  });
+
+  rebuild();
+  if (reducedMotion.matches) render(2.4);
+  else start();
+})();
+
+(() => {
+  const layers = document.querySelectorAll('.hero-stars');
+  if (!layers.length) return;
+
+  const GLYPHS = '..··++00';
+
+  // Two static seeds; the twinkle comes from CSS crossfading the layers.
+  const paint = () => {
+    layers.forEach((layer) => {
+      const cols = Math.ceil(layer.clientWidth / 12) || 0;
+      const rows = Math.ceil(layer.clientHeight / 20) || 0;
+      let out = '';
+      for (let y = 0; y < rows; y++) {
+        for (let x = 0; x < cols; x++) {
+          out += Math.random() < 0.02 ? GLYPHS[Math.floor(Math.random() * GLYPHS.length)] : ' ';
+        }
+        out += '\n';
+      }
+      layer.textContent = out;
+    });
+  };
+
+  let resizeTimer = 0;
+  window.addEventListener('resize', () => {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(paint, 150);
+  });
+
+  paint();
+})();

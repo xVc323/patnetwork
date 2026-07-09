@@ -7,7 +7,7 @@
   <meta name="description" content="An independent archive of useful experiments, prototypes, and small internet artifacts by Pat.">
   <meta name="theme-color" content="#0b0f13">
   <link rel="icon" type="image/svg+xml" href="favicon.svg">
-  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="styles.css?v=20260709-p-libre">
 </head>
 <body>
   <a class="skip-link" href="#main">Skip to content</a>
@@ -35,6 +35,8 @@
 
   <main id="main">
     <section class="hero" aria-labelledby="hero-title">
+      <pre class="hero-stars hero-stars-far" aria-hidden="true"></pre>
+      <pre class="hero-stars hero-stars-near" aria-hidden="true"></pre>
       <div class="container hero-layout">
         <div class="hero-copy">
           <p class="status"><span class="status-dot"></span> Curious, practical, and still learning</p>
@@ -46,13 +48,14 @@
           </div>
         </div>
 
-        <div class="hero-signal" aria-label="A live visual representation of an active project archive">
-          <div class="signal-topline"><span>CURRENT BUILD</span><span>VOL. 07-26</span></div>
-          <div class="signal-orb"><span class="orb-core">P</span></div>
-          <div class="signal-grid" aria-hidden="true">
-            <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+        <div class="hero-signal" aria-label="A live ASCII animation: the letter P emerging from a drifting character field">
+          <div class="signal-topline"><span>LIVE SIGNAL</span><span>VOL. 07-26</span></div>
+          <div class="ascii-field" aria-hidden="true">
+            <pre class="ascii-layer ascii-base"></pre>
+            <pre class="ascii-layer ascii-accent"></pre>
+            <pre class="ascii-layer ascii-glyph"></pre>
           </div>
-          <div class="signal-footer"><span>EXPLORE / BUILD / IMPROVE</span><span class="signal-count">01</span></div>
+          <div class="signal-footer"><span>EXPLORE / BUILD / IMPROVE</span><span class="signal-count">P</span></div>
         </div>
       </div>
       <div class="ticker" aria-label="Areas of interest"><div class="ticker-track"><span>Artificial intelligence</span><b>✳</b><span>Web experiments</span><b>✳</b><span>Thoughtful automation</span><b>✳</b><span>Small systems</span><b>✳</b><span>Artificial intelligence</span><b>✳</b><span>Web experiments</span><b>✳</b><span>Thoughtful automation</span><b>✳</b><span>Small systems</span><b>✳</b></div></div>
@@ -144,6 +147,6 @@
     <div class="container footer-bottom"><p>© <span id="year">2026</span> Pat. Small things, shared openly.</p><p>Curiosity, made useful.</p></div>
   </footer>
 
-  <script src="script.js"></script>
+  <script src="script.js?v=20260709-p-libre"></script>
 </body>
 </html>
