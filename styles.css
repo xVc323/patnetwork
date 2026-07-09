@@ -68,7 +68,10 @@ h1 em { font-family: var(--serif); font-weight: 400; letter-spacing: -.04em; }
 .signal-footer { position: absolute; right: 0; bottom: 17px; left: 0; }
 .signal-count { color: var(--acid); }
 .ticker { border-top: 1px solid rgba(245,241,234,.22); overflow: hidden; white-space: nowrap; }
-.ticker-track { display: inline-flex; align-items: center; gap: 29px; min-width: max-content; padding: 15px 0; color: rgba(245,241,234,.75); font: 500 10px var(--mono); text-transform: uppercase; letter-spacing: .08em; animation: ticker 30s linear 1.25s infinite; }
+.ticker-track { display: inline-flex; align-items: center; min-width: max-content; padding: 15px 0; color: rgba(245,241,234,.75); font: 500 10px var(--mono); text-transform: uppercase; letter-spacing: .08em; animation: ticker 60s linear 1.25s infinite; }
+/* Spacing lives on the items (not flex gap) so the -50% loop point lands
+   exactly on a copy boundary and the wrap is seamless at any viewport. */
+.ticker-track > * { margin-right: clamp(29px, 3.2vw, 82px); }
 .ticker b { color: var(--acid); font-size: 15px; font-weight: 400; }
 @keyframes ticker { to { transform: translateX(-50%); } }
 
