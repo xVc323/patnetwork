@@ -41,21 +41,175 @@
   if (!panel || !field || !baseLayer || !accentLayer || !glyphLayer) return;
 
   const BASE_RAMP = '  ..::--=+*';
-  const GLYPH_RAMP = 'pppPP@';
-  const P_BITMAP = [
-    '1111111100',
-    '1111111110',
-    '1100000111',
-    '1100000011',
-    '1100000111',
-    '1111111110',
-    '1111111100',
-    '1100000000',
-    '1100000000',
-    '1100000000',
-    '1100000000',
-    '1100000000',
+  // Opening sequence: the P brand mark, then a quick 3-2-1 countdown, then
+  // an endless random cycle through the site's motifs. Shapes are drawn as
+  // chunky bitmaps because the ~22×15 glyph grid erases fine detail.
+  const SYMBOLS = [
+    {
+      label: 'P',
+      ramp: 'pppPP@',
+      bitmap: [
+        '1111111100',
+        '1111111110',
+        '1100000111',
+        '1100000011',
+        '1100000111',
+        '1111111110',
+        '1111111100',
+        '1100000000',
+        '1100000000',
+        '1100000000',
+        '1100000000',
+        '1100000000',
+      ],
+    },
+    {
+      label: '3',
+      ramp: ':33333@',
+      bitmap: [
+        '1111111111',
+        '1111111111',
+        '0000000011',
+        '0000000011',
+        '0000000011',
+        '1111111111',
+        '1111111111',
+        '0000000011',
+        '0000000011',
+        '0000000011',
+        '1111111111',
+        '1111111111',
+      ],
+    },
+    {
+      label: '2',
+      ramp: ':22222@',
+      bitmap: [
+        '1111111111',
+        '1111111111',
+        '0000000011',
+        '0000000011',
+        '0000000011',
+        '1111111111',
+        '1111111111',
+        '1100000000',
+        '1100000000',
+        '1100000000',
+        '1111111111',
+        '1111111111',
+      ],
+    },
+    {
+      label: '1',
+      ramp: ':11111@',
+      bitmap: [
+        '0000110000',
+        '0001110000',
+        '0011110000',
+        '0000110000',
+        '0000110000',
+        '0000110000',
+        '0000110000',
+        '0000110000',
+        '0000110000',
+        '0000110000',
+        '0111111100',
+        '0111111100',
+      ],
+    },
+    {
+      label: '?',
+      ramp: '..:??#',
+      bitmap: [
+        '0011111100',
+        '0111111110',
+        '1110000111',
+        '1100000011',
+        '0000000111',
+        '0000001110',
+        '0000011100',
+        '0000111000',
+        '0000110000',
+        '0000000000',
+        '0000110000',
+        '0000110000',
+      ],
+    },
+    {
+      label: '>_',
+      ramp: '.:>>#@',
+      bitmap: [
+        '110000000000',
+        '111000000000',
+        '011100000000',
+        '000111000000',
+        '000011100000',
+        '000001110000',
+        '000011100000',
+        '000111000000',
+        '011100000000',
+        '111000000000',
+        '110000111111',
+        '000000111111',
+      ],
+    },
+    {
+      label: 'INVADER',
+      ramp: '.:*##@',
+      bitmap: [
+        '00100000100',
+        '00010001000',
+        '00111111100',
+        '01101110110',
+        '11111111111',
+        '10111111101',
+        '10100000101',
+        '00011011000',
+      ],
+    },
+    {
+      label: 'CURSOR',
+      ramp: '..:##@',
+      bitmap: [
+        '1000000000',
+        '1100000000',
+        '1110000000',
+        '1111000000',
+        '1111100000',
+        '1111110000',
+        '1111111000',
+        '1111111100',
+        '1111111110',
+        '1111110000',
+        '1100111000',
+        '0000011100',
+      ],
+    },
+    {
+      label: 'IDEA',
+      ramp: '.:o##@',
+      bitmap: [
+        '0011111100',
+        '0111111110',
+        '1111111111',
+        '1111111111',
+        '1111111111',
+        '1111111111',
+        '0111111110',
+        '0011111100',
+        '0001111000',
+        '0001111000',
+        '0001111000',
+        '0000110000',
+      ],
+    },
   ];
+  const INTRO_SEQ = ['3', '2', '1'];
+  const POOL = ['?', '>_', 'INVADER', 'CURSOR', 'IDEA'];
+  let introStep = 0;
+  let symbolIndex = 0;
+  let symbol = SYMBOLS[0];
+  const counter = document.querySelector('.signal-count');
 
   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
 
@@ -75,11 +229,24 @@
   let tempo = 1;
   let tempoTarget = 1;
   let tempoTimer = 0;
-  // Cohesion drives the dissolve/reform cycle: at 1 the P is whole; lower
-  // values let cells escape into the field as loose particles.
+  // Cohesion drives the metamorphosis: at 1 the glyph is whole; the morph
+  // dissolves it almost completely, swaps the symbol at the bottom where the
+  // change is invisible, then reforms slowly by accretion.
   let cohesion = 1;
-  let cohesionTarget = 1;
-  let cohesionTimer = 6;
+  let morphState = 'hold';
+  let morphTimer = 4;
+
+  const pickNextSymbol = () => {
+    if (introStep < INTRO_SEQ.length) {
+      const idx = SYMBOLS.findIndex((s) => s.label === INTRO_SEQ[introStep]);
+      introStep++;
+      return idx;
+    }
+    const pool = SYMBOLS
+      .map((s, i) => (POOL.includes(s.label) && i !== symbolIndex ? i : -1))
+      .filter((i) => i >= 0);
+    return pool[Math.floor(Math.random() * pool.length)];
+  };
   let visible = true;
   let rafId = 0;
   let lastFrame = 0;
@@ -100,9 +267,16 @@
     cols = Math.max(20, Math.floor(field.clientWidth / charW));
     rows = Math.max(12, Math.floor(field.clientHeight / charH));
 
-    // The P keeps its 7:8 shape in pixels despite cells being taller than wide.
+    setMaskBox();
+  };
+
+  // The glyph keeps its bitmap's shape in pixels despite cells being taller
+  // than wide.
+  const setMaskBox = () => {
+    const bw = symbol.bitmap[0].length;
+    const bh = symbol.bitmap.length;
     const maskRows = Math.round(rows * 0.66);
-    const maskCols = Math.min(cols - 4, Math.round(maskRows * (10 / 12) * (charH / charW)));
+    const maskCols = Math.min(cols - 4, Math.round(maskRows * (bw / bh) * (charH / charW)));
     maskBox = {
       top: Math.floor((rows - maskRows) / 2),
       left: Math.floor((cols - maskCols) / 2),
@@ -128,7 +302,7 @@
     const u = (x + wx - maskBox.left) / maskBox.cols;
     const v = (y + wy - maskBox.top) / maskBox.rows;
     if (u < 0 || u >= 1 || v < 0 || v >= 1) return false;
-    const row = P_BITMAP[Math.floor(v * P_BITMAP.length)];
+    const row = symbol.bitmap[Math.floor(v * symbol.bitmap.length)];
     return row[Math.floor(u * row.length)] === '1';
   };
 
@@ -143,7 +317,7 @@
     const cy = rows / 2;
     // Undulation amplitude follows the tempo surges, so accelerations twist
     // the glyph harder.
-    const warpAmp = (0.7 + Math.abs(Math.sin(t * 0.37) * Math.sin(t * 0.13 + 2)) * 1.6) * (0.4 + tempo * 0.5);
+    const warpAmp = (0.5 + Math.abs(Math.sin(t * 0.37) * Math.sin(t * 0.13 + 2)) * 1.1) * (0.35 + tempo * 0.4);
     let base = '';
     let accent = '';
     let glyph = '';
@@ -169,7 +343,7 @@
           if (cohesion >= 0.99 || h <= cohesion) {
             base += ' ';
             accent += ' ';
-            glyph += GLYPH_RAMP[Math.min(GLYPH_RAMP.length - 1, Math.floor(n * GLYPH_RAMP.length))];
+            glyph += symbol.ramp[Math.min(symbol.ramp.length - 1, Math.floor(n * symbol.ramp.length))];
             continue;
           }
         } else if (cohesion < 0.97 && h > cohesion && h < cohesion + 0.07 && n > 0.3 && maskBox
@@ -216,13 +390,28 @@
       tempoTimer = 2 + Math.random() * 4;
     }
     tempo += (tempoTarget - tempo) * Math.min(1, dt * 1.6);
-    cohesionTimer -= dt;
-    if (cohesionTimer <= 0) {
-      const dissolve = Math.random() < 0.45;
-      cohesionTarget = dissolve ? 0.5 + Math.random() * 0.35 : 1;
-      cohesionTimer = dissolve ? 2.5 + Math.random() * 3 : 5 + Math.random() * 7;
+    morphTimer -= dt;
+    // The countdown runs on tighter timings than the ambient cycle.
+    const quick = introStep <= INTRO_SEQ.length && INTRO_SEQ.includes(symbol.label);
+    if (morphState === 'hold' && morphTimer <= 0) {
+      morphState = 'out';
+    } else if (morphState === 'out') {
+      cohesion += (0.05 - cohesion) * Math.min(1, dt * (quick || introStep < INTRO_SEQ.length ? 3.4 : 1.5));
+      if (cohesion < 0.18) {
+        symbolIndex = pickNextSymbol();
+        symbol = SYMBOLS[symbolIndex];
+        setMaskBox();
+        if (counter) counter.textContent = symbol.label;
+        morphState = 'in';
+      }
+    } else if (morphState === 'in') {
+      cohesion += (1 - cohesion) * Math.min(1, dt * (quick ? 2.6 : 0.75));
+      if (cohesion > 0.97) {
+        cohesion = 1;
+        morphState = 'hold';
+        morphTimer = quick ? 0.9 : 6 + Math.random() * 8;
+      }
     }
-    cohesion += (cohesionTarget - cohesion) * Math.min(1, dt * 1.1);
     speed += (speedTarget - speed) * 0.04;
     mouse.strength += (mouse.target - mouse.strength) * 0.05;
     clock += dt * speed * tempo;
