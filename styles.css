@@ -127,6 +127,7 @@ h2 { margin-bottom: 0; font-size: clamp(47px, 5.3vw, 76px); font-weight: 500; le
 .archive-name { font-size: 24px; font-weight: 500; letter-spacing: -.045em; }
 .archive-type, .archive-year, .archive-index { color: var(--muted); }
 .archive-arrow { justify-self: end; font-size: 20px; }
+.archive-more .archive-name { font-family: var(--serif); font-style: italic; font-weight: 400; letter-spacing: -.02em; }
 
 .about-section { padding: 120px 0 143px; background: var(--ink); color: var(--paper); }
 .about-layout { display: grid; grid-template-columns: 1fr 2fr; gap: 40px; }
