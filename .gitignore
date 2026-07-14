@@ -1,13 +1,11 @@
 # Local agent/workflow artifacts
 .superpowers/
 .omx/
+.worktrees/
 
 # OS/editor noise
 .DS_Store
 
 # Browser automation scratch state
 .playwright-mcp/
-
-# Private local pages (kept out of the public archive)
-immoidf.html
-immoidf-data.json
+output/

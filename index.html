@@ -6,8 +6,8 @@
   <title>Pat: Independent Experiments</title>
   <meta name="description" content="An independent archive of useful experiments, prototypes, and small internet artifacts by Pat.">
   <meta name="theme-color" content="#0b0f13">
-  <link rel="icon" type="image/svg+xml" href="favicon.svg">
-  <link rel="stylesheet" href="styles.css?v=20260710-trail">
+  <link rel="icon" type="image/svg+xml" href="favicon.svg?v=20260714">
+  <link rel="stylesheet" href="styles.css?v=20260713-corporate-ascension">
 </head>
 <body>
   <a class="skip-link" href="#main">Skip to content</a>
@@ -46,6 +46,9 @@
             <a class="button button-primary" href="#featured">See a few things <span aria-hidden="true">↓</span></a>
             <a class="text-link" href="#about">A note on the archive <span aria-hidden="true">↘</span></a>
           </div>
+          <button class="game-invite" id="game-invite" type="button">
+            <span aria-hidden="true">◆</span> wanna play a little game?
+          </button>
         </div>
 
         <div class="hero-signal" aria-label="A live ASCII animation: the letter P emerging from a drifting character field">
@@ -148,6 +151,66 @@
     <div class="container footer-bottom"><p>© <span id="year">2026</span> Pat. Small things, shared openly.</p><p>Curiosity, made useful.</p></div>
   </footer>
 
-  <script src="script.js?v=20260710-trail"></script>
+  <div class="infernal-modal" id="infernal-modal" role="dialog" aria-modal="true" aria-labelledby="infernal-title" hidden>
+    <div class="infernal-shell">
+      <header class="infernal-header">
+        <div><p>DEPARTMENT OF ETERNAL ACCOUNTS</p><h2 id="infernal-title">The Infernal Ledger</h2></div>
+        <div class="infernal-actions"><button id="infernal-deck-toggle" type="button" aria-label="Inspect deck" hidden>▤</button><button id="infernal-fullscreen" type="button" aria-label="Enter fullscreen" aria-pressed="false">F</button><button id="infernal-close" type="button" aria-label="Close game">×</button></div>
+      </header>
+      <div class="infernal-hud" id="infernal-hud"></div>
+      <p class="infernal-sr-only" id="infernal-effect-status" aria-live="polite" aria-atomic="true"></p>
+      <p class="infernal-sr-only" id="infernal-card-status" aria-live="polite" aria-atomic="true"></p>
+      <main class="infernal-main">
+        <canvas id="infernal-canvas" width="768" height="432" tabindex="0" aria-label="The Infernal Ledger game scene"></canvas>
+        <section class="infernal-screen" id="infernal-map" aria-label="Dungeon map"></section>
+        <section class="infernal-screen" id="infernal-combat" aria-label="Card battle" hidden>
+          <div class="infernal-actor-plate player">
+            <div><span>MINOR DEMON</span><strong id="infernal-player-hp-text">40/40</strong></div>
+            <div class="infernal-health" id="infernal-player-hp" role="progressbar" aria-label="Player health" aria-valuemin="0" aria-valuemax="40" aria-valuenow="40"></div>
+            <span class="infernal-block" id="infernal-player-block" aria-label="Player Block">0</span>
+            <div class="infernal-statuses" id="infernal-player-statuses" aria-label="Player statuses"></div>
+          </div>
+          <div class="infernal-actor-plate enemy">
+            <div><span id="infernal-enemy-name">ENEMY</span><strong id="infernal-enemy-hp-text">0/0</strong></div>
+            <div class="infernal-health" id="infernal-enemy-hp" role="progressbar" aria-label="Enemy health" aria-valuemin="0" aria-valuemax="1" aria-valuenow="0"></div>
+            <span class="infernal-block" id="infernal-enemy-block" aria-label="Enemy Block">0</span>
+            <div class="infernal-statuses" id="infernal-enemy-statuses" aria-label="Enemy statuses"></div>
+          </div>
+          <div class="infernal-intent" id="infernal-intent" role="status" aria-live="polite" aria-atomic="true"></div>
+          <div class="infernal-resource-tokens" id="infernal-resource-tokens"></div>
+          <div class="infernal-status-detail" id="infernal-status-detail" role="status" hidden></div>
+          <div class="infernal-combat-bark" id="infernal-combat-bark" hidden></div>
+          <div class="infernal-hand" id="infernal-hand"></div>
+          <button class="infernal-end-turn" id="infernal-end-turn" type="button">End turn <kbd>E</kbd></button>
+        </section>
+        <section class="infernal-screen infernal-choice" id="infernal-choice" hidden></section>
+        <section class="infernal-screen infernal-outcome" id="infernal-outcome" hidden></section>
+        <section class="infernal-intro" id="infernal-intro">
+          <p>HELL HAS ACCOUNTS RECEIVABLE.</p>
+          <h3 id="infernal-tutorial-title">Read the fine print.</h3>
+          <p id="infernal-tutorial-copy"></p>
+          <div class="infernal-tutorial-progress" id="infernal-tutorial-progress" aria-label="Tutorial progress"></div>
+          <div class="infernal-tutorial-actions">
+            <button id="infernal-tutorial-back" type="button">Back</button>
+            <button id="infernal-tutorial-skip" type="button">Skip</button>
+            <button id="infernal-tutorial-next" type="button">Next</button>
+            <button id="infernal-start" type="button" hidden>Clock in</button>
+          </div>
+        </section>
+      </main>
+      <aside class="infernal-deck-drawer" id="infernal-deck-drawer" role="dialog" aria-modal="true" aria-labelledby="infernal-deck-title" hidden>
+        <header><div><p>PERSONNEL FILE</p><h3 id="infernal-deck-title">Current deck</h3></div><button id="infernal-deck-close" type="button" aria-label="Close deck">×</button></header>
+        <nav class="infernal-pile-tabs" id="infernal-pile-tabs" aria-label="Card piles"></nav>
+        <div class="infernal-deck-list" id="infernal-deck-list"></div>
+      </aside>
+      <footer class="infernal-footer"><p id="infernal-log">Probation pending.</p><div id="infernal-relics"></div></footer>
+    </div>
+  </div>
+
+  <script src="script.js?v=20260713-dungeon"></script>
+  <script src="games/infernal-ledger/data.js?v=20260714-audit-v2"></script>
+  <script src="games/infernal-ledger/core.js?v=20260714-audit-v2"></script>
+  <script src="games/infernal-ledger/content.js?v=20260714-audit-v2"></script>
+  <script src="games/infernal-ledger/game.js?v=20260714-audit-v2"></script>
 </body>
 </html>

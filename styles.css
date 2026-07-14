@@ -49,6 +49,10 @@ h1 em { font-family: var(--serif); font-weight: 400; letter-spacing: -.04em; }
 .button:hover { transform: translateY(-2px); }
 .button-primary { background: var(--acid); color: var(--ink); }
 .text-link { font-size: 13px; font-weight: 600; color: var(--paper); text-underline-offset: 5px; }
+.game-invite { margin-top: 23px; border: 0; padding: 0; background: transparent; color: var(--acid); cursor: pointer; font: 500 12px var(--mono); text-decoration: underline; text-decoration-style: dotted; text-underline-offset: 6px; }
+.game-invite span { display: inline-block; margin-right: 7px; color: var(--orange); font-size: 9px; transition: transform .2s ease; }
+.game-invite:hover span { transform: rotate(45deg) scale(1.2); }
+.no-js .game-invite { display: none; }
 
 .hero-signal { position: relative; min-height: 394px; padding: 17px 0; overflow: visible; cursor: crosshair; }
 .signal-topline, .signal-footer { position: relative; z-index: 2; display: flex; justify-content: space-between; color: rgba(245,241,234,.62); pointer-events: none; }
@@ -176,6 +180,480 @@ h2 { margin-bottom: 0; font-size: clamp(47px, 5.3vw, 76px); font-weight: 500; le
   .footer-top, .footer-bottom { align-items: flex-start; flex-direction: column; gap: 17px; }
 }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; } }
+
+body.game-open { overflow: hidden; }
+.dungeon-modal { position: fixed; z-index: 200; inset: 0; overflow: auto; background: var(--ink); color: var(--paper); }
+.dungeon-modal[hidden] { display: none; }
+.dungeon-shell { min-height: 100%; display: grid; grid-template-rows: auto auto minmax(0, 1fr) auto; width: min(100%, 980px); margin: auto; padding: 18px 24px 22px; }
+.dungeon-header, .dungeon-hud { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+.dungeon-header { border-bottom: 1px solid rgba(245,241,234,.22); padding-bottom: 13px; }
+.dungeon-header p, .dungeon-hud, .dungeon-card-kicker { margin: 0; font: 500 11px var(--mono); letter-spacing: .06em; text-transform: uppercase; }
+.dungeon-header p { color: var(--acid); }
+.dungeon-header h2 { margin: 3px 0 0; font: 500 clamp(24px, 4vw, 42px)/1 var(--sans); letter-spacing: -.05em; }
+.dungeon-actions { display: flex; gap: 8px; }
+.dungeon-actions button, .dungeon-dpad button { border: 1px solid rgba(245,241,234,.45); background: transparent; color: inherit; cursor: pointer; }
+.dungeon-actions button { width: 44px; height: 44px; font: 500 20px var(--mono); }
+.dungeon-actions button:hover, .dungeon-dpad button:hover { border-color: var(--acid); color: var(--acid); }
+.dungeon-hud { min-height: 38px; color: var(--acid); }
+.dungeon-stage { position: relative; display: grid; min-height: 0; place-items: center; overflow: hidden; }
+#dungeon-canvas { display: block; width: min(100%, calc((100vh - 190px) * 1.3636)); max-height: calc(100vh - 190px); outline: none; aspect-ratio: 15 / 11; background: #262a30; image-rendering: pixelated; touch-action: none; }
+#dungeon-canvas:focus-visible { box-shadow: 0 0 0 2px var(--acid); }
+.dungeon-card { position: absolute; width: min(88%, 440px); padding: 30px; background: var(--paper); color: var(--ink); box-shadow: 12px 12px 0 var(--violet); text-align: center; }
+.dungeon-card[hidden] { display: none; }
+.dungeon-card-kicker { margin-bottom: 13px; color: var(--violet); }
+.dungeon-card h3 { margin: 0 0 18px; font-size: clamp(28px, 5vw, 42px); font-weight: 500; letter-spacing: -.06em; line-height: .96; }
+.dungeon-card button { min-height: 48px; border: 0; padding: 0 22px; background: var(--acid); color: var(--ink); font: 700 13px var(--mono); cursor: pointer; }
+.dungeon-card button:hover { transform: translateY(-2px); }
+.dungeon-controls-copy { margin-bottom: 19px; color: var(--muted); font: 500 11px/1.5 var(--mono); }
+.dungeon-dpad { display: none; grid-template-columns: repeat(3, 54px); grid-template-rows: repeat(2, 54px); justify-content: center; gap: 7px; padding-top: 12px; }
+.dungeon-dpad button { font: 500 21px var(--mono); touch-action: manipulation; }
+.dungeon-dpad [data-move="up"] { grid-column: 2; }
+.dungeon-dpad [data-move="left"] { grid-column: 1; grid-row: 2; }
+.dungeon-dpad [data-move="down"] { grid-column: 2; grid-row: 2; }
+.dungeon-dpad [data-move="right"] { grid-column: 3; grid-row: 2; }
+
+@media (pointer: coarse), (max-width: 760px) {
+  .dungeon-shell { padding: 12px 14px 16px; }
+  .dungeon-header h2 { font-size: 24px; }
+  .dungeon-header > div:first-child { min-width: 0; }
+  .dungeon-header p { font-size: 9px; }
+  .dungeon-hud { gap: 8px; font-size: 9px; }
+  .dungeon-dpad { display: grid; }
+  #dungeon-canvas { width: min(100%, calc((100vh - 272px) * 1.3636)); max-height: calc(100vh - 272px); }
+  .dungeon-card { padding: 24px 18px; box-shadow: 8px 8px 0 var(--violet); }
+}
+
+@media (max-height: 620px) and (pointer: coarse) {
+  .dungeon-shell { grid-template-columns: 1fr auto; grid-template-rows: auto auto 1fr; column-gap: 12px; }
+  .dungeon-header, .dungeon-hud { grid-column: 1 / -1; }
+  .dungeon-dpad { align-self: center; padding-top: 0; }
+  #dungeon-canvas { width: min(100%, calc((100vh - 140px) * 1.3636)); max-height: calc(100vh - 140px); }
+}
+
+/* The Infernal Ledger */
+.infernal-modal { position: fixed; z-index: 300; inset: 0; overflow: hidden; background: #080706; color: #e8dcc3; }
+.infernal-modal[hidden] { display: none; }
+.infernal-sr-only { position: absolute; width: 1px; height: 1px; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); clip-path: inset(50%); white-space: nowrap; }
+.infernal-shell { position: relative; min-height: 100%; height: 100%; display: grid; grid-template-rows: auto auto minmax(0, 1fr) auto; width: min(100%, 1440px); margin: auto; padding: 14px 20px; background: radial-gradient(circle at 72% 35%, #27120f 0, #100b09 36%, #080706 72%); }
+.infernal-header { display: flex; align-items: center; justify-content: space-between; gap: 18px; padding-bottom: 9px; border-bottom: 1px solid rgba(214,184,126,.24); }
+.infernal-header p { margin: 0 0 2px; color: #b49a57; font: 600 9px var(--mono); letter-spacing: .14em; }
+.infernal-header h2 { margin: 0; color: #f0e3c9; font: 500 clamp(27px, 3.2vw, 46px)/.95 var(--serif); letter-spacing: -.04em; }
+.infernal-actions { display: flex; gap: 7px; }
+.infernal-actions button { width: 43px; height: 43px; border: 1px solid #5c4c38; background: #110e0b; color: #e8dcc3; cursor: pointer; font: 600 18px var(--mono); }
+.infernal-actions button:hover { border-color: #c5a458; color: #e8c863; }
+.infernal-shell button:focus-visible, .infernal-shell canvas:focus-visible, .infernal-shell [tabindex]:focus-visible { outline: 3px solid #f0ce72; outline-offset: 3px; }
+.infernal-shell button:disabled { cursor: not-allowed; opacity: .42; filter: grayscale(.7); }
+.infernal-shell button[aria-disabled="true"]:not(:disabled) { opacity: .62; filter: grayscale(.45); }
+.infernal-hud { min-height: 37px; display: flex; align-items: center; gap: clamp(15px, 4vw, 60px); border-bottom: 1px solid rgba(214,184,126,.12); color: #c6b994; font: 600 10px var(--mono); letter-spacing: .06em; text-transform: uppercase; }
+.infernal-hud strong { color: #f0e3c9; }
+.infernal-hud .debt { color: #d2644d; }
+.infernal-main { position: relative; min-height: 0; overflow: hidden; }
+#infernal-canvas { position: absolute; inset: 0; width: 100%; height: 100%; outline: none; image-rendering: pixelated; }
+.infernal-screen { position: absolute; z-index: 2; inset: 0; }
+.infernal-screen[hidden] { display: none; }
+.infernal-intro, .infernal-choice, .infernal-outcome { position: absolute; z-index: 4; top: 50%; left: 50%; width: min(92%, 580px); padding: clamp(24px, 4vw, 48px); transform: translate(-50%, -50%); border: 1px solid #6d5839; background: linear-gradient(145deg, rgba(32,25,18,.98), rgba(14,11,9,.98)); box-shadow: 16px 16px 0 rgba(88,25,23,.55); text-align: center; }
+.infernal-intro[hidden] { display: none; }
+@media (min-width: 900px) {
+  .infernal-intro { left: 66%; width: min(46%, 610px); }
+}
+.infernal-intro > p:first-child, .infernal-choice .eyebrow, .infernal-outcome .eyebrow { color: #c3a351; font: 600 10px var(--mono); letter-spacing: .12em; }
+.infernal-intro h3, .infernal-choice h3, .infernal-outcome h3 { margin: 10px 0 17px; color: #f0e3c9; font: 500 clamp(38px, 6vw, 70px)/.85 var(--serif); letter-spacing: -.055em; }
+.infernal-outcome { top: 4%; bottom: 4%; width: min(92%, 620px); max-height: none; overflow: auto; padding: clamp(20px, 3vw, 34px); transform: translateX(-50%); }
+.infernal-outcome h3 { font-size: clamp(34px, 5vw, 58px); }
+.infernal-intro p { color: #a99b82; }
+.infernal-intro button, .infernal-choice button, .infernal-outcome button { min-height: 48px; border: 1px solid #b68b42; padding: 0 22px; background: #a6322d; color: #fff0d7; cursor: pointer; font: 700 12px var(--mono); }
+.infernal-tutorial-progress { display: flex; flex-direction: column; justify-content: center; gap: 8px; margin: 22px 0 16px; color: #b99a55; font: 700 8px var(--mono); letter-spacing: .1em; }
+.infernal-tutorial-progress > span { display: flex; justify-content: center; gap: 8px; }
+.infernal-tutorial-dot { width: 24px; height: 4px; background: #493a2a; }
+.infernal-tutorial-dot.active { background: #d6ad58; box-shadow: 0 0 8px rgba(214,173,88,.6); }
+.infernal-tutorial-actions, .infernal-reward-actions { display: flex; justify-content: center; gap: 9px; flex-wrap: wrap; }
+.infernal-tutorial-actions button:disabled { opacity: .32; cursor: default; }
+.infernal-map-heading { position: absolute; z-index: 3; top: 2.5%; right: 3%; left: 3%; display: flex; align-items: end; justify-content: space-between; gap: 25px; pointer-events: none; }
+.infernal-map-heading p { margin: 0; color: #c7a553; font: 700 8px var(--mono); letter-spacing: .14em; }
+.infernal-map-heading h3 { margin: 3px 0 0; color: #ebdec4; font: 500 clamp(24px, 3vw, 42px)/1 var(--serif); }
+.infernal-map-progress { width: min(31vw, 330px); border: 1px solid #5f4b31; padding: 8px 10px; background: rgba(18,13,10,.82); }
+.infernal-map-progress span, .infernal-map-progress small { display: block; color: #9f8d6c; font: 700 7px var(--mono); letter-spacing: .1em; }
+.infernal-map-progress span { color: #ddbd68; }
+.infernal-map-progress i { position: relative; display: block; height: 4px; margin: 7px 0 5px; background: #34291d; }
+.infernal-map-progress i::after { position: absolute; inset: 0 auto 0 0; width: var(--map-progress, 0); background: linear-gradient(90deg, #a4402e, #d6b45e); box-shadow: 0 0 7px rgba(214,180,94,.4); content: ''; }
+.infernal-map-scroll { position: absolute; inset: 13% 3% 8%; overflow-x: auto; overflow-y: hidden; border-top: 1px solid rgba(174,139,75,.2); border-bottom: 1px solid rgba(174,139,75,.18); background: linear-gradient(90deg, rgba(50,25,18,.16), rgba(12,9,8,.04) 48%, rgba(91,45,28,.13)); }
+.infernal-map-paths { position: absolute; z-index: 0; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; }
+.infernal-map-path { fill: none; stroke: #786245; stroke-linecap: round; stroke-width: 1.2; opacity: .075; vector-effect: non-scaling-stroke; transition: opacity .18s ease, stroke .18s ease; }
+.infernal-map-path.available { stroke: #d0aa59; stroke-width: 3; opacity: .95; filter: drop-shadow(0 0 5px rgba(205,157,76,.5)); }
+.infernal-map-path.traversed { stroke: #ead071; stroke-width: 4; opacity: 1; }
+.infernal-map-anchor { fill: #705c3d; opacity: .2; }
+.infernal-map-anchor.available { fill: #f0ce72; opacity: 1; filter: drop-shadow(0 0 3px #b87a35); }
+.infernal-map-anchor.traversed { fill: #fff0a0; opacity: 1; }
+.infernal-map-grid { position: absolute; z-index: 1; inset: 0; display: grid; grid-template-columns: repeat(11, minmax(82px, 1fr)); gap: 1.2%; align-items: center; padding: 0 10px 8px; }
+.infernal-map-column { position: relative; height: 100%; border-right: 1px solid rgba(154,124,72,.08); }
+.infernal-map-column::after { position: absolute; z-index: -1; top: 8%; right: 6%; bottom: 3%; left: 6%; background: linear-gradient(180deg, rgba(122,89,46,.035), transparent 35%, rgba(122,48,34,.025)); content: ''; }
+.infernal-map-column.boss-column::after { border: 1px solid rgba(173,126,49,.15); background: radial-gradient(circle at 50% 52%, rgba(113,55,24,.22), transparent 68%); }
+.infernal-map-floor-label { position: absolute; top: 2.2%; right: 0; left: 0; text-align: center; }
+.infernal-map-floor-label span, .infernal-map-floor-label small { display: block; }
+.infernal-map-floor-label span { color: #756348; font: 800 8px var(--mono); }
+.infernal-map-floor-label small { margin-top: 3px; color: #5e513e; font: 700 6px var(--mono); letter-spacing: .09em; }
+.infernal-map-column.boss-column .infernal-map-floor-label span, .infernal-map-column.boss-column .infernal-map-floor-label small { color: #b18d4c; }
+.infernal-map-node { position: absolute; top: var(--node-y, 50%); left: 50%; display: grid; width: clamp(82px, 7.1vw, 112px); min-height: 58px; grid-template-columns: 30px 1fr; align-items: center; gap: 7px; border: 1px solid #59472f; border-radius: 7px; padding: 7px 8px; transform: translate(-50%, -50%); background: linear-gradient(145deg, rgba(38,28,20,.98), rgba(12,9,8,.98)); color: #c8b897; cursor: pointer; box-shadow: 0 5px 0 rgba(8,5,4,.62), inset 0 0 0 2px rgba(181,142,71,.035); text-align: left; text-transform: uppercase; transition: border-color .16s ease, box-shadow .16s ease, filter .16s ease, transform .16s ease; }
+.infernal-map-node::before, .infernal-map-node::after { position: absolute; top: 50%; width: 6px; height: 6px; transform: translateY(-50%); border: 1px solid #826944; border-radius: 50%; background: #17110d; content: ''; }
+.infernal-map-node::before { left: -5px; }
+.infernal-map-node::after { right: -5px; }
+.infernal-map-node-icon { display: grid; width: 29px; height: 29px; place-items: center; border: 1px solid #675236; border-radius: 50%; background: #17110d; color: #a78d59; font: 800 14px var(--mono); }
+.infernal-map-node-copy { min-width: 0; }
+.infernal-map-node-copy strong, .infernal-map-node-copy small { display: block; }
+.infernal-map-node-copy strong { color: #d5c5a4; font: 800 8px/1.05 var(--mono); }
+.infernal-map-node-copy small { margin-top: 4px; overflow: hidden; color: #766b57; font: 600 5px/1.1 var(--mono); letter-spacing: .02em; white-space: nowrap; }
+.infernal-map-node:hover:not(:disabled), .infernal-map-node.available { z-index: 4; transform: translate(-50%, calc(-50% - 3px)); border-color: #d3ab58; color: #f3d985; box-shadow: 0 8px 0 rgba(25,10,7,.72), 0 0 24px rgba(184,92,45,.28), inset 0 0 0 2px rgba(221,176,87,.12); }
+.infernal-map-node.available .infernal-map-node-icon { border-color: #dfb65a; background: radial-gradient(circle, #6b2a20, #1d100c); color: #ffe18a; box-shadow: 0 0 10px rgba(218,166,74,.28); }
+.infernal-map-node.available::before, .infernal-map-node.available::after { border-color: #e0b961; background: #e0b961; box-shadow: 0 0 5px rgba(224,185,97,.55); }
+.infernal-map-node.type-event { border-color: #665079; background: linear-gradient(145deg, #241b2b, #0d0a0f); }
+.infernal-map-node.type-event .infernal-map-node-icon { color: #c7a4d9; }
+.infernal-map-node.type-shop { border-color: #756039; }
+.infernal-map-node.type-shop .infernal-map-node-icon { color: #dfbf62; }
+.infernal-map-node.type-campfire { border-color: #784332; }
+.infernal-map-node.type-campfire .infernal-map-node-icon { color: #dc7a4d; }
+.infernal-map-node.type-elite { border-width: 2px; border-color: #8e533c; background: linear-gradient(145deg, #351b17, #100a08); }
+.infernal-map-node.type-elite .infernal-map-node-icon { border-color: #9b5a43; color: #e49772; }
+.infernal-map-node.type-boss { min-height: 72px; grid-template-columns: 34px 1fr; border-color: #a27d39; background: radial-gradient(circle at 35% 50%, #3c2514, #100b08 70%); }
+.infernal-map-node.type-boss .infernal-map-node-icon { width: 34px; height: 34px; border-color: #b58d42; color: #f0c85f; }
+.infernal-map-node:disabled { cursor: default; opacity: .36; }
+.infernal-map-node.reachable:disabled { opacity: .64; }
+.infernal-map-node.unreachable { opacity: .16; filter: grayscale(.8); }
+.infernal-map-node.visited { opacity: .48; filter: sepia(.3); }
+.infernal-map-current-marker { position: absolute; z-index: 6; bottom: 1.5%; left: 50%; width: max-content; transform: translateX(-50%); border: 1px solid #b78b3e; padding: 4px 7px; background: #2b1711; color: #f0ce72; font: 800 6px var(--mono); letter-spacing: .08em; pointer-events: none; }
+.infernal-map-scroll-affordance { position: absolute; z-index: 5; top: 13%; bottom: 8%; width: 34px; opacity: 0; pointer-events: none; transition: opacity .15s ease; }
+.infernal-map-scroll-affordance[data-visible="true"] { opacity: 1; }
+.infernal-map-scroll-affordance.start { left: 3%; background: linear-gradient(90deg, rgba(228,183,89,.3), transparent); }
+.infernal-map-scroll-affordance.end { right: 3%; background: linear-gradient(270deg, rgba(228,183,89,.3), transparent); }
+.infernal-map-legend { position: absolute; z-index: 3; right: 3%; bottom: 1.5%; left: 3%; display: flex; align-items: center; gap: 18px; color: #776a55; font: 700 6px var(--mono); letter-spacing: .06em; pointer-events: none; }
+.infernal-map-legend > span { display: flex; align-items: center; gap: 6px; }
+.infernal-map-legend i { display: block; width: 22px; height: 2px; background: #5a4b35; }
+.infernal-map-legend i.available { height: 3px; background: #d0aa59; box-shadow: 0 0 5px rgba(208,170,89,.4); }
+.infernal-map-legend b { color: #b87051; }
+.infernal-map-legend > small { margin-left: auto; color: #685b48; font: inherit; }
+.infernal-combat { pointer-events: none; }
+.infernal-combat::after { position: absolute; z-index: 0; right: 0; bottom: 0; left: 0; height: 31%; border-top: 1px solid rgba(133,117,91,.28); background: linear-gradient(180deg, rgba(12,9,8,.2), rgba(5,4,3,.94) 20%), repeating-linear-gradient(90deg, rgba(102,86,62,.06) 0 1px, transparent 1px 90px); box-shadow: inset 0 14px 28px rgba(0,0,0,.7); content: ''; }
+.infernal-actor-plate { position: absolute; z-index: 3; top: 1.5%; width: min(30%, 380px); height: 100px; min-height: 100px; isolation: isolate; padding: 0; color: #d8d1c3; filter: saturate(.72); font: 700 9px var(--mono); text-shadow: 0 2px 2px #000; text-transform: uppercase; }
+.infernal-actor-plate::before { position: absolute; z-index: -1; inset: 0; box-sizing: border-box; border: clamp(17px, 2vw, 28px) solid transparent; border-right-width: clamp(25px, 3.2vw, 44px); border-left-width: clamp(25px, 3.2vw, 44px); border-image: url("games/infernal-ledger/assets/combat-hud-plate.png") 84 150 90 150 fill / 1 stretch; content: ''; filter: drop-shadow(0 6px 7px rgba(0,0,0,.8)); pointer-events: none; }
+.infernal-actor-plate.player { left: 2.5%; }
+.infernal-actor-plate.enemy { right: 2.5%; }
+.infernal-actor-plate > div:first-child { position: absolute; z-index: 2; top: 29px; right: 44px; left: 44px; display: flex; justify-content: space-between; gap: 10px; color: #fff0d9; font-size: 10px; text-shadow: 1px 2px #000, 0 0 5px #000; }
+.infernal-actor-plate > div:first-child span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.infernal-actor-plate > div:first-child strong { flex: none; color: #fff1dc; font-size: 11px; }
+.infernal-health { position: absolute; z-index: 1; top: 47px; right: 43px; left: 43px; height: 23px; overflow: hidden; border: 1px solid #26201b; border-radius: 7px; background: linear-gradient(180deg, #080707, #1b0c0c); box-shadow: inset 0 3px 5px #000, 0 0 0 1px #706452; }
+.infernal-health::before { display: block; width: var(--health, 100%); height: 100%; background: linear-gradient(180deg, #bb6459 0, #84271f 45%, #4d100f 100%); box-shadow: inset 0 2px rgba(255,220,193,.2), inset 0 -2px rgba(0,0,0,.55); content: ''; transition: width .2s ease; }
+.infernal-health::after { position: absolute; inset: 2px 10px 55% 8px; border-radius: 50%; background: rgba(255,255,255,.12); content: ''; }
+.infernal-block { position: absolute; top: 47px; display: grid; width: 34px; height: 38px; place-items: center; border: 2px solid #737d80; clip-path: polygon(50% 0, 92% 18%, 82% 76%, 50% 100%, 18% 76%, 8% 18%); background: linear-gradient(145deg, #34464c, #111a1e); color: #cfe3e5; box-shadow: inset 0 0 0 3px #11181b; opacity: .42; font: 800 9px var(--mono); text-shadow: 0 1px #000; }
+.infernal-block.active { opacity: 1; filter: drop-shadow(0 0 6px rgba(121,184,198,.65)); }
+.infernal-actor-plate.player .infernal-block { right: -34px; }
+.infernal-actor-plate.enemy .infernal-block { left: -34px; }
+.infernal-statuses { position: absolute; top: calc(100% + 5px); right: 38px; left: 38px; display: flex; min-height: 25px; gap: 5px; margin: 0; pointer-events: auto; }
+.infernal-actor-plate.enemy .infernal-statuses { justify-content: flex-end; }
+.infernal-status-chip { display: inline-flex; min-width: 44px; height: 28px; align-items: center; justify-content: center; gap: 6px; border: 1px solid #817666; border-radius: 2px; padding: 0 9px; background: linear-gradient(180deg, rgba(66,60,50,.98), rgba(16,14,12,.98)); color: #f0e3ca; cursor: help; box-shadow: inset 0 0 0 1px #171411, 0 3px 5px rgba(0,0,0,.72); font: 800 9px var(--mono); }
+.infernal-status-chip span { color: #dc9d60; font-size: 13px; }
+.infernal-status-chip[data-polarity="negative"] { border-color: #9d493e; background: linear-gradient(180deg, rgba(78,43,39,.98), rgba(20,13,12,.98)); }
+.infernal-status-chip[data-polarity="positive"] { border-color: #688359; background: linear-gradient(180deg, rgba(48,67,43,.98), rgba(14,19,13,.98)); }
+.infernal-status-chip[data-polarity="resource"] { border-color: #9b8348; background: linear-gradient(180deg, rgba(75,64,36,.98), rgba(18,16,11,.98)); }
+.infernal-gimmick-chip { min-width: 74px; letter-spacing: .04em; }
+.infernal-resource-tokens { position: absolute; z-index: 5; bottom: 42%; left: 50%; display: flex; align-items: center; gap: 24px; transform: translateX(-50%); pointer-events: none; }
+.infernal-resource-orb { position: relative; display: grid; width: 96px; height: 96px; place-content: center; border: 0; border-radius: 50%; background: #090707; box-shadow: 0 10px 22px rgba(0,0,0,.82), inset 0 0 17px #000; color: #f2e8d8; isolation: isolate; overflow: visible; text-align: center; }
+.infernal-resource-orb::before { position: absolute; z-index: -2; inset: 7px; border-radius: 50%; clip-path: inset(calc(100% - var(--orb-fill, 100%)) 0 0); content: ''; transition: clip-path .25s ease; }
+.infernal-resource-orb::after { position: absolute; z-index: -1; inset: 12px 19px 49% 18px; border-radius: 50%; background: linear-gradient(135deg, rgba(255,255,255,.25), transparent 62%); content: ''; }
+.infernal-orb-frame { position: absolute; z-index: 6; inset: -16px; background: url("games/infernal-ledger/assets/combat-hud-orb.png") center / 100% 100% no-repeat; filter: drop-shadow(0 7px 6px rgba(0,0,0,.85)); }
+.infernal-resource-orb small { position: relative; z-index: 3; color: #ded5c8; font: 800 7px/1.05 var(--mono); letter-spacing: .08em; text-shadow: 0 2px 3px #000; }
+.infernal-resource-orb small em { display: block; color: #ffbd58; font: inherit; font-style: normal; }
+.infernal-resource-orb strong { position: relative; z-index: 3; color: #fff4e5; font: 900 14px var(--mono); text-shadow: 0 2px 3px #000; }
+.infernal-hp-orb::before { background: radial-gradient(circle at 35% 24%, #ff7260, #a31520 50%, #3a070b 100%); }
+.infernal-mana-orb::before { background: radial-gradient(circle at 35% 24%, #ffd46b, #d06119 48%, #50140d 100%); }
+.infernal-mana-orb.has-debt { box-shadow: 0 0 24px rgba(134,69,143,.55), inset 0 0 17px #000; }
+.infernal-mana-orb > i { position: absolute; z-index: 1; inset: 8px; border-radius: 50%; opacity: 0; background: repeating-conic-gradient(from 12deg, transparent 0 19deg, rgba(42,8,49,.9) 20deg 22deg, transparent 23deg 51deg); }
+.infernal-mana-orb.has-debt > i { opacity: .75; }
+.infernal-orb-debt { position: relative; z-index: 3; margin-top: 3px; color: #e3afd9; font: 800 6px var(--mono); letter-spacing: .04em; text-shadow: 0 1px 2px #000; }
+.infernal-loot-banner { display: flex; width: min(760px, 94%); justify-content: center; gap: 18px; margin: 8px auto 2px; border: 1px solid #8e6b35; padding: 8px 12px; background: linear-gradient(90deg, transparent, rgba(91,55,20,.42), transparent); color: #c4aa75; font: 700 9px var(--mono); letter-spacing: .06em; text-transform: uppercase; }
+.infernal-loot-banner strong { color: #f2cb65; }
+.infernal-status-detail { position: absolute; z-index: 7; top: 14%; left: 50%; display: flex; max-width: 340px; gap: 8px; transform: translateX(-50%); border: 1px solid #5f4a32; padding: 6px 9px; background: rgba(15,11,9,.9); color: #b8a88c; font: 600 8px/1.3 var(--mono); pointer-events: none; }
+.infernal-status-detail[hidden] { display: none; }
+.infernal-status-detail strong { color: #e6c873; white-space: nowrap; }
+.infernal-intent[data-category="attack"] { --intent-accent: #a9493b; }
+.infernal-intent[data-category="defense"] { --intent-accent: #4f8394; }
+.infernal-intent[data-category="debuff"] { --intent-accent: #875992; }
+.infernal-intent[data-category="special"] { --intent-accent: #a98b43; }
+.infernal-intent { position: absolute; z-index: 4; top: calc(1.5% + 112px); right: 18%; min-width: 170px; max-width: 250px; isolation: isolate; padding: 15px 21px; border: 0; background: rgba(15,12,10,.94); color: #d8cabc; box-shadow: inset 0 0 0 1px var(--intent-accent, #6d6255), 0 0 15px color-mix(in srgb, var(--intent-accent, #6d6255) 28%, transparent); filter: saturate(.72); font: 600 10px/1.4 var(--mono); text-align: right; text-shadow: 0 2px 2px #000; }
+.infernal-intent::before, .infernal-end-turn::before { position: absolute; z-index: -1; inset: -12px; box-sizing: border-box; border: 18px solid transparent; border-right-width: 24px; border-left-width: 24px; border-image: url("games/infernal-ledger/assets/combat-hud-plaque.png") 92 112 96 112 fill / 1 stretch; content: ''; filter: drop-shadow(0 6px 6px rgba(0,0,0,.82)); pointer-events: none; }
+.infernal-hand { position: absolute; right: 11%; bottom: 8px; left: 5%; display: flex; align-items: end; justify-content: center; gap: clamp(5px, .8vw, 12px); pointer-events: auto; }
+.infernal-card { position: relative; width: clamp(112px, 13vw, 174px); height: clamp(164px, 20vw, 244px); flex: 0 1 174px; border: 2px solid #a28b55; border-radius: 10px; padding: 0; transform-origin: 50% 110%; background: #211710; color: #f6ead0; cursor: pointer; box-shadow: 0 7px 0 #120b08, inset 0 0 0 3px rgba(48,31,18,.22); text-align: left; transition: transform .16s ease, filter .16s ease; }
+.infernal-card:nth-child(odd) { transform: rotate(-1.5deg); }
+.infernal-card:nth-child(even) { transform: rotate(1.5deg); }
+.infernal-card.selected { z-index: 4; transform: translateY(-26px) scale(1.05); filter: brightness(1.08); }
+.infernal-card:hover, .infernal-card:focus-visible { z-index: 20; transform: translateY(-26px) scale(1.05); filter: brightness(1.08); }
+.infernal-card.unaffordable { filter: grayscale(.65) brightness(.63); }
+.infernal-card.unaffordable::after { position: absolute; z-index: 7; inset: auto 8px 52px; border: 1px solid #b65f4c; padding: 4px; background: rgba(50,13,11,.92); color: #ffd1b8; content: 'CLAUSE BLOCKED'; font: 800 7px var(--mono); text-align: center; }
+.infernal-card.invalid-feedback { animation: infernal-invalid-card .24s ease-in-out 2; }
+@keyframes infernal-invalid-card { 25% { transform: translateX(-6px) rotate(-1deg); } 75% { transform: translateX(6px) rotate(1deg); } }
+.infernal-card-cost { position: absolute; z-index: 5; top: -12px; left: -10px; display: grid; width: 34px; height: 34px; place-items: center; border: 2px solid #d8b65d; border-radius: 50%; background: #6a211f; color: #fff0ca; font: 800 15px var(--mono); }
+.infernal-card-overdraft { position: absolute; z-index: 5; top: 50px; left: 7px; border: 1px solid #ca694c; padding: 4px 6px; background: rgba(67,20,17,.94); color: #ffd0a3; box-shadow: 2px 2px 0 rgba(0,0,0,.55); font: 800 7px/1.25 var(--mono); letter-spacing: .04em; text-align: center; }
+.infernal-card h4 { position: absolute; z-index: 3; top: 0; right: 0; left: 0; min-height: 46px; margin: 0; padding: 14px 9px 18px 27px; color: #fff2d5; background: linear-gradient(180deg, rgba(18,10,8,.92), rgba(18,10,8,.48) 65%, transparent); font: 700 clamp(12px, 1.2vw, 17px)/1 var(--serif); text-shadow: 0 2px 0 #100806, 1px 0 0 #100806, -1px 0 0 #100806; }
+.infernal-card-art { position: absolute; z-index: 0; inset: 0; height: auto; margin: 0; overflow: hidden; border-radius: 8px; background: #251a15; }
+.infernal-card-art::before, .infernal-deck-thumb::before { content: ''; position: absolute; top: 50%; left: 0; width: 500%; aspect-ratio: 1 / 2; transform: translate(var(--card-art-x, -80%), var(--card-art-y, -91.6667%)); background: url("games/infernal-ledger/assets/card-atlas.png") 0 0 / 100% 100% no-repeat; image-rendering: auto; }
+.card-atlas-2 .infernal-card-art, .card-atlas-2 .infernal-deck-thumb { background: url("games/infernal-ledger/assets/card-atlas-2.png") var(--card-art-x-2, 0) var(--card-art-y-2, 0) / auto 300% no-repeat; image-rendering: auto; }
+.card-atlas-2 .infernal-card-art::before, .card-atlas-2 .infernal-deck-thumb::before { display: none; }
+.infernal-card > p { position: absolute; z-index: 3; right: 7px; bottom: 20px; left: 7px; margin: 0; border: 1px solid rgba(223,188,112,.35); padding: 7px 8px; background: rgba(20,11,9,.84); color: #f8e9ca; font: 600 clamp(8px, .72vw, 10px)/1.35 var(--mono); text-shadow: 0 1px 0 #000; }
+.infernal-card-rarity { position: absolute; z-index: 4; right: 8px; bottom: 6px; color: #ead18c; font: 700 7px var(--mono); text-shadow: 0 1px 0 #000; text-transform: uppercase; }
+.infernal-end-turn { position: absolute; z-index: 4; right: 2%; bottom: 40px; min-width: 112px; min-height: 54px; isolation: isolate; pointer-events: auto; border: 0; padding: 0 20px; background: #251512; color: #dbd1c3; cursor: pointer; filter: saturate(.72); font: 700 9px var(--mono); text-shadow: 0 2px 2px #000; text-transform: uppercase; }
+.infernal-end-turn kbd { color: #d9ac58; font: inherit; }
+.infernal-combat-bark { position: absolute; z-index: 6; top: 18%; width: max-content; max-width: min(34%, 390px); border: 1px solid #b98a4a; padding: 0; background: rgba(19,13,10,.96); color: #eadbbf; box-shadow: 8px 8px 0 rgba(21,8,7,.62); font: 700 clamp(10px, .85vw, 13px)/1.35 var(--mono); text-align: left; overflow-wrap: anywhere; pointer-events: none; animation: infernal-bark-in .22s ease-out both; }
+.infernal-combat-bark[hidden] { display: none; }
+.infernal-combat-bark.hero { left: 16%; }
+.infernal-combat-bark.enemy { top: calc(1.5% + 210px); right: 8%; }
+.infernal-bark-speaker { display: block; margin: -1px -1px 0; padding: 5px 9px; background: #8f332b; color: #fff0d5; font: 700 8px var(--mono); letter-spacing: .1em; text-transform: uppercase; }
+.infernal-bark-copy { display: block; padding: 10px 12px 11px; }
+@keyframes infernal-bark-in { from { opacity: 0; transform: translateY(8px) scale(.98); } to { opacity: 1; transform: translateY(0) scale(1); } }
+@media (prefers-reduced-motion: reduce) { .infernal-combat-bark { animation: none; } }
+.infernal-choice { max-height: 82%; overflow: auto; }
+.infernal-choice h3 { font-size: clamp(32px, 5vw, 56px); }
+.infernal-choice p { color: #b8a990; }
+.infernal-choice-list { display: grid; gap: 9px; }
+.infernal-choice-list button { width: 100%; height: auto; min-height: 58px; padding: 12px 15px; }
+.infernal-choice-list button small { display: block; margin-top: 5px; color: #e0b69c; font-weight: 400; }
+.infernal-keyword { position: relative; border-bottom: 1px dotted #dfb85d; color: inherit; cursor: help; }
+.infernal-keyword:focus-visible { border-radius: 2px; outline: 2px solid #f0c663; outline-offset: 2px; background: rgba(91,55,24,.82); }
+.infernal-glossary-tooltip { position: fixed; z-index: 250; width: max-content; max-width: min(270px, 84vw); border: 1px solid #c39a52; padding: 9px 11px; transform: translate(-50%, -100%); background: linear-gradient(180deg, #1d1510, #0c0907); color: #f3e4c7; box-shadow: 0 8px 20px rgba(0,0,0,.82), inset 0 0 0 1px rgba(222,183,102,.15); font: 700 9px/1.45 var(--mono); pointer-events: none; text-align: left; text-shadow: 0 1px 0 #000; }
+.infernal-glossary-tooltip::before { position: absolute; top: 100%; left: 50%; width: 9px; height: 9px; transform: translate(-50%, -5px) rotate(45deg); border-right: 1px solid #c39a52; border-bottom: 1px solid #c39a52; background: #0c0907; content: ''; }
+.infernal-glossary-tooltip[hidden] { display: none; }
+.infernal-choice.reward-mode { top: 4%; bottom: 4%; width: min(96%, 900px); max-height: none; transform: translateX(-50%); }
+.infernal-choice.benefit-mode { top: 8%; bottom: 8%; width: min(92%, 720px); max-height: none; overflow: auto; transform: translateX(-50%); }
+.infernal-choice.benefit-mode h3 { font-size: clamp(36px, 5vw, 62px); }
+.infernal-choice.benefit-mode .infernal-choice-list { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.infernal-choice.benefit-mode .infernal-choice-list button { min-height: 116px; }
+.infernal-benefit-dossier { position: relative; display: flex; min-height: 310px !important; flex-direction: column; align-items: stretch; overflow: hidden; border-color: #765934 !important; padding: 16px 14px 13px !important; background: linear-gradient(155deg, #3c2018, #1c120e 55%, #100b09) !important; text-align: left; }
+.infernal-benefit-dossier::before { position: absolute; inset: 0; background: repeating-linear-gradient(0deg, transparent 0 18px, rgba(208,175,104,.035) 19px); content: ''; pointer-events: none; }
+.infernal-benefit-dossier:hover, .infernal-benefit-dossier:focus-visible, .infernal-benefit-dossier.selected { transform: translateY(-7px); border-color: #d2a652 !important; box-shadow: 0 12px 25px rgba(0,0,0,.45), inset 0 0 0 2px rgba(210,166,82,.14); }
+.infernal-benefit-file { align-self: flex-end; color: #8d7657; font: 700 7px var(--mono); letter-spacing: .12em; }
+.infernal-benefit-sigil { position: relative; display: grid; width: 82px; height: 82px; place-items: end; align-self: center; margin: 3px 0 10px; overflow: hidden; border: 1px solid #8d693a; border-radius: 50%; background: #160d09 url("games/infernal-ledger/assets/relic-atlas-v2.png") var(--benefit-x, 0) var(--benefit-y, 0) / 400% 300% no-repeat; color: #f0ce72; box-shadow: 0 0 0 6px rgba(141,105,58,.1), inset 0 0 18px #140907; }
+.infernal-benefit-sigil b { display: grid; width: 24px; height: 24px; place-items: center; margin: 0 3px 3px 0; border: 1px solid rgba(226,187,97,.72); border-radius: 50%; background: rgba(25,12,9,.84); font: 700 13px var(--serif); text-shadow: 0 1px 2px #000; }
+.infernal-benefit-dossier > small { margin: 0 0 5px !important; color: #b39250 !important; font: 700 7px var(--mono) !important; letter-spacing: .1em; text-transform: uppercase; }
+.infernal-benefit-dossier > strong { color: #f1dfbc; font: 700 22px/1 var(--serif); }
+.infernal-benefit-dossier > p { min-height: 48px; margin: 7px 0 12px; color: #c4b497; font: 600 8px/1.45 var(--mono); }
+.infernal-benefit-clause, .infernal-benefit-risk { display: block; margin-top: auto; border-top: 1px solid #4e3925; padding-top: 7px; color: #cdbb9a; font: 600 7px/1.35 var(--mono); }
+.infernal-benefit-risk { margin-top: 6px; color: #9f806c; }
+.infernal-benefit-clause b, .infernal-benefit-risk b { display: block; margin-bottom: 2px; color: #c8a24f; font-size: 6px; letter-spacing: .1em; }
+.infernal-benefit-footer { display: flex; align-items: center; justify-content: center; gap: 12px; margin-top: 18px; color: #9e8c6d; font: 700 7px var(--mono); letter-spacing: .12em; }
+.infernal-benefit-footer i { width: 28px; height: 1px; background: #58452d; }
+.infernal-choice.shop-mode { top: 3%; bottom: 3%; width: min(97%, 1180px); max-height: none; overflow: auto; transform: translateX(-50%); text-align: left; }
+.infernal-choice.shop-mode > .eyebrow, .infernal-choice.shop-mode > h3, .infernal-choice.shop-mode > p { text-align: center; }
+.infernal-choice.shop-mode > h3 { margin-bottom: 8px; font-size: clamp(34px, 5vw, 58px); }
+.infernal-shop { grid-template-columns: 1.45fr .72fr 1fr; align-items: start; gap: 12px; }
+.infernal-shop-merchant { grid-column: 1 / -1; display: flex; min-height: 72px; align-items: center; gap: 14px; border: 1px solid #62472e; padding: 9px 14px; background: linear-gradient(90deg, #26130e, #120e0b); }
+.infernal-shop-merchant > span { width: 58px; height: 58px; flex: 0 0 auto; border-radius: 50%; background: #1a0d09 url("games/infernal-ledger/assets/act2-sprite-atlas.png") 0 0 / 400% 300% no-repeat; box-shadow: inset 0 0 0 4px #160c09; }
+.infernal-shop-merchant small, .infernal-shop-merchant strong { display: block; }
+.infernal-shop-merchant small { color: #d2ad59; font: 700 8px var(--mono); letter-spacing: .12em; }
+.infernal-shop-merchant strong { margin-top: 5px; color: #e7d6b6; font: 500 16px var(--serif); }
+.infernal-shop-column { display: grid; max-height: none; gap: 7px; overflow: visible; border: 1px solid #4d3927; padding: 10px; background: rgba(15,11,9,.76); }
+.infernal-shop-column > h4 { position: sticky; top: -10px; z-index: 7; margin: -10px -10px 2px; border-bottom: 1px solid #58422c; padding: 10px; background: #1a120e; color: #ddbd6a; font: 700 10px var(--mono); letter-spacing: .12em; text-transform: uppercase; }
+.infernal-shop-column button { min-height: 58px; background: #3a1714; text-align: left; }
+.infernal-shop-column button.selected { border-color: #e4c56d; box-shadow: inset 4px 0 #e4c56d, 0 0 16px rgba(205,160,70,.2); }
+.infernal-shop-column button.discounted { border-color: #d4b554; box-shadow: inset 4px 0 #d4b554; }
+.infernal-shop-stock { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 11px; padding: 8px 5px 14px; }
+.infernal-shop-column .infernal-shop-card { width: 100%; height: 238px; min-height: 238px; padding: 0; background: #211710; }
+.infernal-shop-column .infernal-shop-card:disabled { cursor: default; filter: grayscale(.8) brightness(.42); }
+.infernal-shop-column .infernal-shop-card:hover:not(:disabled), .infernal-shop-column .infernal-shop-card:focus-visible { transform: translateY(-8px) scale(1.025); }
+.infernal-shop-price { position: absolute; z-index: 6; top: 8px; right: 7px; border: 1px solid #d1a750; padding: 4px 6px; background: rgba(31,14,10,.92); color: #f4d574; font: 800 7px var(--mono); }
+.infernal-shop-sale { position: absolute; z-index: 6; top: 46px; right: -7px; padding: 4px 8px; transform: rotate(4deg); background: #d2ad4f; color: #29120d; box-shadow: 2px 2px 0 #160b08; font: 900 7px var(--mono); }
+.infernal-relic-item { display: grid; grid-template-columns: 76px 1fr; align-items: center; gap: 8px; }
+.infernal-relic-art { position: relative; width: 70px; height: 70px; grid-row: 1 / span 2; overflow: hidden; border: 1px solid #775c35; background: #0e0907 url("games/infernal-ledger/assets/relic-atlas-v2.png") var(--relic-x, 0) var(--relic-y, 0) / 400% 300% no-repeat; image-rendering: auto; box-shadow: inset 0 0 9px #000; }
+.infernal-relic-art::after { position: absolute; right: 3px; bottom: 3px; display: grid; width: 18px; height: 18px; place-items: center; border: 1px solid rgba(226,187,97,.72); border-radius: 50%; background: rgba(25,12,9,.82); color: #f1cf72; content: attr(data-sigil); font: 800 10px var(--serif); text-shadow: 0 1px 2px #000; }
+.infernal-relic-item small { grid-column: 2; }
+.infernal-upgrade-comparison { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 6px; margin-top: 7px; border-top: 1px solid rgba(219,177,89,.35); padding-top: 7px; color: #cbbda2; font: 600 7px/1.3 var(--mono); }
+.infernal-upgrade-comparison > span { display: block; }
+.infernal-upgrade-comparison small { display: block; margin: 0 0 3px; color: #c39c4d; font: 800 6px var(--mono); letter-spacing: .08em; }
+.infernal-upgrade-comparison > b { color: #e2bd61; font-size: 18px; }
+.infernal-shop-service-group { display: grid; gap: 6px; border-top: 1px solid #4d3927; padding-top: 8px; }
+.infernal-shop-service-group > h5 { margin: 0; color: #b99956; font: 800 7px var(--mono); letter-spacing: .11em; }
+.infernal-service-count { float: right; min-width: 27px; margin-right: 7px; border: 1px solid #8a6d3c; padding: 2px 4px; color: #f0ce72; text-align: center; }
+.infernal-permanent-detail { grid-column: 1 / -1; display: grid; grid-template-columns: 1fr minmax(190px, .35fr); align-items: stretch; gap: 10px; border: 1px solid #9b783f; padding: 12px; background: linear-gradient(110deg, #241610, #100c09); box-shadow: inset 0 0 0 2px rgba(213,174,93,.07); text-align: left; }
+.infernal-permanent-detail > div { min-width: 0; }
+.infernal-permanent-detail small { display: block; color: #d2a954; font: 800 7px var(--mono); letter-spacing: .12em; }
+.infernal-permanent-detail strong { display: block; margin-top: 4px; color: #f2dfba; font: 700 20px var(--serif); }
+.infernal-permanent-detail p { margin: 6px 0 0; color: #c9b99b; font: 600 9px/1.45 var(--mono); }
+.infernal-permanent-detail > button { min-height: 64px; background: linear-gradient(90deg, #6f261e, #a33c2e); text-align: center; }
+.infernal-choice.shop-mode .infernal-permanent-detail, .infernal-choice.camp-mode .infernal-permanent-detail { position: sticky; z-index: 30; bottom: 0; box-shadow: 0 -10px 24px rgba(0,0,0,.78), inset 0 0 0 2px rgba(213,174,93,.07); }
+.infernal-shop-exit { grid-column: 1 / -1; min-height: 54px !important; border-color: #d0a14b !important; background: linear-gradient(90deg, #32130f, #7a2921, #32130f) !important; text-align: center; letter-spacing: .08em; }
+.infernal-camp { gap: 14px; }
+.infernal-choice.camp-mode { top: 3%; bottom: 3%; width: min(97%, 1180px); max-height: none; overflow: auto; transform: translateX(-50%); }
+.infernal-choice.camp-mode > h3 { margin-bottom: 8px; }
+.infernal-camp-rest { min-height: 72px !important; background: linear-gradient(90deg, #32160f, #8c3a22, #32160f) !important; }
+.infernal-camp-upgrades { display: flex; gap: 14px; align-items: start; overflow-x: auto; padding: 14px 8px 25px; scroll-snap-type: x mandatory; }
+.infernal-camp-upgrade-card { width: 190px; min-width: 190px; border: 1px solid #4f3b27; padding: 10px; background: rgba(15,10,8,.8); scroll-snap-align: center; }
+.infernal-camp-upgrade-card > .infernal-card { width: 100%; height: 240px; min-height: 240px; padding: 0; }
+.infernal-camp-upgrade-card > .infernal-card:hover, .infernal-camp-upgrade-card > .infernal-card:focus-visible { transform: translateY(-7px) scale(1.02); }
+.infernal-camp-upgrade-card > .infernal-upgrade-comparison { min-height: 70px; text-align: left; }
+.infernal-reward-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); align-items: end; justify-items: center; }
+.infernal-choice .infernal-reward-card { width: min(100%, 180px); height: 250px; min-height: 250px; padding: 0; background: #211710; color: #f8e9ca; }
+.infernal-choice .infernal-reward-card.selected { outline: 3px solid #e2bf66; box-shadow: 0 0 24px rgba(226,191,102,.45), 0 7px 0 #211710; }
+.infernal-reward-footer { display: grid; gap: 12px; margin-top: 13px; }
+.infernal-reward-detail { display: grid; grid-template-columns: 1fr 1.3fr; gap: 10px; text-align: left; }
+.infernal-reward-detail > div { border: 1px solid #57432d; padding: 10px 12px; background: #15100c; }
+.infernal-reward-detail small { display: block; margin-bottom: 5px; color: #c9a654; font: 700 8px var(--mono); letter-spacing: .12em; }
+.infernal-reward-detail strong { color: #f0dfbd; font: 700 14px var(--serif); }
+.infernal-reward-detail p { margin: 4px 0 0; color: #ad9c80; font: 600 9px/1.4 var(--mono); }
+.infernal-reward-actions { grid-column: 1 / -1; width: 100%; }
+.infernal-reward-actions button { flex: 1 1 220px; }
+.infernal-reward-actions button small { display: block; margin-top: 5px; color: #f0c4a7; font-weight: 400; }
+.infernal-run-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 20px 0; }
+.infernal-stat { border: 1px solid #55412b; padding: 10px 7px; background: #17100c; }
+.infernal-stat small, .infernal-stat strong { display: block; }
+.infernal-stat small { color: #a9926a; font: 700 8px var(--mono); text-transform: uppercase; }
+.infernal-stat strong { margin-top: 5px; color: #edce78; font: 700 19px var(--mono); }
+.infernal-outcome { width: min(94%, 790px); text-align: left; }
+.infernal-audit-head { display: grid; grid-template-columns: 1fr 150px; gap: 18px; align-items: center; }
+.infernal-audit-head h3 { margin-bottom: 5px; }
+.infernal-audit-grade { display: grid; min-height: 142px; place-content: center; transform: rotate(2deg); border: 2px solid #9e4939; background: radial-gradient(circle, #3d1713, #180d0a); color: #e4c072; box-shadow: inset 0 0 0 5px #160c09; text-align: center; }
+.infernal-audit-grade small, .infernal-audit-grade span { font: 700 7px var(--mono); letter-spacing: .1em; }
+.infernal-audit-grade strong { color: #f0d88e; font: 700 68px/.85 var(--serif); }
+.infernal-audit-grade span { margin-top: 7px; color: #bf8270; }
+.infernal-audit-summary { max-width: 70%; margin: 0 0 15px; color: #bcae94; font: 500 13px/1.4 var(--mono); }
+.infernal-audit-rule { display: flex; justify-content: space-between; border-top: 1px solid #6a5132; border-bottom: 1px solid #6a5132; padding: 7px 2px; color: #8f7e61; font: 700 7px var(--mono); letter-spacing: .1em; }
+.infernal-audit-rule b { color: #c09b4b; }
+.infernal-outcome .infernal-stat { position: relative; padding: 13px 12px; }
+.infernal-outcome .infernal-stat::before { position: absolute; top: 5px; right: 7px; color: #51412f; content: '0' attr(data-rank); font: 700 7px var(--mono); }
+.infernal-audit-verdict { display: grid; grid-template-columns: 82px 1fr; gap: 14px; align-items: center; border: 1px solid #684936; padding: 11px; background: linear-gradient(90deg, #23120e, #130e0b); }
+.infernal-audit-seal { display: grid; width: 68px; height: 68px; place-items: center; border: 3px double #a64d3c; border-radius: 50%; color: #bf5c46; font: 700 36px var(--serif); }
+.infernal-audit-verdict small, .infernal-audit-verdict strong, .infernal-audit-verdict p { display: block; }
+.infernal-audit-verdict small { color: #b38f4c; font: 700 7px var(--mono); letter-spacing: .1em; }
+.infernal-audit-verdict strong { margin-top: 4px; color: #e5d2ad; font: 700 17px var(--serif); }
+.infernal-audit-verdict p { margin: 3px 0 0; color: #8f8069; font: 600 8px var(--mono); }
+.infernal-outcome-dossier { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 7px; margin: 0 0 12px; }
+.infernal-outcome-dossier h4 { grid-column: 1 / -1; margin: 0; border-bottom: 1px solid #6a5132; padding: 0 0 6px; color: #c09b4b; font: 700 8px var(--mono); letter-spacing: .1em; }
+.infernal-outcome-dossier div { min-width: 0; border: 1px solid #463623; padding: 7px 8px; background: #120d0a; }
+.infernal-outcome-dossier small { color: #9f8a67; font: 700 7px var(--mono); letter-spacing: .08em; text-transform: uppercase; }
+.infernal-outcome-dossier p { margin: 3px 0 0; overflow-wrap: anywhere; color: #d7c5a3; font: 600 8px/1.35 var(--mono); }
+.infernal-actions button.fullscreen-failed { border-color: #cc5b47; color: #ffd0c5; }
+.infernal-outcome-actions { position: sticky; z-index: 8; bottom: -1px; display: grid; grid-template-columns: 1fr 1fr; gap: 9px; margin: 12px -8px -8px; border-top: 1px solid #765638; padding: 10px 8px 8px; background: linear-gradient(180deg, rgba(20,14,10,.88), #120d0a 28%); box-shadow: 0 -12px 22px rgba(0,0,0,.62); }
+.infernal-outcome-actions button { text-align: center; }
+.infernal-outcome-actions button small { display: block; margin-top: 4px; color: #e7bda1; font-weight: 400; }
+.infernal-deck-drawer { position: absolute; z-index: 20; inset: 9% 7%; overflow: auto; border: 1px solid #8a6d40; padding: clamp(18px, 3vw, 36px); background: rgba(13,9,7,.985); box-shadow: 20px 20px 0 rgba(88,25,23,.55); }
+.infernal-deck-drawer[hidden] { display: none; }
+.infernal-deck-drawer header { display: flex; align-items: start; justify-content: space-between; margin-bottom: 22px; border-bottom: 1px solid #4b3825; padding-bottom: 15px; }
+.infernal-deck-drawer header p { margin: 0; color: #c3a351; font: 700 9px var(--mono); letter-spacing: .14em; }
+.infernal-deck-drawer h3 { margin: 4px 0 0; font: 500 clamp(32px, 5vw, 58px)/.9 var(--serif); }
+.infernal-deck-drawer header button { width: 43px; height: 43px; border: 1px solid #7f5f36; background: #26120f; color: #f0dfbd; font-size: 22px; cursor: pointer; }
+.infernal-pile-tabs { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 7px; margin: -8px 0 18px; }
+.infernal-pile-tabs[hidden] { display: none; }
+.infernal-pile-tab { display: flex; min-height: 50px; align-items: center; justify-content: space-between; border: 1px solid #4f3c28; padding: 0 12px; background: #1b110d; color: #a99574; cursor: pointer; font: 700 8px var(--mono); letter-spacing: .08em; text-transform: uppercase; }
+.infernal-pile-tab strong { color: #e2bf66; font-size: 16px; }
+.infernal-pile-tab.active { border-color: #c49b4f; background: #3a1913; color: #f1d291; }
+.infernal-empty-pile { grid-column: 1 / -1; border: 1px dashed #4b3928; padding: 35px; color: #796b56; font: 700 9px var(--mono); letter-spacing: .1em; text-align: center; }
+.infernal-deck-list { display: grid; grid-template-columns: repeat(auto-fit, minmax(245px, 1fr)); gap: 10px; }
+.infernal-deck-entry { display: grid; grid-template-columns: 72px 1fr; gap: 13px; align-items: center; border: 1px solid #4f3c28; padding: 8px; background: #1b130e; }
+.infernal-deck-entry strong, .infernal-deck-entry small { display: block; }
+.infernal-deck-entry strong { color: #ead9b8; font: 700 14px var(--serif); }
+.infernal-deck-entry small { margin-top: 5px; color: #aa987a; font: 600 9px/1.35 var(--mono); }
+.infernal-deck-thumb { position: relative; width: 72px; height: 88px; overflow: hidden; border: 1px solid #72593b; background: #251a15; }
+.infernal-footer { min-height: 35px; display: flex; align-items: center; justify-content: space-between; gap: 14px; border-top: 1px solid rgba(214,184,126,.15); color: #9c8a70; font: 500 9px var(--mono); }
+.infernal-footer p { max-width: 65%; margin: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.infernal-footer p.bark { color: #f0cf79; }
+#infernal-relics { color: #d3b363; }
+
+@media (max-width: 760px) {
+  .infernal-shell { padding: 9px 10px; }
+  .infernal-header h2 { font-size: 26px; }
+  .infernal-header p { font-size: 7px; }
+  .infernal-hud { justify-content: space-between; gap: 5px; overflow-x: hidden; font-size: 7px; white-space: nowrap; letter-spacing: .02em; }
+  .infernal-map-heading { top: 2%; left: 2%; }
+  .infernal-map-heading h3 { font-size: 22px; }
+  .infernal-map-scroll { inset: 12% 1% 3%; }
+  .infernal-map-paths, .infernal-map-grid { width: 900px; min-width: 900px; }
+  .infernal-map-grid { grid-template-columns: repeat(11, 72px); gap: 9px; }
+  .infernal-map-node { width: clamp(48px, 14vw, 68px); font-size: 7px; }
+  .infernal-choice.benefit-mode { top: 3%; bottom: 3%; width: 96%; padding: 18px; }
+  .infernal-choice.benefit-mode .infernal-choice-list { grid-template-columns: 1fr; }
+  .infernal-choice.benefit-mode .infernal-choice-list button { min-height: 68px; }
+  .infernal-benefit-dossier { min-height: 250px !important; }
+  .infernal-benefit-sigil { width: 58px; height: 58px; font-size: 26px; }
+  .infernal-choice.shop-mode { top: 2%; bottom: 2%; width: 98%; padding: 14px; }
+  .infernal-shop { grid-template-columns: 1fr; }
+  .infernal-shop-merchant { position: sticky; top: -14px; z-index: 5; }
+  .infernal-shop-column { max-height: none; }
+  .infernal-shop-stock { display: flex; overflow-x: auto; padding: 15px 8px 23px; scroll-snap-type: x mandatory; }
+  .infernal-shop-column .infernal-shop-card { width: 155px; min-width: 155px; height: 220px; min-height: 220px; scroll-snap-align: center; }
+  .infernal-camp-upgrades { display: flex; overflow-x: auto; padding: 12px 7px 24px; scroll-snap-type: x mandatory; }
+  .infernal-camp-upgrade-card { width: 172px; min-width: 172px; scroll-snap-align: center; }
+  .infernal-hand { right: 1%; bottom: 6px; left: 1%; justify-content: flex-start; overflow-x: auto; padding: 25px 8px 10px; scroll-snap-type: x mandatory; }
+  .infernal-resource-tokens { bottom: 39%; gap: 10px; }
+  .infernal-resource-orb { width: 68px; height: 68px; }
+  .infernal-resource-orb strong { font-size: 11px; }
+  .infernal-resource-orb small, .infernal-orb-debt { font-size: 10px; }
+  .infernal-card { width: 126px; min-width: 126px; height: 178px; flex-basis: 126px; scroll-snap-align: center; }
+  .infernal-card > p { padding: 5px 6px; font-size: 10px; }
+  .infernal-card:hover, .infernal-card:focus-visible, .infernal-card.selected { transform: translateY(-10px) scale(1.02); }
+  .infernal-end-turn { right: 5px; bottom: 196px; font-size: 10px; }
+  .infernal-actor-plate { top: 1.5%; width: 49%; height: 80px; min-height: 80px; padding: 0; font-size: 8px; }
+  .infernal-actor-plate.player { left: .5%; }
+  .infernal-actor-plate.enemy { right: .5%; }
+  .infernal-actor-plate > div:first-child { top: 22px; right: 8px; left: 8px; gap: 2px; font-size: 10px; }
+  .infernal-actor-plate > div:first-child strong { font-size: 10px; }
+  .infernal-health { top: 38px; right: 27px; left: 27px; height: 18px; }
+  .infernal-statuses { top: calc(100% + 3px); right: 25px; left: 25px; min-height: 20px; }
+  .infernal-status-chip { min-width: 44px; height: 44px; padding: 0 8px; font-size: 10px; }
+  .infernal-permanent-detail { grid-template-columns: 1fr; }
+  .infernal-block { top: 38px; width: 23px; height: 23px; font-size: 8px; }
+  .infernal-actor-plate.player .infernal-block { right: -26px; }
+  .infernal-actor-plate.enemy .infernal-block { left: -26px; }
+  .infernal-intent { top: calc(1.5% + 108px); right: 4%; min-width: 145px; max-width: 48%; padding: 11px 15px; font-size: 10px; }
+  .infernal-combat-bark { top: 15%; max-width: 43%; padding: 7px 9px; font-size: 9px; }
+  .infernal-combat-bark.hero { left: 4%; }
+  .infernal-combat-bark.enemy { top: 215px; right: 4%; }
+  .infernal-intro, .infernal-choice, .infernal-outcome { padding: 25px 17px; }
+  .infernal-choice.reward-mode { width: 98%; }
+  .infernal-reward-grid { display: flex; justify-content: flex-start; overflow-x: auto; padding: 15px 7px 25px; scroll-snap-type: x mandatory; }
+  .infernal-choice .infernal-reward-card { width: 150px; min-width: 150px; height: 215px; min-height: 215px; scroll-snap-align: center; }
+  .infernal-reward-detail { grid-template-columns: 1fr; }
+  .infernal-reward-actions { align-self: stretch; align-content: center; }
+  .infernal-deck-drawer { inset: 7% 3%; padding: 18px 12px; }
+  .infernal-deck-list { grid-template-columns: 1fr; }
+  .infernal-run-stats { grid-template-columns: repeat(2, 1fr); }
+  .infernal-audit-head { grid-template-columns: 1fr 105px; }
+  .infernal-audit-grade { min-height: 105px; }
+  .infernal-audit-grade strong { font-size: 46px; }
+  .infernal-audit-summary { max-width: 100%; }
+  .infernal-outcome-actions { grid-template-columns: 1fr; }
+  .infernal-pile-tabs { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .infernal-card.invalid-feedback { animation: none; }
+}
+
+@media (max-height: 540px) {
+  .infernal-header { padding-bottom: 5px; }
+  .infernal-header h2 { font-size: 24px; }
+  .infernal-hud { min-height: 27px; justify-content: center; }
+  .infernal-hud span:nth-child(2), .infernal-hud span:nth-child(4), .infernal-hud span:nth-child(5) { display: none; }
+  .infernal-footer { min-height: 24px; }
+  .infernal-hand { right: 128px; bottom: 4px; gap: 5px; overflow-x: auto; padding-top: 6px; }
+  .infernal-card { width: 100px; min-width: 100px; height: 124px; flex-basis: 100px; }
+  .infernal-card h4 { min-height: 34px; padding: 10px 7px 12px 24px; font-size: 10px; }
+  .infernal-card:hover, .infernal-card:focus-visible, .infernal-card.selected { transform: translateY(-6px); }
+  .infernal-card-art { height: auto; }
+  .infernal-end-turn { top: 2px; right: auto; bottom: auto; left: 50%; min-width: 104px; min-height: 44px; padding: 0 12px; transform: translateX(-50%); }
+  .infernal-resource-tokens { bottom: 6px; left: auto; right: 8px; gap: 4px; transform: none; }
+  .infernal-resource-orb { width: 50px; height: 50px; border-width: 2px; }
+  .infernal-orb-frame { inset: -9px; }
+  .infernal-resource-orb strong { font-size: 10px; }
+  .infernal-resource-orb small { font-size: 10px; }
+  .infernal-orb-debt { font-size: 10px; }
+  .infernal-actor-plate { width: 32%; height: 64px; min-height: 64px; padding: 0; }
+  .infernal-actor-plate > div:first-child { top: 19px; right: 25px; left: 25px; padding: 0; font-size: 10px; }
+  .infernal-actor-plate > div:first-child strong { font-size: 10px; }
+  .infernal-health { top: 31px; right: 25px; left: 25px; height: 15px; }
+  .infernal-block { top: 30px; }
+  .infernal-actor-plate .infernal-statuses { top: calc(100% + 2px); min-height: 12px; margin: 0; }
+  .infernal-intent { top: 70px; right: 34%; left: auto; min-width: 150px; max-width: 190px; padding: 7px 14px; transform: none; font-size: 10px; text-align: center; }
+  .infernal-combat-bark { display: none !important; }
+  .infernal-combat-bark.hero,
+  .infernal-combat-bark.enemy { right: auto; left: 3%; }
+  .infernal-combat-bark .infernal-bark-speaker { display: flex; margin: 0; align-items: center; padding: 4px 7px; }
+  .infernal-combat-bark .infernal-bark-copy { overflow: hidden; padding: 6px 8px; text-overflow: ellipsis; }
+}
 
 .art-shot { overflow: hidden; }
 .shot-window { position: absolute; top: 33px; left: 12%; width: 67%; height: 181px; border: 2px solid rgba(255,255,255,.82); box-shadow: 14px 14px 0 rgba(23,18,89,.24); transform: rotate(-4deg); }

@@ -15,8 +15,19 @@ const requiredFiles = [
   'script.js',
   'styles.css',
   'immo.html',
-  'immoidf.html',
-  'immoidf-data.json',
+  'games/infernal-ledger/data.js',
+  'games/infernal-ledger/core.js',
+  'games/infernal-ledger/content.js',
+  'games/infernal-ledger/game.js',
+  'games/infernal-ledger/assets/sprite-atlas.png',
+  'games/infernal-ledger/assets/card-atlas.png',
+  'games/infernal-ledger/assets/act2-sprite-atlas.png',
+  'games/infernal-ledger/assets/extra-enemy-atlas.png',
+  'games/infernal-ledger/assets/card-atlas-2.png',
+  'games/infernal-ledger/assets/relic-atlas-v2.png',
+  'games/infernal-ledger/assets/combat-hud-orb.png',
+  'games/infernal-ledger/assets/combat-hud-plate.png',
+  'games/infernal-ledger/assets/combat-hud-plaque.png',
 ];
 
 for (const file of requiredFiles) {
@@ -75,6 +86,15 @@ if (exists('index.html')) {
     failures.push('index.html must not expose xVc323 in visible or metadata copy');
   }
   if (/<form\b/i.test(html)) failures.push('index.html must not include a fake/nonfunctional contact form');
+  if (!/wanna play a little game\?/i.test(html)) failures.push('index.html missing game invitation');
+  if (!/id=["']infernal-modal["'][^>]*role=["']dialog["']/i.test(html)) {
+    failures.push('Infernal modal must use dialog semantics');
+  }
+  if (!/id=["']infernal-canvas["']/i.test(html)) failures.push('index.html missing infernal canvas');
+  if (!/src=["']games\/infernal-ledger\/data\.js\?/.test(html)) failures.push('index.html missing versioned infernal data script');
+  if (!/src=["']games\/infernal-ledger\/core\.js\?/.test(html)) failures.push('index.html missing versioned infernal core script');
+  if (!/src=["']games\/infernal-ledger\/content\.js\?/.test(html)) failures.push('index.html missing versioned infernal content script');
+  if (!/src=["']games\/infernal-ledger\/game\.js\?/.test(html)) failures.push('index.html missing versioned infernal game script');
 
   const anchorTargets = new Set(
     [...html.matchAll(/id=["']([^"']+)["']/g)].map((match) => match[1])
@@ -88,6 +108,28 @@ if (exists('index.html')) {
     const localFile = match[1];
     if (!exists(localFile)) failures.push(`Broken local HTML link: ${localFile}`);
   }
+}
+
+if (exists('games/infernal-ledger/content.js')) {
+  const { CARD_LIBRARY } = require(path.join(root, 'games/infernal-ledger/core.js'));
+  const { CARD_ART, ACTOR_CROPS, RELIC_PRESENTATION, lineFor } = require(path.join(root, 'games/infernal-ledger/content.js'));
+  const cardIds = Object.keys(CARD_LIBRARY);
+  if (cardIds.some((id) => !CARD_ART[id])) failures.push('Every Infernal card must have unique art coordinates');
+  const actTwoActors = ['claim_eater', 'carbon_copy', 'benefits_larva', 'merger_mimic', 'compliance_seraph', 'parachute_knight', 'synergy_hydra', 'burnout_oracle', 'consultant', 'vp_knives', 'eternal_vp', 'eternal_vp_phase2'];
+  if (!ACTOR_CROPS || actTwoActors.some((id) => !ACTOR_CROPS[id])) failures.push('Every Act 2 actor must have safe crop metadata');
+  else if (actTwoActors.some((id) => {
+    const crop = ACTOR_CROPS[id];
+    return crop.x < 0 || crop.y < 0 || crop.width <= 0 || crop.height <= 0 || crop.x + crop.width > 362 || crop.y + crop.height > 362;
+  })) failures.push('Act 2 actor crop metadata must stay inside its 362px atlas cell');
+  const relicIds = require(path.join(root, 'games/infernal-ledger/data.js')).RELICS.map((relic) => relic.id);
+  if (!RELIC_PRESENTATION || relicIds.some((id) => !RELIC_PRESENTATION[id])) failures.push('Every Infernal relic must have presentation metadata');
+  else if (new Set(relicIds.map((id) => `${RELIC_PRESENTATION[id].art}:${RELIC_PRESENTATION[id].sigil}`)).size !== relicIds.length) {
+    failures.push('Every Infernal relic must have an immediately distinct art and sigil signature');
+  }
+  const coordinates = cardIds.map((id) => `${CARD_ART[id]?.atlas || 1}:${CARD_ART[id]?.column}:${CARD_ART[id]?.row}`);
+  if (new Set(coordinates).size !== cardIds.length) failures.push('Infernal card art coordinates must be unique');
+  if (!lineFor('overdraft', 'hero', 0)) failures.push('Infernal dialogue must return deterministic hero lines');
+  if (!lineFor('attack', 'manager', 0)) failures.push('Infernal dialogue must return deterministic enemy lines');
 }
 
 if (failures.length) {
