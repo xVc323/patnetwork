@@ -276,15 +276,19 @@ body.game-open { overflow: hidden; }
 .infernal-map-progress span { color: #ddbd68; }
 .infernal-map-progress i { position: relative; display: block; height: 4px; margin: 7px 0 5px; background: #34291d; }
 .infernal-map-progress i::after { position: absolute; inset: 0 auto 0 0; width: var(--map-progress, 0); background: linear-gradient(90deg, #a4402e, #d6b45e); box-shadow: 0 0 7px rgba(214,180,94,.4); content: ''; }
-.infernal-map-scroll { position: absolute; inset: 13% 3% 8%; overflow-x: auto; overflow-y: hidden; border-top: 1px solid rgba(174,139,75,.2); border-bottom: 1px solid rgba(174,139,75,.18); background: linear-gradient(90deg, rgba(50,25,18,.16), rgba(12,9,8,.04) 48%, rgba(91,45,28,.13)); }
-.infernal-map-paths { position: absolute; z-index: 0; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; }
+.infernal-map-scroll { position: absolute; inset: 13% 3% 8%; overflow-x: auto; overflow-y: hidden; border-top: 1px solid rgba(174,139,75,.2); border-bottom: 1px solid rgba(174,139,75,.18); background: linear-gradient(90deg, rgba(50,25,18,.16), rgba(12,9,8,.04) 48%, rgba(91,45,28,.13)); cursor: grab; touch-action: pan-x; overscroll-behavior-x: contain; scrollbar-color: #9b773b #17110d; scrollbar-width: thin; user-select: none; }
+.infernal-map-scroll.dragging { cursor: grabbing; }
+.infernal-map-paths { position: absolute; z-index: 0; inset: 0 auto 0 0; width: var(--map-rail-width, 2640px); min-width: var(--map-rail-width, 2640px); height: 100%; overflow: visible; pointer-events: none; }
 .infernal-map-path { fill: none; stroke: #786245; stroke-linecap: round; stroke-width: 1.2; opacity: .075; vector-effect: non-scaling-stroke; transition: opacity .18s ease, stroke .18s ease; }
 .infernal-map-path.available { stroke: #d0aa59; stroke-width: 3; opacity: .95; filter: drop-shadow(0 0 5px rgba(205,157,76,.5)); }
 .infernal-map-path.traversed { stroke: #ead071; stroke-width: 4; opacity: 1; }
+.infernal-map-path.future { stroke: #967b4e; opacity: .15; }
+.infernal-map-path.impossible { opacity: .025; }
+.infernal-map-path.preview { stroke: #ffe08a; stroke-width: 4; opacity: 1; filter: drop-shadow(0 0 6px rgba(231,183,79,.72)); }
 .infernal-map-anchor { fill: #705c3d; opacity: .2; }
 .infernal-map-anchor.available { fill: #f0ce72; opacity: 1; filter: drop-shadow(0 0 3px #b87a35); }
 .infernal-map-anchor.traversed { fill: #fff0a0; opacity: 1; }
-.infernal-map-grid { position: absolute; z-index: 1; inset: 0; display: grid; grid-template-columns: repeat(11, minmax(82px, 1fr)); gap: 1.2%; align-items: center; padding: 0 10px 8px; }
+.infernal-map-grid { position: absolute; z-index: 1; inset: 0 auto 0 0; display: grid; width: var(--map-rail-width, 2640px); min-width: var(--map-rail-width, 2640px); grid-template-columns: repeat(var(--map-columns, 15), minmax(0, 1fr)); gap: 0; align-items: center; padding: 0 18px 8px; }
 .infernal-map-column { position: relative; height: 100%; border-right: 1px solid rgba(154,124,72,.08); }
 .infernal-map-column::after { position: absolute; z-index: -1; top: 8%; right: 6%; bottom: 3%; left: 6%; background: linear-gradient(180deg, rgba(122,89,46,.035), transparent 35%, rgba(122,48,34,.025)); content: ''; }
 .infernal-map-column.boss-column::after { border: 1px solid rgba(173,126,49,.15); background: radial-gradient(circle at 50% 52%, rgba(113,55,24,.22), transparent 68%); }
@@ -379,8 +383,8 @@ body.game-open { overflow: hidden; }
 .infernal-intent[data-category="special"] { --intent-accent: #a98b43; }
 .infernal-intent { position: absolute; z-index: 4; top: calc(1.5% + 112px); right: 18%; min-width: 170px; max-width: 250px; isolation: isolate; padding: 15px 21px; border: 0; background: rgba(15,12,10,.94); color: #d8cabc; box-shadow: inset 0 0 0 1px var(--intent-accent, #6d6255), 0 0 15px color-mix(in srgb, var(--intent-accent, #6d6255) 28%, transparent); filter: saturate(.72); font: 600 10px/1.4 var(--mono); text-align: right; text-shadow: 0 2px 2px #000; }
 .infernal-intent::before, .infernal-end-turn::before { position: absolute; z-index: -1; inset: -12px; box-sizing: border-box; border: 18px solid transparent; border-right-width: 24px; border-left-width: 24px; border-image: url("games/infernal-ledger/assets/combat-hud-plaque.png") 92 112 96 112 fill / 1 stretch; content: ''; filter: drop-shadow(0 6px 6px rgba(0,0,0,.82)); pointer-events: none; }
-.infernal-hand { position: absolute; right: 11%; bottom: 8px; left: 5%; display: flex; align-items: end; justify-content: center; gap: clamp(5px, .8vw, 12px); pointer-events: auto; }
-.infernal-card { position: relative; width: clamp(112px, 13vw, 174px); height: clamp(164px, 20vw, 244px); flex: 0 1 174px; border: 2px solid #a28b55; border-radius: 10px; padding: 0; transform-origin: 50% 110%; background: #211710; color: #f6ead0; cursor: pointer; box-shadow: 0 7px 0 #120b08, inset 0 0 0 3px rgba(48,31,18,.22); text-align: left; transition: transform .16s ease, filter .16s ease; }
+.infernal-hand { position: absolute; right: 11%; bottom: 8px; left: 5%; display: flex; align-items: end; justify-content: center; gap: clamp(5px, .8vw, 12px); pointer-events: auto; touch-action: pan-x; }
+.infernal-card { position: relative; width: clamp(112px, 13vw, 174px); height: clamp(164px, 20vw, 244px); flex: 0 1 174px; border: 2px solid #a28b55; border-radius: 10px; padding: 0; transform-origin: 50% 110%; background: #211710; color: #f6ead0; cursor: pointer; box-shadow: 0 7px 0 #120b08, inset 0 0 0 3px rgba(48,31,18,.22); text-align: left; touch-action: manipulation; -webkit-user-select: none; user-select: none; transition: transform .16s ease, filter .16s ease; }
 .infernal-card:nth-child(odd) { transform: rotate(-1.5deg); }
 .infernal-card:nth-child(even) { transform: rotate(1.5deg); }
 .infernal-card.selected { z-index: 4; transform: translateY(-26px) scale(1.05); filter: brightness(1.08); }
@@ -415,10 +419,41 @@ body.game-open { overflow: hidden; }
 .infernal-choice-list button { width: 100%; height: auto; min-height: 58px; padding: 12px 15px; }
 .infernal-choice-list button small { display: block; margin-top: 5px; color: #e0b69c; font-weight: 400; }
 .infernal-keyword { position: relative; border-bottom: 1px dotted #dfb85d; color: inherit; cursor: help; }
+.infernal-semantic-term { font-weight: 900; letter-spacing: .01em; }
+.infernal-term-damage, .infernal-keyword-damage { color: #ff705c; text-shadow: 0 1px 0 #240704, 0 0 7px rgba(255,67,45,.25); }
+.infernal-term-block, .infernal-keyword-block { color: #8bd8f2; text-shadow: 0 1px 0 #03131a, 0 0 7px rgba(87,194,230,.2); }
+.infernal-term-heal { color: #7ee09d; text-shadow: 0 1px 0 #06170b, 0 0 7px rgba(84,207,124,.2); }
+.infernal-term-status, .infernal-keyword-status { color: #d39aef; text-shadow: 0 1px 0 #16061c, 0 0 7px rgba(187,103,225,.2); }
+.infernal-term-resource, .infernal-keyword-resource, .infernal-keyword-special { color: #f2cc67; text-shadow: 0 1px 0 #211603, 0 0 7px rgba(221,174,62,.2); }
+.infernal-intent-effects { display: inline-block; margin-top: 3px; }
+.infernal-intent .infernal-semantic-term { font-size: 1.08em; }
 .infernal-keyword:focus-visible { border-radius: 2px; outline: 2px solid #f0c663; outline-offset: 2px; background: rgba(91,55,24,.82); }
 .infernal-glossary-tooltip { position: fixed; z-index: 250; width: max-content; max-width: min(270px, 84vw); border: 1px solid #c39a52; padding: 9px 11px; transform: translate(-50%, -100%); background: linear-gradient(180deg, #1d1510, #0c0907); color: #f3e4c7; box-shadow: 0 8px 20px rgba(0,0,0,.82), inset 0 0 0 1px rgba(222,183,102,.15); font: 700 9px/1.45 var(--mono); pointer-events: none; text-align: left; text-shadow: 0 1px 0 #000; }
 .infernal-glossary-tooltip::before { position: absolute; top: 100%; left: 50%; width: 9px; height: 9px; transform: translate(-50%, -5px) rotate(45deg); border-right: 1px solid #c39a52; border-bottom: 1px solid #c39a52; background: #0c0907; content: ''; }
 .infernal-glossary-tooltip[hidden] { display: none; }
+.infernal-narrative { position: absolute; z-index: 80; inset: 0; display: grid; grid-template-columns: minmax(210px, 34%) minmax(320px, 560px); align-items: end; justify-content: center; gap: clamp(12px, 3vw, 44px); overflow: hidden; padding: clamp(36px, 7vh, 86px) clamp(24px, 7vw, 110px); background: radial-gradient(circle at 58% 44%, rgba(72,31,24,.72), rgba(8,7,6,.94) 68%); }
+.infernal-narrative[hidden] { display: none; }
+.infernal-narrative-portrait { width: 100%; min-height: 72%; align-self: stretch; background-position: center bottom; background-repeat: no-repeat; background-size: contain; filter: drop-shadow(16px 18px 12px rgba(0,0,0,.76)); animation: infernal-narrative-portrait-in .42s ease-out both; }
+.infernal-narrative-portrait[data-speaker="hero"] { background-image: url("games/infernal-ledger/assets/hero-dialogue-v2.png"); }
+.infernal-narrative-portrait[data-speaker="morrow"] { background-image: url("games/infernal-ledger/assets/morrow-companion-v2.png"); }
+.infernal-narrative article { position: relative; align-self: center; isolation: isolate; border: 1px solid #a47e44; padding: clamp(22px, 4vw, 42px); background: linear-gradient(145deg, rgba(31,21,16,.98), rgba(13,10,8,.98)); box-shadow: 14px 16px 0 rgba(74,25,20,.54), 0 22px 60px #000; animation: infernal-narrative-copy-in .32s ease-out both; }
+.infernal-narrative article::before { position: absolute; z-index: -1; inset: -9px; border: 1px solid rgba(170,132,70,.28); content: ''; pointer-events: none; }
+.infernal-narrative small { color: #d1ad59; font: 800 8px/1.4 var(--mono); letter-spacing: .15em; }
+.infernal-narrative h3 { margin: 7px 0 12px; color: #f3e4c7; font: 700 clamp(34px, 4.2vw, 62px)/.94 var(--serif); }
+.infernal-narrative p { min-height: 4.3em; margin: 0 0 24px; color: #d2c2a7; font: 500 clamp(14px, 1.4vw, 19px)/1.55 var(--sans); }
+.infernal-narrative button { min-width: 190px; border-color: #ba8f48; background: #87392d; }
+@keyframes infernal-narrative-portrait-in { from { opacity: 0; transform: translateX(-28px) scale(.97); } to { opacity: 1; transform: none; } }
+@keyframes infernal-narrative-copy-in { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: none; } }
+@media (max-width: 680px) {
+  .infernal-narrative { grid-template-columns: 36% 1fr; gap: 7px; padding: 66px 12px 34px; }
+  .infernal-narrative-portrait { min-height: 54%; align-self: center; }
+  .infernal-narrative article { padding: 17px 14px; }
+  .infernal-narrative small { font-size: 6px; }
+  .infernal-narrative h3 { margin: 5px 0 8px; font-size: clamp(27px, 9vw, 40px); }
+  .infernal-narrative p { min-height: 6.5em; margin-bottom: 13px; font-size: 12px; line-height: 1.42; }
+  .infernal-narrative button { min-width: 0; width: 100%; }
+}
+@media (prefers-reduced-motion: reduce) { .infernal-narrative-portrait, .infernal-narrative article { animation: none; } }
 .infernal-choice.reward-mode { top: 4%; bottom: 4%; width: min(96%, 900px); max-height: none; transform: translateX(-50%); }
 .infernal-choice.benefit-mode { top: 8%; bottom: 8%; width: min(92%, 720px); max-height: none; overflow: auto; transform: translateX(-50%); }
 .infernal-choice.benefit-mode h3 { font-size: clamp(36px, 5vw, 62px); }
@@ -427,7 +462,9 @@ body.game-open { overflow: hidden; }
 .infernal-benefit-dossier { position: relative; display: flex; min-height: 310px !important; flex-direction: column; align-items: stretch; overflow: hidden; border-color: #765934 !important; padding: 16px 14px 13px !important; background: linear-gradient(155deg, #3c2018, #1c120e 55%, #100b09) !important; text-align: left; }
 .infernal-benefit-dossier::before { position: absolute; inset: 0; background: repeating-linear-gradient(0deg, transparent 0 18px, rgba(208,175,104,.035) 19px); content: ''; pointer-events: none; }
 .infernal-benefit-dossier:hover, .infernal-benefit-dossier:focus-visible, .infernal-benefit-dossier.selected { transform: translateY(-7px); border-color: #d2a652 !important; box-shadow: 0 12px 25px rgba(0,0,0,.45), inset 0 0 0 2px rgba(210,166,82,.14); }
-.infernal-benefit-file { align-self: flex-end; color: #8d7657; font: 700 7px var(--mono); letter-spacing: .12em; }
+.infernal-benefit-header { position: relative; z-index: 1; display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.infernal-benefit-file { color: #8d7657; font: 700 7px var(--mono); letter-spacing: .12em; }
+.infernal-benefit-kind { border: 1px solid #705231; padding: 3px 5px; background: rgba(14,8,6,.62); color: #d8b762; font: 800 6px var(--mono); letter-spacing: .12em; }
 .infernal-benefit-sigil { position: relative; display: grid; width: 82px; height: 82px; place-items: end; align-self: center; margin: 3px 0 10px; overflow: hidden; border: 1px solid #8d693a; border-radius: 50%; background: #160d09 url("games/infernal-ledger/assets/relic-atlas-v2.png") var(--benefit-x, 0) var(--benefit-y, 0) / 400% 300% no-repeat; color: #f0ce72; box-shadow: 0 0 0 6px rgba(141,105,58,.1), inset 0 0 18px #140907; }
 .infernal-benefit-sigil b { display: grid; width: 24px; height: 24px; place-items: center; margin: 0 3px 3px 0; border: 1px solid rgba(226,187,97,.72); border-radius: 50%; background: rgba(25,12,9,.84); font: 700 13px var(--serif); text-shadow: 0 1px 2px #000; }
 .infernal-benefit-dossier > small { margin: 0 0 5px !important; color: #b39250 !important; font: 700 7px var(--mono) !important; letter-spacing: .1em; text-transform: uppercase; }
@@ -561,9 +598,11 @@ body.game-open { overflow: hidden; }
   .infernal-map-heading { top: 2%; left: 2%; }
   .infernal-map-heading h3 { font-size: 22px; }
   .infernal-map-scroll { inset: 12% 1% 3%; }
-  .infernal-map-paths, .infernal-map-grid { width: 900px; min-width: 900px; }
-  .infernal-map-grid { grid-template-columns: repeat(11, 72px); gap: 9px; }
-  .infernal-map-node { width: clamp(48px, 14vw, 68px); font-size: 7px; }
+  .infernal-map-paths, .infernal-map-grid { width: var(--map-rail-width, 2640px); min-width: var(--map-rail-width, 2640px); }
+  .infernal-map-node { width: 108px; min-height: 60px; font-size: 7px; }
+  .infernal-map-node-copy strong { font-size: 8px; }
+  .infernal-map-node-copy small { font-size: 6px; }
+  .infernal-map-legend > small { display: none; }
   .infernal-choice.benefit-mode { top: 3%; bottom: 3%; width: 96%; padding: 18px; }
   .infernal-choice.benefit-mode .infernal-choice-list { grid-template-columns: 1fr; }
   .infernal-choice.benefit-mode .infernal-choice-list button { min-height: 68px; }
@@ -578,8 +617,10 @@ body.game-open { overflow: hidden; }
   .infernal-camp-upgrades { display: flex; overflow-x: auto; padding: 12px 7px 24px; scroll-snap-type: x mandatory; }
   .infernal-camp-upgrade-card { width: 172px; min-width: 172px; scroll-snap-align: center; }
   .infernal-hand { right: 1%; bottom: 6px; left: 1%; justify-content: flex-start; overflow-x: auto; padding: 25px 8px 10px; scroll-snap-type: x mandatory; }
-  .infernal-resource-tokens { bottom: 39%; gap: 10px; }
-  .infernal-resource-orb { width: 68px; height: 68px; }
+  .infernal-resource-tokens { bottom: 39%; gap: 2px; }
+  .infernal-resource-orb { width: 56px; height: 56px; }
+  .infernal-orb-frame { inset: -11px; }
+  .infernal-mana-orb .infernal-orb-debt { position: absolute; top: calc(100% + 4px); left: 50%; width: max-content; margin: 0; border: 1px solid #6e466d; padding: 2px 5px; transform: translateX(-50%); background: rgba(24,12,24,.95); box-shadow: 0 2px 5px #000; }
   .infernal-resource-orb strong { font-size: 11px; }
   .infernal-resource-orb small, .infernal-orb-debt { font-size: 10px; }
   .infernal-card { width: 126px; min-width: 126px; height: 178px; flex-basis: 126px; scroll-snap-align: center; }

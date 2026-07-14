@@ -132,41 +132,45 @@
     }
 
     function buildMap(act = 1) {
-      const templates = [
-        [
-          ['battle', 'battle', 'event'], ['battle', 'shop', 'event', 'battle'], ['battle', 'cache', 'battle'],
-          ['elite', 'battle', 'contract', 'event'], ['campfire', 'battle', 'shop'], ['battle', 'event', 'battle', 'contract'],
-          ['cache', 'battle', 'contract'], ['battle', 'shop', 'event', 'battle'], ['campfire', 'elite', 'campfire'], ['battle', 'battle', 'event'],
-        ],
-        [
-          ['battle', 'event', 'battle'], ['shop', 'battle', 'contract', 'event'], ['battle', 'cache', 'battle'],
-          ['battle', 'elite', 'event', 'contract'], ['campfire', 'battle', 'shop'], ['event', 'battle', 'contract', 'battle'],
-          ['battle', 'cache', 'battle'], ['shop', 'battle', 'event', 'contract'], ['campfire', 'elite', 'battle'], ['battle', 'event', 'battle'],
-        ],
-        [
-          ['event', 'battle', 'battle'], ['battle', 'contract', 'shop', 'battle'], ['cache', 'battle', 'event'],
-          ['battle', 'elite', 'contract', 'battle'], ['campfire', 'event', 'battle'], ['battle', 'shop', 'battle', 'contract'],
-          ['cache', 'battle', 'event'], ['battle', 'contract', 'shop', 'battle'], ['elite', 'campfire', 'battle'], ['event', 'battle', 'battle'],
-        ],
+      const variant = Math.floor(random() * 4);
+      const patterns = [
+        ['battle', 'battle', 'battle', 'battle'],
+        ['event', 'battle', 'cache', 'contract'],
+        ['battle', 'battle', 'battle', 'battle'],
+        ['event', 'cache', 'contract', 'battle'],
+        ['shop', 'battle', 'cache', 'contract'],
+        ['battle', 'battle', 'battle', 'battle'],
+        ['event', 'elite', 'battle', 'contract'],
+        ['cache', 'battle', 'contract', 'elite'],
+        ['battle', 'battle', 'battle', 'battle'],
+        ['cache', 'battle', 'contract', 'battle'],
+        ['battle', 'battle', 'battle', 'battle'],
+        ['battle', 'battle', 'battle', 'battle'],
+        ['campfire', 'campfire', 'campfire', 'campfire'],
+        ['battle', 'battle', 'battle', 'battle'],
       ];
-      const templateIndex = Math.floor(random() * templates.length);
-      const patterns = templates[templateIndex];
-      const rows = patterns.map((types, row) => shuffle(types).map((type, column) => ({
-        id: `a${act}n${row}-${column}`, act, row, column, lane: column, type, offset: 0, connections: [],
-      })));
-      const boss = { id: `a${act}boss`, act, row: rows.length, column: 1, lane: null, type: 'boss', offset: 0, connections: [] };
+      const rows = patterns.map((types, row) => {
+        const rotated = types.map((_, index) => types[(index + variant + row) % types.length]);
+        return rotated.map((type, column) => ({
+          id: `a${act}n${row}-${column}`, act, row, column, lane: column, type,
+          offset: ((row * 3 + column * 5 + variant) % 3) - 1, connections: [],
+        }));
+      });
+      const boss = { id: `a${act}boss`, act, row: rows.length, column: 1.5, lane: null, type: 'boss', offset: 0, connections: [] };
       rows.forEach((nodes, rowIndex) => nodes.forEach((node, column) => {
         if (rowIndex === rows.length - 1) node.connections = [boss.id];
         else {
           const next = rows[rowIndex + 1];
-          const anchor = Math.round((column / Math.max(1, nodes.length - 1)) * (next.length - 1));
-          const candidates = next
-            .map((target, targetIndex) => ({ id: target.id, distance: Math.abs(targetIndex - anchor), tie: targetIndex }))
-            .sort((first, second) => first.distance - second.distance || first.tie - second.tie);
-          node.connections = candidates.slice(0, Math.min(2, next.length)).map((target) => target.id);
+          const neighbor = column === 0 ? 1 : column === next.length - 1 ? column - 1
+            : column + (((rowIndex + column + variant) % 2) ? 1 : -1);
+          node.connections = [next[column].id, next[neighbor].id];
         }
       }));
-      return refreshMapReachability({ act, templateId: `act-${act}-${templateIndex + 1}`, progress: 0, rows, boss, visited: [], visitedEdges: [], available: rows[0].map((node) => node.id) });
+      return refreshMapReachability({
+        act, templateId: `act-${act}-v${variant + 1}`, progress: 0, rows, boss,
+        routeRules: { minimumBattles: 5, maximumShops: 1, maximumEvents: 3, lateCampfire: 12 },
+        visited: [], visitedEdges: [], available: rows[0].map((node) => node.id),
+      });
     }
 
     const state = {};
@@ -199,6 +203,36 @@
       state.benefits.push({ ...benefit });
       if (benefit.effect === 'blood') { state.player.maxHp += 6; state.player.hp += 6; }
       if (benefit.effect === 'credit') { state.player.debtLimit = 3; state.player.obols += 15; }
+      if (benefit.effect === 'removeStarter') {
+        const index = state.deck.findIndex((card) => card.cardId === 'paper_cut');
+        if (index >= 0) state.deck.splice(index, 1);
+      }
+      if (benefit.effect === 'transformStarter') {
+        state.deck.filter((card) => card.cardId === 'red_tape').slice(0, 2).forEach((card) => {
+          card.cardId = weightedCards(1)[0] || card.cardId; card.upgraded = false;
+        });
+      }
+      if (benefit.effect === 'upgradeStarters') {
+        ['paper_cut', 'red_tape'].forEach((cardId) => {
+          const card = state.deck.find((item) => item.cardId === cardId && !item.upgraded); if (card) card.upgraded = true;
+        });
+      }
+      if (benefit.effect === 'draftRare') state.deck.push(makeCard('archive_fire'));
+      if (benefit.effect === 'hazardPay') {
+        state.player.maxHp += 8; state.player.hp += 8;
+        state.player.pendingDebt = Math.min(state.player.debtLimit, state.player.pendingDebt + 1);
+      }
+      if (benefit.effect === 'cashCurse') { state.player.obols += 55; state.deck.push(makeCard('form_66b')); }
+      if (benefit.effect === 'removePair') {
+        ['paper_cut', 'red_tape'].forEach((cardId) => {
+          const index = state.deck.findIndex((card) => card.cardId === cardId); if (index >= 0) state.deck.splice(index, 1);
+        });
+      }
+      if (benefit.effect === 'upgradeForMaxHp') {
+        state.player.maxHp = Math.max(1, state.player.maxHp - 4); state.player.hp = Math.min(state.player.hp, state.player.maxHp);
+        shuffle(state.deck.filter((card) => !card.upgraded && hasMeaningfulUpgrade(card.cardId))).slice(0, 3).forEach((card) => { card.upgraded = true; });
+      }
+      if (benefit.effect === 'draftLiability') { state.deck.push(makeCard('unlimited_liability')); state.player.obols += 25; }
       state.benefitChoice = [];
       state.map = buildMap(state.act);
       state.floor = 0;
@@ -334,7 +368,8 @@
           state.relics.push(relicReward);
         }
       }
-      const obols = state.combat.nodeType === 'elite' ? 40 + Math.floor(random() * 11) : 12 + Math.floor(random() * 7);
+      const baseObols = state.combat.nodeType === 'elite' ? 40 + Math.floor(random() * 11) : 12 + Math.floor(random() * 7);
+      const obols = baseObols * (state.combat.lootMultiplier || 1);
       state.player.obols += obols;
       emit({ kind: 'obols', target: 'player', amount: obols, source: state.combat.enemy.name, trigger: 'loot' });
       if (state.relics.some((relic) => relic.id === 'blood_mug')) healPlayer(2, 'blood_mug');
@@ -696,6 +731,8 @@
         state.event.error = reason;
         return { kind: 'unaffordable', reason };
       }
+      if (choice.effect === 'healForObols' && state.player.obols < 25) return { kind: 'unaffordable', reason: 'Requires 25 Obols.' };
+      if (choice.effect === 'purgeCurse' && !state.deck.some((card) => card.cardId === 'form_66b')) return { kind: 'unaffordable', reason: 'No Form 66-B to sell.' };
       delete state.event.error;
       if (choice.effect === 'bloodMoney') { losePlayerHp(5, 'event'); state.player.obols += 45; }
       else if (choice.effect === 'debtHeal') { healPlayer(6, 'event'); state.player.pendingDebt = 1; }
@@ -723,6 +760,61 @@
         state.player.obols -= 20; const cardId = weightedCards(1, { rarity: 'rare' })[0]; if (cardId) state.deck.push(makeCard(cardId));
       }
       else if (choice.effect === 'reportGhost') state.player.obols += 30;
+      else if (choice.effect === 'removeStarter') {
+        const index = state.deck.findIndex((card) => ['paper_cut', 'red_tape'].includes(card.cardId)); if (index >= 0) state.deck.splice(index, 1);
+      }
+      else if (choice.effect === 'curseForObols') { state.deck.push(makeCard('form_66b')); state.player.obols += 42; }
+      else if (choice.effect === 'transformStarter') {
+        const card = state.deck.find((item) => ['paper_cut', 'red_tape'].includes(item.cardId));
+        if (card) { card.cardId = weightedCards(1)[0] || card.cardId; card.upgraded = false; }
+      }
+      else if (choice.effect === 'rareForMaxHp') {
+        state.player.maxHp = Math.max(1, state.player.maxHp - 3); state.player.hp = Math.min(state.player.hp, state.player.maxHp);
+        const cardId = weightedCards(1, { rarity: 'rare' })[0]; if (cardId) state.deck.push(makeCard(cardId));
+      }
+      else if (choice.effect === 'auditLottery') {
+        if (random() < .2) losePlayerHp(12, 'Benefits Roulette'); else state.player.obols += 60;
+      }
+      else if (choice.effect === 'maxHpForCurse') { state.player.maxHp += 6; state.player.hp += 6; state.deck.push(makeCard('form_66b')); }
+      else if (choice.effect === 'upgradeStarter') {
+        const card = state.deck.find((item) => ['paper_cut', 'red_tape'].includes(item.cardId) && !item.upgraded); if (card) card.upgraded = true;
+        losePlayerHp(6, 'Compliance Tattoo');
+      }
+      else if (choice.effect === 'ambush') {
+        state.event = null; const result = startCombat('battle'); state.combat.lootMultiplier = 2; return { ...result, kind: 'event-combat' };
+      }
+      else if (choice.effect === 'forcedFine') state.player.obols = Math.max(0, state.player.obols - 28);
+      else if (choice.effect === 'healForObols') { state.player.obols -= 25; healPlayer(16, 'Sick-Day Jar'); }
+      else if (choice.effect === 'moneyDebt') { state.player.obols += 35; state.player.pendingDebt = Math.min(state.player.debtLimit, state.player.pendingDebt + 1); }
+      else if (choice.effect === 'purgeCurse') {
+        const index = state.deck.findIndex((card) => card.cardId === 'form_66b'); state.deck.splice(index, 1); state.player.obols += 20;
+      }
+      else if (choice.effect === 'relicForDebt') {
+        const available = RELICS.filter((relic) => !state.relics.some((owned) => owned.id === relic.id));
+        const relic = shuffle(available)[0]; if (relic) state.relics.push({ ...relic });
+        state.player.pendingDebt = Math.min(state.player.debtLimit, state.player.pendingDebt + 1);
+      }
+      else if (choice.effect === 'maxHpForMoney') {
+        state.player.maxHp = Math.max(1, state.player.maxHp - 5); state.player.hp = Math.min(state.player.hp, state.player.maxHp); state.player.obols += 75;
+      }
+      else if (choice.effect === 'debtForUpgrades') {
+        state.player.pendingDebt = Math.min(state.player.debtLimit, state.player.pendingDebt + 2);
+        shuffle(state.deck.filter((card) => !card.upgraded && hasMeaningfulUpgrade(card.cardId))).slice(0, 3).forEach((card) => { card.upgraded = true; });
+      }
+      else if (choice.effect === 'parachuteGamble') {
+        if (random() < .5) {
+          const available = RELICS.filter((relic) => !state.relics.some((owned) => owned.id === relic.id));
+          const relic = shuffle(available)[0]; if (relic) state.relics.push({ ...relic });
+        } else losePlayerHp(10, 'Parachute Test');
+      }
+      else if (choice.effect === 'fullHealForCurses') {
+        healPlayer(state.player.maxHp, 'Compulsory Wellness'); state.deck.push(makeCard('form_66b'), makeCard('form_66b'));
+      }
+      else if (choice.effect === 'bloodRemove') {
+        losePlayerHp(8, 'Wellness Refusal');
+        const index = state.deck.findIndex((card) => ['paper_cut', 'red_tape'].includes(card.cardId)); if (index >= 0) state.deck.splice(index, 1);
+      }
+      if (state.screen === 'outcome' || state.result === 'defeat') return { kind: 'event-defeat' };
       returnToMap(); return { kind: 'event-chosen' };
     }
     function createEvent(index) {

@@ -15,6 +15,12 @@
   const hand = document.getElementById('infernal-hand');
   const intent = document.getElementById('infernal-intent');
   const combatBark = document.getElementById('infernal-combat-bark');
+  const narrative = document.getElementById('infernal-narrative');
+  const narrativePortrait = document.getElementById('infernal-narrative-portrait');
+  const narrativeRole = document.getElementById('infernal-narrative-role');
+  const narrativeSpeaker = document.getElementById('infernal-narrative-speaker');
+  const narrativeCopy = document.getElementById('infernal-narrative-copy');
+  const narrativeNext = document.getElementById('infernal-narrative-next');
   const hud = document.getElementById('infernal-hud');
   const effectStatus = document.getElementById('infernal-effect-status');
   const cardStatus = document.getElementById('infernal-card-status');
@@ -47,7 +53,8 @@
   const tutorialSkip = document.getElementById('infernal-tutorial-skip');
   const tutorialNext = document.getElementById('infernal-tutorial-next');
   if (!modal || !invite || !shell || !canvas || !context || !intro || !mapScreen
-    || !combatScreen || !choiceScreen || !outcomeScreen || !hand || !intent || !combatBark
+    || !combatScreen || !choiceScreen || !outcomeScreen || !hand || !intent || !combatBark || !narrative
+    || !narrativePortrait || !narrativeRole || !narrativeSpeaker || !narrativeCopy || !narrativeNext
     || !hud || !effectStatus || !cardStatus || !log || !relics || !closeButton || !startButton || !endTurnButton
     || !playerHp || !playerHpText || !playerBlock || !enemyHp || !enemyHpText || !enemyBlock || !enemyName
     || !playerStatuses || !enemyStatuses || !resourceTokens || !statusDetail
@@ -102,6 +109,8 @@
   let mapResizeFrame = 0;
   let runStartedAt = 0;
   let lastRenderedScreen = 'intro';
+  let narrativeState = null;
+  const seenNarratives = new Set();
   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
   const glossaryTooltip = document.createElement('div');
   glossaryTooltip.id = 'infernal-glossary-tooltip';
@@ -109,6 +118,60 @@
   glossaryTooltip.setAttribute('role', 'tooltip');
   glossaryTooltip.hidden = true;
   shell.appendChild(glossaryTooltip);
+
+  const NARRATIVE_SCENES = {
+    opening: [
+      { actor: 'hero', speaker: 'Minor Demon', role: 'NEW HIRE · ETERNAL ACCOUNTS', copy: 'Probation. One corporate ladder. Two departments of Hell. What could be legally survivable?' },
+      { actor: 'morrow', speaker: 'Morrow', role: 'UNION REPRESENTATIVE · DECEASED', copy: 'I cannot stop Hell from exploiting you. I can, however, make it document the exploitation in triplicate.' },
+      { actor: 'morrow', speaker: 'Morrow', role: 'LOCAL 666 · CASE OFFICER', copy: 'Choose a package. Read enemy intent. And remember: Soul Debt is tomorrow’s mana wearing handcuffs.' },
+    ],
+    promotion: [
+      { actor: 'morrow', speaker: 'Morrow', role: 'PROMOTION WITNESS', copy: 'Act Two. Executive access, sharper monsters, and a dress code composed mostly of knives.' },
+      { actor: 'hero', speaker: 'Minor Demon', role: 'ASSISTANT TO THE ASSISTANT MANAGER', copy: 'So the promotion is real?' },
+      { actor: 'morrow', speaker: 'Morrow', role: 'UNION REPRESENTATIVE · DECEASED', copy: 'The workload is real. The promotion is a decorative noun.' },
+    ],
+    board: [
+      { actor: 'morrow', speaker: 'Morrow', role: 'FINAL GRIEVANCE OFFICER', copy: 'The Executive is ahead. Its health plan covers neither health nor plans.' },
+      { actor: 'hero', speaker: 'Minor Demon', role: 'HOSTILE SUCCESSION CANDIDATE', copy: 'Good. I brought an actionable restructuring proposal.' },
+    ],
+  };
+
+  function setNarrativeVisibility(open) {
+    narrative.hidden = !open;
+    [canvas, mapScreen, combatScreen, choiceScreen, outcomeScreen].forEach((surface) => { surface.inert = open; });
+  }
+
+  function renderNarrative() {
+    const line = narrativeState && NARRATIVE_SCENES[narrativeState.scene]?.[narrativeState.index];
+    setNarrativeVisibility(Boolean(line));
+    if (!line) return;
+    narrative.dataset.actor = line.actor;
+    narrativePortrait.dataset.speaker = line.actor;
+    narrativeRole.textContent = line.role;
+    narrativeSpeaker.textContent = line.speaker;
+    narrativeCopy.textContent = line.copy;
+    narrativeNext.textContent = narrativeState.index === NARRATIVE_SCENES[narrativeState.scene].length - 1 ? 'Proceed under protest' : 'Continue';
+    narrativeNext.focus({ preventScroll: true });
+  }
+
+  function openNarrative(scene) {
+    if (!NARRATIVE_SCENES[scene] || seenNarratives.has(scene)) return;
+    seenNarratives.add(scene);
+    narrativeState = { scene, index: 0 };
+    renderNarrative();
+  }
+
+  function advanceNarrative() {
+    if (!narrativeState) return;
+    narrativeState.index += 1;
+    if (narrativeState.index >= NARRATIVE_SCENES[narrativeState.scene].length) {
+      narrativeState = null; setNarrativeVisibility(false);
+      const target = run?.state.screen === 'combat' ? canvas : choiceScreen.querySelector('#infernal-choice-title') || mapScreen.querySelector('.infernal-map-node.available');
+      target?.focus({ preventScroll: true });
+      return;
+    }
+    renderNarrative();
+  }
 
   function showGlossaryTooltip(keyword) {
     const position = () => {
@@ -183,6 +246,7 @@
   };
   const KEYWORD_DEFINITIONS = {
     'Soul Debt': 'Borrowed mana. Each point removes 1 Hellfire next turn, then clears.',
+    Damage: 'Removes HP after Block and other defenses are resolved.',
     Debt: 'Soul Debt: each point removes 1 Hellfire next turn, then clears.',
     Hellfire: 'Mana spent to play cards. Normally refills to 3 each turn, minus Soul Debt.',
     Overdraft: 'Play without enough Hellfire by gaining Soul Debt.',
@@ -209,19 +273,57 @@
     immunity: { icon: '◇', art: 11, department: 'Executive Privilege', clause: 'First debuff prevented', risk: 'Ethics waiver permanent' },
     liquid: { icon: '¢', art: 2, department: 'Liquid Assets', clause: 'First Obol cost reduced', risk: 'Purse remains carnivorous' },
     pension: { icon: '×', art: 10, department: 'Post-Mortem Benefits', clause: 'Elite kills restore HP', risk: 'Vesting begins after death' },
+    removeStarter: { icon: '⌫', art: 10, department: 'Severance Processing', clause: 'Remove starter paperwork', risk: 'Personal effects incinerated' },
+    transformStarter: { icon: '↻', art: 8, department: 'Lateral Reassignment', clause: 'Transform a starter card', risk: 'Role description may develop teeth' },
+    upgradeStarters: { icon: '↑', art: 3, department: 'Accelerated Promotion', clause: 'Upgrade starter cards', risk: 'Expectations rise faster than pay' },
+    draftRare: { icon: '★', art: 0, department: 'Executive Sampling', clause: 'Begin with a rare card', risk: 'Sample remains legally binding' },
+    hazardPay: { icon: '☣', art: 11, department: 'Occupational Hazards', clause: 'More maximum HP', risk: 'Debt begins immediately' },
+    cashCurse: { icon: '¤', art: 2, department: 'Payroll Advances', clause: 'Start richer', risk: 'Repayment follows you home' },
+    removePair: { icon: '✂', art: 9, department: 'Board Cleanup', clause: 'Remove two starter cards', risk: 'Redundancies may include organs' },
+    upgradeForMaxHp: { icon: '⇧', art: 4, department: 'Golden Restructure', clause: 'Upgrade cards for maximum HP', risk: 'Growth is measured in scar tissue' },
+    draftLiability: { icon: '⚖', art: 7, department: 'Executive Liability', clause: 'Draft a powerful obligation', risk: 'Indemnity explicitly excluded' },
   };
 
   function escapeHtml(value) {
     return String(value).replace(/[&<>"']/g, (character) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[character]));
   }
 
-  function enrichTerms(value) {
+  const KEYWORD_CLASSES = {
+    damage: 'damage', block: 'block', weak: 'status', vulnerable: 'status', bleed: 'status', debt: 'status', 'soul debt': 'status',
+    hellfire: 'resource', obols: 'resource', filing: 'resource', ritual: 'resource', bribed: 'special', exhaust: 'special', exhausted: 'special', overdraft: 'special',
+  };
+  const SEMANTIC_TERM_PATTERN = /(?:deal(?:s)?|take(?:s)?|lose(?:s)?)?\s*\+?\d+(?:\s*[,+]\s*\+?\d+\s+with\s+Debt)?\s+(?:attack\s+)?damage(?:\s*\(\d+\s+hits\))?|(?:gain(?:s)?|\+)?\s*\d+\s+Block|(?:heal(?:s)?|restore(?:s)?)\s+\d+\s+HP|(?:gain(?:s)?|apply|applies|add|adds)?\s*\d+\s+(?:Debt|Weak|Vulnerable|Bleed)|(?:gain(?:s)?|lose(?:s)?|spend|pay|start\s+with)?\s*\d+\s+(?:Hellfire|Obols?|Filing|Ritual)/gi;
+
+  function enrichKeywords(value, interactive = true) {
     const pattern = new RegExp(`\\b(${Object.keys(KEYWORD_DEFINITIONS).map((keyword) => keyword.replace(' ', '\\s+')).join('|')})\\b`, 'gi');
     return escapeHtml(value).replace(pattern, (match) => {
       const definition = Object.entries(KEYWORD_DEFINITIONS).find(([keyword]) => keyword.toLowerCase() === match.toLowerCase().replace(/\s+/g, ' '))?.[1];
       const label = `${match}: ${definition || ''}`;
-      return `<span class="infernal-keyword" role="button" tabindex="0" aria-label="${escapeHtml(label)}" title="${escapeHtml(definition || '')}" data-tooltip="${escapeHtml(definition || '')}">${match}</span>`;
+      const semanticClass = KEYWORD_CLASSES[match.toLowerCase().replace(/\s+/g, ' ')];
+      if (!interactive) return `<span class="infernal-keyword-static${semanticClass ? ` infernal-keyword-${semanticClass}` : ''}">${match}</span>`;
+      return `<span class="infernal-keyword${semanticClass ? ` infernal-keyword-${semanticClass}` : ''}" role="button" tabindex="0" aria-label="${escapeHtml(label)}" title="${escapeHtml(definition || '')}" data-tooltip="${escapeHtml(definition || '')}">${match}</span>`;
     });
+  }
+
+  function semanticTermClass(value) {
+    if (/damage/i.test(value)) return 'damage';
+    if (/Block/i.test(value)) return 'block';
+    if (/heal|restore/i.test(value)) return 'heal';
+    if (/Debt|Weak|Vulnerable|Bleed/i.test(value)) return 'status';
+    return 'resource';
+  }
+
+  function enrichTerms(value, { interactive = true } = {}) {
+    const source = String(value);
+    const matches = [...source.matchAll(new RegExp(SEMANTIC_TERM_PATTERN.source, 'gi'))];
+    if (!matches.length) return enrichKeywords(source, interactive);
+    let cursor = 0;
+    return matches.map((match) => {
+      const prefix = enrichKeywords(source.slice(cursor, match.index), interactive);
+      cursor = match.index + match[0].length;
+      const type = semanticTermClass(match[0]);
+      return `${prefix}<strong class="infernal-semantic-term infernal-term-${type}">${enrichKeywords(match[0], interactive)}</strong>`;
+    }).join('') + enrichKeywords(source.slice(cursor), interactive);
   }
 
   function statusEntries(actor, target = 'player') {
@@ -293,13 +395,13 @@
       };
     }
     if (portrait) {
-      const heroSize = Math.min(height * .48, width * .65);
-      const enemySize = Math.min(height * .5, width * .64);
+      const heroSize = Math.min(height * .34, width * .38);
+      const enemySize = Math.min(height * .36, width * .42);
       return {
         mode: 'portrait',
-        hero: { x: width * -.06, y: height * .34, size: heroSize },
-        enemy: { x: width * .36, y: height * .35, size: enemySize },
-        enemyHudSafeBottom: height * .34,
+        hero: { x: width * .04, y: height * .36, size: heroSize },
+        enemy: { x: width * .56, y: height * .34, size: enemySize },
+        enemyHudSafeBottom: height * .31,
       };
     }
     const heroSize = Math.min(height * .58, width * .39);
@@ -384,8 +486,10 @@
     if (state.screen === 'combat' && state.combat) {
       const composition = combatComposition();
       const enemy = state.combat.enemy;
-      const attackShift = animation?.type === 'attack' && animation.target === 'enemy' ? Math.sin((1 - animation.remaining / animation.duration) * Math.PI) * canvas.width * .05 : 0;
-      const heroHitShift = animation?.type === 'hit' && animation.target === 'player' ? Math.sin(animation.remaining) * 8 : 0;
+      const motion = animation ? Math.sin((1 - animation.remaining / animation.duration) * Math.PI) : 0;
+      const attackShift = animation?.type === 'attack' && animation.target === 'enemy' ? motion * canvas.width * .05 : 0;
+      const enemyLunge = animation?.type === 'enemy-attack' ? -motion * canvas.width * .055 : 0;
+      const heroHitShift = ['hit', 'enemy-attack'].includes(animation?.type) && animation.target === 'player' ? Math.sin(animation.remaining) * 8 : 0;
       const heroSize = composition.hero.size;
       const enemySize = composition.enemy.size;
       breathingSprite(animation?.type === 'attack' ? 'demonAttack' : 'demon', composition.hero.x + attackShift + heroHitShift, composition.hero.y, heroSize);
@@ -394,8 +498,9 @@
       const attackImpact = animation?.type === 'attack' && animation.target === 'enemy' && animation.remaining < animation.duration * .62;
       const hitShift = (animation?.type === 'hit' && animation.target === 'enemy') || attackImpact ? Math.sin(animation.remaining) * 8 : 0;
       const mirrorEnemy = enemyShouldMirror(enemy);
-      breathingSprite(enemyKey, composition.enemy.x + hitShift, composition.enemy.y, enemySize, mirrorEnemy, Math.PI);
-      if (animation?.type === 'hit' || attackImpact) {
+      breathingSprite(enemyKey, composition.enemy.x + enemyLunge + hitShift, composition.enemy.y, enemySize, mirrorEnemy, Math.PI);
+      drawActionFx(composition);
+      if (animation?.type === 'hit' || animation?.type === 'enemy-attack' || attackImpact) {
         const flashX = animation.target === 'enemy' ? composition.enemy.x : composition.hero.x;
         const flashWidth = animation.target === 'enemy' ? enemySize : heroSize;
         context.fillStyle = `rgba(255,104,72,${Math.min(.3, animation.remaining / animation.duration * .3)})`;
@@ -411,6 +516,47 @@
       sprite('demon', canvas.width * .01, canvas.height - size * 1.05, size, size);
     }
     drawVisualEffects();
+  }
+
+  function drawActionFx(composition) {
+    if (!animation || reducedMotion.matches) return;
+    const progress = 1 - animation.remaining / animation.duration;
+    const pulse = Math.sin(progress * Math.PI);
+    const hero = { x: composition.hero.x + composition.hero.size * .58, y: composition.hero.y + composition.hero.size * .48 };
+    const enemy = { x: composition.enemy.x + composition.enemy.size * .46, y: composition.enemy.y + composition.enemy.size * .48 };
+    const effects = animation.effectKinds || [];
+    context.save();
+    context.globalAlpha = Math.max(0, pulse * .86);
+    context.lineCap = 'round';
+    if (animation.type === 'attack' || animation.type === 'enemy-attack') {
+      const from = animation.type === 'attack' ? hero : enemy;
+      const to = animation.type === 'attack' ? enemy : hero;
+      context.strokeStyle = animation.type === 'attack' ? '#ff8a65' : '#d65369';
+      context.shadowColor = context.strokeStyle; context.shadowBlur = canvas.width * .014;
+      context.lineWidth = Math.max(3, canvas.width / 260);
+      for (let slash = -1; slash <= 1; slash += 1) {
+        const offset = slash * canvas.height * .025;
+        context.beginPath();
+        context.moveTo(from.x + (to.x - from.x) * Math.max(0, progress - .22), from.y + offset);
+        context.lineTo(from.x + (to.x - from.x) * Math.min(1, progress + .28), to.y + offset - slash * 9);
+        context.stroke();
+      }
+      context.beginPath(); context.arc(to.x, to.y, composition.enemy.size * .08 * pulse, 0, Math.PI * 2); context.stroke();
+    } else if (animation.type === 'card' || animation.type === 'enemy-card') {
+      const origin = animation.type === 'card' ? hero : enemy;
+      const color = effects.includes('block') ? '#8bd8f2' : effects.some((kind) => ['weak', 'vulnerable', 'bleed', 'debt'].includes(kind)) ? '#d39aef' : '#f2cc67';
+      context.strokeStyle = color; context.shadowColor = color; context.shadowBlur = canvas.width * .012;
+      context.lineWidth = Math.max(2, canvas.width / 360);
+      for (let ring = 1; ring <= 3; ring += 1) {
+        context.beginPath(); context.arc(origin.x, origin.y, composition.hero.size * (.04 + ring * .045) * (1 + progress), 0, Math.PI * 2); context.stroke();
+      }
+      for (let ray = 0; ray < 8; ray += 1) {
+        const angle = ray / 8 * Math.PI * 2 + progress;
+        const radius = composition.hero.size * .23;
+        context.fillStyle = color; context.fillRect(origin.x + Math.cos(angle) * radius, origin.y + Math.sin(angle) * radius, 4, 4);
+      }
+    }
+    context.restore();
   }
 
   const EFFECT_COLORS = { damage: '#ff5b4d', block: '#79c9e8', absorbed: '#79c9e8', heal: '#75d487', debt: '#f39a4d', obols: '#f1c75b', weak: '#be86e8', vulnerable: '#d47e9a', bleed: '#d95454', filing: '#e0bd62', ritual: '#dca1f0', bribed: '#d9b64e', immune: '#87d0d8', phase: '#f0c45e' };
@@ -526,7 +672,8 @@
     if (!run) { hud.innerHTML = '<span>Awaiting employee number…</span>'; return; }
     const { player, deck, map } = run.state;
     const streak = run.state.screen === 'combat' ? `<span id="infernal-streak">STREAK <strong>${run.state.combat.streak}</strong></span>` : '';
-    const floor = map ? `${Math.min(map.progress + 1, 11)}/11` : 'PROMOTION';
+    const floorTotal = map ? map.rows.length + 1 : 0;
+    const floor = map ? `${Math.min(map.progress + 1, floorTotal)}/${floorTotal}` : 'PROMOTION';
     const combatSummary = `<span>ACT <strong>${run.state.act}/2</strong></span><span>OBOLS <strong>${player.obols}</strong></span><span>DECK <strong>${deck.length}</strong></span><span>FLOOR <strong>${floor}</strong></span>${streak}`;
     const runSummary = `<span>ACT <strong>${run.state.act}/2</strong></span><span>HP <strong>${player.hp}/${player.maxHp}</strong></span><span>OBOLS <strong>${player.obols}</strong></span><span>MANA · HELLFIRE <strong>${player.energy}</strong></span><span class="debt">SOUL DEBT <strong>${player.debt}/${player.debtLimit}</strong></span><span>DECK <strong>${deck.length}</strong></span><span>FLOOR <strong>${floor}</strong></span>`;
     hud.innerHTML = run.state.screen === 'combat' ? combatSummary : runSummary;
@@ -680,14 +827,17 @@
   function renderMap() {
     mapScreen.innerHTML = '';
     const heading = document.createElement('header'); heading.className = 'infernal-map-heading';
-    const mapProgress = Math.min(100, (run.state.map.progress / 10) * 100);
-    heading.innerHTML = `<div><p>ACT ${run.state.act} · CORPORATE LADDER</p><h3 id="infernal-map-title">${window.InfernalCore.ACTS[run.state.act - 1]?.name || 'Infernal Administration'}</h3></div><div class="infernal-map-progress"><span>FILE ${String(run.state.map.progress + 1).padStart(2, '0')} / 11</span><i style="--map-progress:${mapProgress}%"></i><small>ASCENSION TO MANAGEMENT</small></div>`;
+    const floorCount = run.state.map.rows.length + 1;
+    const mapProgress = Math.min(100, (run.state.map.progress / run.state.map.rows.length) * 100);
+    heading.innerHTML = `<div><p>ACT ${run.state.act} · CORPORATE LADDER</p><h3 id="infernal-map-title">${window.InfernalCore.ACTS[run.state.act - 1]?.name || 'Infernal Administration'}</h3></div><div class="infernal-map-progress"><span>FILE ${String(run.state.map.progress + 1).padStart(2, '0')} / ${floorCount}</span><i style="--map-progress:${mapProgress}%"></i><small>DRAG · SWIPE · FOLLOW THE LIT ROUTES</small></div>`;
     mapScreen.setAttribute('aria-labelledby', 'infernal-map-title');
     const state = run.state;
     const allRows = [...state.map.rows, [state.map.boss]];
+    const railWidth = allRows.length * 176;
+    let mapGestureMoved = false;
     const paths = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-    paths.classList.add('infernal-map-paths'); paths.setAttribute('aria-hidden', 'true');
-    const grid = document.createElement('div'); grid.className = 'infernal-map-grid';
+    paths.classList.add('infernal-map-paths'); paths.setAttribute('aria-hidden', 'true'); paths.style.setProperty('--map-rail-width', `${railWidth}px`);
+    const grid = document.createElement('div'); grid.className = 'infernal-map-grid'; grid.style.setProperty('--map-rail-width', `${railWidth}px`); grid.style.setProperty('--map-columns', allRows.length);
     allRows.forEach((row, rowIndex) => {
       const column = document.createElement('div'); column.className = 'infernal-map-column';
       column.classList.toggle('boss-column', rowIndex === allRows.length - 1);
@@ -709,7 +859,10 @@
         button.classList.toggle('reachable', state.map.reachable.includes(node.id));
         button.classList.toggle('unreachable', state.map.unreachable.includes(node.id));
         button.classList.toggle('visited', state.map.visited.includes(node.id));
-        button.addEventListener('click', () => { chooseNode(node.id); canvas.focus(); });
+        button.addEventListener('click', () => {
+          if (mapGestureMoved) return;
+          chooseNode(node.id); canvas.focus();
+        });
         column.appendChild(button);
       });
       grid.appendChild(column);
@@ -742,6 +895,8 @@
       path.dataset.renderStartX = start.x; path.dataset.renderEndX = end.x;
       path.classList.toggle('traversed', state.map.visitedEdges.includes(`${node.id}>${targetId}`));
       path.classList.toggle('available', state.map.available.includes(node.id));
+      path.classList.toggle('future', state.map.reachable.includes(node.id) && !path.classList.contains('available') && !path.classList.contains('traversed'));
+      path.classList.toggle('impossible', state.map.unreachable.includes(node.id) || state.map.unreachable.includes(targetId));
       paths.appendChild(path);
       if (path.classList.contains('available') || path.classList.contains('traversed')) {
         [start, end].forEach((point) => {
@@ -759,12 +914,44 @@
       endAffordance.dataset.visible = String(scroll.scrollLeft + scroll.clientWidth < scroll.scrollWidth - 8);
     };
     scroll.addEventListener('scroll', updateScrollAffordances, { passive: true });
-    if (window.innerWidth <= 760) {
-      const choices = [...grid.querySelectorAll('.infernal-map-node.available')];
-      if (choices.length) {
-        const center = choices.reduce((sum, node) => sum + node.parentElement.offsetLeft + node.offsetLeft, 0) / choices.length;
-        scroll.scrollLeft = Math.max(0, Math.min(scroll.scrollWidth - scroll.clientWidth, center - scroll.clientWidth / 2));
+    let dragStartX = 0;
+    let dragStartScroll = 0;
+    let dragging = false;
+    scroll.addEventListener('pointerdown', (event) => {
+      if (event.button !== 0) return;
+      dragging = true; mapGestureMoved = false; dragStartX = event.clientX; dragStartScroll = scroll.scrollLeft;
+    });
+    scroll.addEventListener('pointermove', (event) => {
+      if (!dragging) return;
+      const delta = event.clientX - dragStartX;
+      if (Math.abs(delta) > 6 && !mapGestureMoved) {
+        mapGestureMoved = true; scroll.classList.add('dragging'); scroll.setPointerCapture(event.pointerId);
       }
+      scroll.scrollLeft = dragStartScroll - delta;
+    });
+    const finishDrag = (event) => {
+      if (!dragging) return;
+      dragging = false; scroll.classList.remove('dragging');
+      if (scroll.hasPointerCapture(event.pointerId)) scroll.releasePointerCapture(event.pointerId);
+      if (mapGestureMoved) window.setTimeout(() => { mapGestureMoved = false; }, 0);
+    };
+    scroll.addEventListener('pointerup', finishDrag);
+    scroll.addEventListener('pointercancel', finishDrag);
+    scroll.addEventListener('wheel', (event) => {
+      if (Math.abs(event.deltaY) <= Math.abs(event.deltaX)) return;
+      event.preventDefault(); scroll.scrollLeft += event.deltaY;
+    }, { passive: false });
+    grid.querySelectorAll('.infernal-map-node').forEach((node) => {
+      const preview = (active) => paths.querySelectorAll(`[data-from="${node.dataset.nodeId}"]`).forEach((path) => path.classList.toggle('preview', active));
+      node.addEventListener('pointerenter', () => preview(true));
+      node.addEventListener('pointerleave', () => preview(false));
+      node.addEventListener('focus', () => preview(true));
+      node.addEventListener('blur', () => preview(false));
+    });
+    const choices = [...grid.querySelectorAll('.infernal-map-node.available')];
+    if (choices.length && state.map.progress > 0) {
+      const center = choices.reduce((sum, node) => sum + node.parentElement.offsetLeft + node.offsetLeft, 0) / choices.length;
+      scroll.scrollLeft = Math.max(0, Math.min(scroll.scrollWidth - scroll.clientWidth, center - scroll.clientWidth / 2));
     }
     updateScrollAffordances();
   }
@@ -853,7 +1040,7 @@
     if (enemyIntent.weak) details.push(`applies ${enemyIntent.weak} Weak`);
     if (enemyIntent.steal) details.push(`steals ${enemyIntent.steal} obols unless dealt 10 damage`);
     if (enemy.enemyId === 'intern' && enemy.strength) details.push(`+${enemy.strength} overtime strength`);
-    intent.innerHTML = `<strong>${enemyIntent.label}</strong><br>${details.join(' · ')}`;
+    intent.innerHTML = `<strong class="infernal-intent-label">${escapeHtml(enemyIntent.label)}</strong><br><span class="infernal-intent-effects">${enrichTerms(details.join(' · '))}</span>`;
     intent.setAttribute('aria-label', `${enemyIntent.label}. ${details.join('. ')}`);
     intent.dataset.category = enemyIntent.category || (damage ? 'attack' : enemyIntent.block ? 'defense' : (enemyIntent.weak || enemyIntent.vulnerable || enemyIntent.bleed) ? 'debuff' : 'special');
     updateBarkPresentation();
@@ -866,7 +1053,7 @@
 
   function choiceButton(label, detail, callback, disabled = false) {
     const button = document.createElement('button'); button.type = 'button'; button.disabled = disabled;
-    button.innerHTML = `${escapeHtml(label)}${detail ? `<small>${enrichTerms(detail)}</small>` : ''}`; button.addEventListener('click', callback); return button;
+    button.innerHTML = `${escapeHtml(label)}${detail ? `<small>${enrichTerms(detail, { interactive: false })}</small>` : ''}`; button.addEventListener('click', callback); return button;
   }
 
   function rewardCardElement(card) {
@@ -980,10 +1167,10 @@
     if (state.screen === 'benefit') {
       if (pendingPermanent?.screen !== 'benefit') pendingPermanent = null;
       eyebrow.textContent = state.act === 1 ? 'ONBOARDING PACKAGE' : 'PROMOTION PACKAGE';
-      title.textContent = state.act === 1 ? 'Choose your first company benefit' : 'Choose an executive benefit';
+      title.textContent = state.act === 1 ? 'Choose your infernal onboarding package' : 'Choose your executive package';
       body.textContent = state.act === 1
-        ? 'One permanent clause. Hell reserves the right to reinterpret it.'
-        : 'Middle management survived you. Select compensation before climbing higher.';
+        ? 'Passive protection, deck surgery, illicit promotion or predatory advance. One signature reshapes the run.'
+        : 'Middle management survived you. Select a permanent clause or restructure the deck before climbing higher.';
       state.benefitChoice.forEach((benefit, index) => {
         const detail = BENEFIT_DETAILS[benefit.effect] || { icon: '§', art: 1, department: 'Infernal Benefits', clause: 'Permanent benefit', risk: 'Terms subject to torment' };
         const button = document.createElement('button'); button.type = 'button'; button.className = 'infernal-benefit-dossier'; button.dataset.benefitId = benefit.id;
@@ -991,7 +1178,7 @@
         button.classList.toggle('selected', selected); button.setAttribute('aria-pressed', String(selected));
         const benefitX = (detail.art % 4) / 3 * 100;
         const benefitY = Math.floor(detail.art / 4) / 2 * 100;
-        button.innerHTML = `<span class="infernal-benefit-file">EMP-${String(index + 1).padStart(3, '0')}</span><span class="infernal-benefit-sigil" aria-hidden="true" style="--benefit-x:${benefitX}%;--benefit-y:${benefitY}%"><b>${detail.icon}</b></span><small>${escapeHtml(detail.department)}</small><strong>${escapeHtml(benefit.name)}</strong><p>${enrichTerms(benefit.text)}</p><span class="infernal-benefit-clause"><b>CLAUSE</b>${escapeHtml(detail.clause)}</span><span class="infernal-benefit-risk"><b>FINE PRINT</b>${escapeHtml(detail.risk)}</span>`;
+        button.innerHTML = `<span class="infernal-benefit-header"><span class="infernal-benefit-kind">${escapeHtml((benefit.kind || 'passive').toUpperCase())}</span><span class="infernal-benefit-file">EMP-${String(index + 1).padStart(3, '0')}</span></span><span class="infernal-benefit-sigil" aria-hidden="true" style="--benefit-x:${benefitX}%;--benefit-y:${benefitY}%"><b>${detail.icon}</b></span><small>${escapeHtml(detail.department)}</small><strong>${escapeHtml(benefit.name)}</strong><p>${enrichTerms(benefit.text)}</p><span class="infernal-benefit-clause"><b>CLAUSE</b>${escapeHtml(detail.clause)}</span><span class="infernal-benefit-risk"><b>FINE PRINT</b>${escapeHtml(detail.risk)}</span>`;
         button.addEventListener('click', () => selectPermanent({ screen: 'benefit', type: 'benefit', id: benefit.id })); list.appendChild(button);
       });
       trailing = document.createElement('div');
@@ -1030,11 +1217,20 @@
     } else if (state.screen === 'event') {
       if (pendingPermanent?.screen !== 'event') pendingPermanent = null;
       eyebrow.textContent = 'UNSCHEDULED PAPERWORK'; title.textContent = state.event.title; body.textContent = state.event.body;
-      const permanentEffects = new Set(['cardForBlood', 'upgradeRandom', 'relicForBlood', 'maxHpDebt', 'buyRare']);
+      const permanentEffects = new Set([
+        'cardForBlood', 'upgradeRandom', 'relicForBlood', 'maxHpDebt', 'buyRare',
+        'removeStarter', 'curseForObols', 'transformStarter', 'rareForMaxHp', 'auditLottery', 'maxHpForCurse', 'upgradeStarter',
+        'ambush', 'forcedFine', 'purgeCurse', 'relicForDebt', 'maxHpForMoney', 'debtForUpgrades', 'parachuteGamble', 'fullHealForCurses', 'bloodRemove',
+      ]);
       state.event.choices.forEach((item) => {
-        const unaffordable = item.effect === 'buyRare' && state.player.obols < 20;
+        const missingRareFunds = item.effect === 'buyRare' && state.player.obols < 20;
+        const missingHealFunds = item.effect === 'healForObols' && state.player.obols < 25;
+        const missingCurse = item.effect === 'purgeCurse' && !state.deck.some((card) => card.cardId === 'form_66b');
+        const unaffordable = missingRareFunds || missingHealFunds || missingCurse;
         const selected = pendingPermanent?.type === 'event-choice' && pendingPermanent.id === item.id;
-        const detail = unaffordable ? `${item.detail} Requires 20 Obols; only ${state.player.obols} available.` : item.detail;
+        const reason = missingRareFunds ? `Requires 20 Obols; only ${state.player.obols} available.`
+          : missingHealFunds ? `Requires 25 Obols; only ${state.player.obols} available.` : missingCurse ? 'No Form 66-B is available to sell.' : '';
+        const detail = unaffordable ? `${item.detail} ${reason}` : item.detail;
         const button = choiceButton(item.label, detail, () => {
           if (permanentEffects.has(item.effect)) selectPermanent({ screen: 'event', type: 'event-choice', id: item.id });
           else { run.chooseEvent(item.id); consumeEffects(); render(); }
@@ -1185,6 +1381,7 @@
   function render() {
     glossaryTooltip.hidden = true;
     if (!run) { renderHud(); renderCanvas(); return; }
+    if (run.state.screen === 'outcome' && narrativeState) { narrativeState = null; setNarrativeVisibility(false); }
     if (pendingPermanent && pendingPermanent.screen !== run.state.screen) pendingPermanent = null;
     const hadGameFocus = modal.contains(document.activeElement);
     const screenChanged = lastRenderedScreen !== run.state.screen;
@@ -1207,6 +1404,7 @@
       target?.focus({ preventScroll: true });
     }
     lastRenderedScreen = run.state.screen;
+    if (run.state.act === 2 && run.state.screen === 'benefit') openNarrative('promotion');
   }
 
   function settleAnimation(milliseconds) {
@@ -1246,9 +1444,9 @@
     if (!ambientFrame && !reducedMotion.matches) ambientFrame = requestAnimationFrame(ambientLoop);
   }
 
-  function animate(type, duration = 180, target = null) {
+  function animate(type, duration = 180, target = null, metadata = {}) {
     if (reducedMotion.matches) { animation = null; renderCanvas(); return; }
-    animation = { type, target, duration, remaining: duration };
+    animation = { type, target, duration, remaining: duration, ...metadata };
     if (!animationFrame) animationFrame = requestAnimationFrame(animationLoop);
   }
 
@@ -1271,8 +1469,8 @@
         render();
         return result;
       }
-      const hitsEnemy = effects.some((effect) => effect.kind === 'damage' && effect.target === 'enemy');
-      animate(hitsEnemy ? 'attack' : 'card', 180, hitsEnemy ? 'enemy' : null);
+      const cardAttacks = Boolean(card && resolveCardDefinition(card).damage);
+      animate(cardAttacks ? 'attack' : 'card', cardAttacks ? 280 : 240, cardAttacks ? 'enemy' : 'player', { cardId: card?.cardId, effectKinds: effects.map((effect) => effect.kind) });
       render();
     } else if (result.kind === 'unaffordable' && card) {
       const button = hand.querySelector(`[data-card-index="${index}"]`);
@@ -1283,7 +1481,9 @@
 
   function chooseNode(id) {
     const result = run.chooseNode(id);
-    consumeEffects(); render(); return result;
+    consumeEffects(); render();
+    if (run.state.screen === 'combat' && run.state.combat?.nodeType === 'boss') openNarrative('board');
+    return result;
   }
 
   function endTurn() {
@@ -1291,7 +1491,8 @@
     settlePendingFeedback();
     const result = run.endTurn();
     const effects = consumeEffects();
-    if (effects.some((effect) => effect.kind === 'damage' && effect.target === 'player')) animate('hit', 240, 'player');
+    if (effects.some((effect) => effect.kind === 'damage' && effect.target === 'player')) animate('enemy-attack', 300, 'player', { effectKinds: effects.map((effect) => effect.kind) });
+    else if (effects.some((effect) => effect.target === 'player' || effect.target === 'enemy')) animate('enemy-card', 240, 'player', { effectKinds: effects.map((effect) => effect.kind) });
     render(); return result;
   }
 
@@ -1300,8 +1501,9 @@
     if (animationFrame) cancelAnimationFrame(animationFrame);
     animation = null; animationFrame = 0; lastFrame = 0; visualEffects = []; currentBark = null; queuedBarks = [];
     clearArmedTouchCard(); barkIndex = 0; dialogueClock = 0; lastDialogueClock = -Infinity; runStartedAt = performance.now(); effectStatus.textContent = ''; updateBarkPresentation();
+    seenNarratives.clear(); narrativeState = null; setNarrativeVisibility(false);
     [...shell.children].forEach((child) => { child.inert = false; });
-    render(); if (run.state.screen === 'combat') canvas.focus(); return run.state;
+    render(); openNarrative('opening'); if (run.state.screen === 'combat') canvas.focus(); return run.state;
   }
   function openGame() {
     previousFocus = document.activeElement; modal.hidden = false; document.body.classList.add('game-open');
@@ -1309,7 +1511,7 @@
   }
   function closeGame() {
     modal.hidden = true; document.body.classList.remove('game-open');
-    glossaryTooltip.hidden = true; clearArmedTouchCard();
+    glossaryTooltip.hidden = true; setNarrativeVisibility(false); narrativeState = null; clearArmedTouchCard();
     if (ambientFrame) cancelAnimationFrame(ambientFrame); ambientFrame = 0; lastAmbientPaint = 0;
     if (document.fullscreenElement) document.exitFullscreen().catch(() => {});
     previousFocus?.focus();
@@ -1439,5 +1641,6 @@
     get run() { return run; },
   };
 
+  narrativeNext.addEventListener('click', advanceNarrative);
   renderTutorial(); renderHud(); renderCanvas();
 })();

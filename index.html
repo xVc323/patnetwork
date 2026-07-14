@@ -7,7 +7,7 @@
   <meta name="description" content="An independent archive of useful experiments, prototypes, and small internet artifacts by Pat.">
   <meta name="theme-color" content="#0b0f13">
   <link rel="icon" type="image/svg+xml" href="favicon.svg?v=20260714">
-  <link rel="stylesheet" href="styles.css?v=20260713-corporate-ascension">
+  <link rel="stylesheet" href="styles.css?v=20260714-progressive-v3">
 </head>
 <body>
   <a class="skip-link" href="#main">Skip to content</a>
@@ -162,6 +162,15 @@
       <p class="infernal-sr-only" id="infernal-card-status" aria-live="polite" aria-atomic="true"></p>
       <main class="infernal-main">
         <canvas id="infernal-canvas" width="768" height="432" tabindex="0" aria-label="The Infernal Ledger game scene"></canvas>
+        <section class="infernal-narrative" id="infernal-narrative" role="group" aria-labelledby="infernal-narrative-speaker" hidden>
+          <div class="infernal-narrative-portrait" id="infernal-narrative-portrait" aria-hidden="true"></div>
+          <article>
+            <small id="infernal-narrative-role"></small>
+            <h3 id="infernal-narrative-speaker"></h3>
+            <p id="infernal-narrative-copy"></p>
+            <button id="infernal-narrative-next" type="button">Continue</button>
+          </article>
+        </section>
         <section class="infernal-screen" id="infernal-map" aria-label="Dungeon map"></section>
         <section class="infernal-screen" id="infernal-combat" aria-label="Card battle" hidden>
           <div class="infernal-actor-plate player">
@@ -208,9 +217,9 @@
   </div>
 
   <script src="script.js?v=20260713-dungeon"></script>
-  <script src="games/infernal-ledger/data.js?v=20260714-audit-v2"></script>
-  <script src="games/infernal-ledger/core.js?v=20260714-audit-v2"></script>
+  <script src="games/infernal-ledger/data.js?v=20260714-progressive-v3"></script>
+  <script src="games/infernal-ledger/core.js?v=20260714-progressive-v3"></script>
   <script src="games/infernal-ledger/content.js?v=20260714-audit-v2"></script>
-  <script src="games/infernal-ledger/game.js?v=20260714-audit-v2"></script>
+  <script src="games/infernal-ledger/game.js?v=20260714-progressive-v3"></script>
 </body>
 </html>

@@ -79,17 +79,26 @@
   };
 
   const BENEFITS = [
-    { id: 'union_dues', act: 1, name: 'Union Dues', text: 'Start combat with 6 Block and 1 Filing.', effect: 'union' },
-    { id: 'blood_bonus', act: 1, name: 'Blood Bonus', text: '+6 maximum HP. Heal 2 after self-damage once per turn.', effect: 'blood' },
-    { id: 'predatory_credit', act: 1, name: 'Predatory Credit', text: 'Soul Debt limit becomes 3. Start with 15 Obols.', effect: 'credit' },
-    { id: 'iron_filing', act: 1, name: 'Iron Filing Cabinet', text: 'Start each combat with 2 additional Filing.', effect: 'filing' },
-    { id: 'pain_clause', act: 1, name: 'Pain Clause', text: 'After losing HP on your turn, your next attack deals +4.', effect: 'pain' },
-    { id: 'archive_dividend', act: 1, name: 'Archive Dividend', text: 'First card Exhausted each turn grants 3 Block.', effect: 'archive' },
+    { id: 'union_dues', act: 1, kind: 'passive', name: 'Union Dues', text: 'Start combat with 6 Block and 1 Filing.', effect: 'union' },
+    { id: 'blood_bonus', act: 1, kind: 'passive', name: 'Blood Bonus', text: '+6 maximum HP. Heal 2 after self-damage once per turn.', effect: 'blood' },
+    { id: 'predatory_credit', act: 1, kind: 'passive', name: 'Predatory Credit', text: 'Soul Debt limit becomes 3. Start with 15 Obols.', effect: 'credit' },
+    { id: 'iron_filing', act: 1, kind: 'passive', name: 'Iron Filing Cabinet', text: 'Start each combat with 2 additional Filing.', effect: 'filing' },
+    { id: 'pain_clause', act: 1, kind: 'passive', name: 'Pain Clause', text: 'After losing HP on your turn, your next attack deals +4.', effect: 'pain' },
+    { id: 'archive_dividend', act: 1, kind: 'passive', name: 'Archive Dividend', text: 'First card Exhausted each turn grants 3 Block.', effect: 'archive' },
+    { id: 'severance_orientation', act: 1, kind: 'remove', name: 'Severance Orientation', text: 'Remove one Paper Cut from your starting deck.', effect: 'removeStarter' },
+    { id: 'lateral_transfer', act: 1, kind: 'transform', name: 'Lateral Transfer', text: 'Transform two Red Tape into random non-starter cards.', effect: 'transformStarter' },
+    { id: 'fast_track', act: 1, kind: 'upgrade', name: 'Fast-Track Probation', text: 'Upgrade one Paper Cut and one Red Tape.', effect: 'upgradeStarters' },
+    { id: 'executive_sample', act: 1, kind: 'draft', name: 'Executive Free Sample', text: 'Add Archive Fire to your deck. The first taste is legally free.', effect: 'draftRare' },
+    { id: 'hazard_pay', act: 1, kind: 'contract', name: 'Hazard Pay', text: 'Gain 8 maximum HP. Begin the next combat with 1 Debt.', effect: 'hazardPay' },
+    { id: 'cash_advance', act: 1, kind: 'economy', name: 'Cash Advance From Below', text: 'Gain 55 Obols. Add Form 66-B to your deck.', effect: 'cashCurse' },
     { id: 'golden_handcuffs', act: 2, name: 'Golden Handcuffs', text: 'Draw one extra card on turn one.', effect: 'draw' },
     { id: 'hostile_synergy', act: 2, name: 'Hostile Synergy', text: 'First status applied each combat also grants 1 Ritual.', effect: 'synergy' },
     { id: 'executive_immunity', act: 2, name: 'Executive Immunity', text: 'Prevent the first debuff in each combat.', effect: 'immunity' },
     { id: 'liquid_assets', act: 2, name: 'Liquid Assets', text: 'First Obol cost each combat is reduced by 6.', effect: 'liquid' },
     { id: 'infernal_pension', act: 2, name: 'Infernal Pension', text: 'Heal 5 HP after defeating an elite.', effect: 'pension' },
+    { id: 'board_cleanup', act: 2, kind: 'remove', name: 'Board-Level Cleanup', text: 'Remove one starter attack and one starter skill.', effect: 'removePair' },
+    { id: 'golden_restructure', act: 2, kind: 'upgrade', name: 'Golden Restructure', text: 'Upgrade three random cards. Lose 4 maximum HP.', effect: 'upgradeForMaxHp' },
+    { id: 'executive_liability', act: 2, kind: 'draft', name: 'Executive Liability', text: 'Add Unlimited Liability and gain 25 Obols.', effect: 'draftLiability' },
   ];
 
   const ACTS = [
@@ -121,6 +130,16 @@
     { act: 2, title: 'Hostile Acquisition Chapel', body: 'A relic waits where the altar should be.', choices: [{ id: 'acquire', label: 'Pay in blood', detail: 'Lose 7 HP. Gain a relic.', effect: 'relicForBlood' }, { id: 'decline', label: 'Cite antitrust law', detail: 'Gain 24 Obols.', effect: 'safeMoney' }] },
     { act: 2, title: 'The Boardroom Without Doors', body: 'The chairs vote before you sit.', choices: [{ id: 'vote', label: 'Vote yourself larger', detail: 'Gain 4 max HP and 1 pending Debt.', effect: 'maxHpDebt' }, { id: 'abstain', label: 'Abstain loudly', detail: 'Heal 10 HP.', effect: 'executiveHeal' }] },
     { act: 2, title: 'Insider Trading Séance', body: 'Tomorrow\'s prices speak through a dead broker.', choices: [{ id: 'listen', label: 'Buy the whisper', detail: 'Lose 20 Obols. Gain a rare card.', effect: 'buyRare' }, { id: 'report', label: 'Report the ghost', detail: 'Gain 30 Obols.', effect: 'reportGhost' }] },
+    { act: 1, title: 'Mandatory Desk Purge', body: 'A smiling shredder requests one piece of your identity.', choices: [{ id: 'purge', label: 'Shred a starter', detail: 'Remove one basic card.', effect: 'removeStarter' }, { id: 'refuse', label: 'Refuse retention policy', detail: 'Add Form 66-B. Gain 42 Obols.', effect: 'curseForObols' }] },
+    { act: 1, title: 'Interdepartmental Flesh Transfer', body: 'Your job title is removed while you are still wearing it.', choices: [{ id: 'transfer', label: 'Accept reassignment', detail: 'Transform a starter card.', effect: 'transformStarter' }, { id: 'appeal', label: 'Appeal to the wall', detail: 'Lose 3 maximum HP. Gain a rare card.', effect: 'rareForMaxHp' }] },
+    { act: 1, title: 'The Benefits Roulette', body: 'The wheel has nineteen prizes and one disciplinary spike.', choices: [{ id: 'spin', label: 'Spin the wheel', detail: '80%: gain 60 Obols. 20%: lose 12 HP.', effect: 'auditLottery' }, { id: 'sell', label: 'Sell your turn', detail: 'Gain 20 Obols safely.', effect: 'smallMoney' }] },
+    { act: 1, title: 'Compliance Tattoo Kiosk', body: 'The needle has already signed your consent form.', choices: [{ id: 'ink', label: 'Authorize the clause', detail: 'Gain 6 maximum HP. Add Form 66-B.', effect: 'maxHpForCurse' }, { id: 'erase', label: 'Erase your signature', detail: 'Lose 6 HP. Upgrade a starter.', effect: 'upgradeStarter' }] },
+    { act: 1, title: 'Unscheduled Performance Ambush', body: 'A conference room grows teeth and locks the door.', choices: [{ id: 'fight', label: 'Challenge the minutes', detail: 'Fight now. Rewards are doubled.', effect: 'ambush' }, { id: 'settle', label: 'Settle out of combat', detail: 'Lose 28 Obols.', effect: 'forcedFine' }] },
+    { act: 1, title: 'The Bottomless Sick-Day Jar', body: 'Every donated coin coughs in a familiar voice.', choices: [{ id: 'donate', label: 'Donate 25 Obols', detail: 'Heal 16 HP.', effect: 'healForObols' }, { id: 'steal', label: 'Embezzle the jar', detail: 'Gain 35 Obols and 1 pending Debt.', effect: 'moneyDebt' }] },
+    { act: 2, title: 'Executive Curse Buyback', body: 'Legal offers to purchase one mistake at market value.', choices: [{ id: 'sell', label: 'Sell a Form 66-B', detail: 'Remove one status card. Gain 20 Obols.', effect: 'purgeCurse' }, { id: 'bundle', label: 'Securitize the mistake', detail: 'Gain a relic and 1 pending Debt.', effect: 'relicForDebt' }] },
+    { act: 2, title: 'The Quarterly Sacrifice', body: 'The Board requires a permanent reduction in somebody.', choices: [{ id: 'body', label: 'Cut biological overhead', detail: 'Lose 5 maximum HP. Gain 75 Obols.', effect: 'maxHpForMoney' }, { id: 'future', label: 'Cut future liquidity', detail: 'Gain 2 pending Debt. Upgrade 3 cards.', effect: 'debtForUpgrades' }] },
+    { act: 2, title: 'Golden Parachute Testing Range', body: 'A safety inspector points toward the floor, several miles below.', choices: [{ id: 'jump', label: 'Test the prototype', detail: '50%: gain a relic. 50%: lose 10 HP.', effect: 'parachuteGamble' }, { id: 'inspect', label: 'Falsify inspection', detail: 'Gain 26 Obols.', effect: 'safeMoney' }] },
+    { act: 2, title: 'Compulsory Wellness Catastrophe', body: 'Attendance is mandatory. Survival is an optional benefit.', choices: [{ id: 'breathe', label: 'Practice infernal breathing', detail: 'Fully heal. Add two Form 66-B.', effect: 'fullHealForCurses' }, { id: 'decline', label: 'Decline wellness', detail: 'Lose 8 HP and remove one starter.', effect: 'bloodRemove' }] },
   ];
 
   return { CARDS, ENEMIES, RELICS, EVENTS, BENEFITS, ACTS };
