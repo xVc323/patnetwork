@@ -134,41 +134,54 @@
     function buildMap(act = 1) {
       const variant = Math.floor(random() * 4);
       const patterns = [
-        ['battle', 'battle', 'battle', 'battle'],
-        ['event', 'battle', 'cache', 'contract'],
-        ['battle', 'battle', 'battle', 'battle'],
-        ['event', 'cache', 'contract', 'battle'],
-        ['shop', 'battle', 'cache', 'contract'],
-        ['battle', 'battle', 'battle', 'battle'],
-        ['event', 'elite', 'battle', 'contract'],
-        ['cache', 'battle', 'contract', 'elite'],
-        ['battle', 'battle', 'battle', 'battle'],
-        ['cache', 'battle', 'contract', 'battle'],
-        ['battle', 'battle', 'battle', 'battle'],
-        ['battle', 'battle', 'battle', 'battle'],
-        ['campfire', 'campfire', 'campfire', 'campfire'],
-        ['battle', 'battle', 'battle', 'battle'],
+        ['battle', 'event', 'cache'],
+        ['event', 'battle'],
+        ['battle', 'cache', 'battle'],
+        ['contract', 'battle'],
+        ['shop', 'battle', 'cache'],
+        ['battle', 'event'],
+        ['elite', 'battle', 'contract'],
+        ['cache', 'battle'],
+        ['battle', 'battle', 'event'],
+        ['campfire', 'campfire'],
+      ];
+      const laneTemplates = [
+        [[0, 2, 4], [1, 3], [0, 2, 4], [0, 3], [1, 2, 4], [1, 4], [0, 2, 3], [0, 3], [1, 2, 4], [1, 3]],
+        [[0, 1, 4], [1, 3], [0, 2, 4], [1, 4], [0, 2, 3], [0, 3], [1, 2, 4], [1, 4], [0, 2, 3], [1, 3]],
+        [[0, 2, 3], [1, 4], [0, 2, 4], [0, 3], [1, 2, 4], [1, 3], [0, 2, 3], [0, 4], [1, 2, 4], [1, 3]],
+        [[1, 2, 4], [0, 3], [0, 2, 4], [1, 4], [0, 2, 3], [0, 3], [1, 2, 4], [0, 3], [0, 2, 4], [1, 3]],
       ];
       const rows = patterns.map((types, row) => {
-        const rotated = types.map((_, index) => types[(index + variant + row) % types.length]);
-        return rotated.map((type, column) => ({
-          id: `a${act}n${row}-${column}`, act, row, column, lane: column, type,
-          offset: ((row * 3 + column * 5 + variant) % 3) - 1, connections: [],
-        }));
+        const lanes = laneTemplates[variant][row];
+        const rotated = row === 0 ? types : types.map((_, index) => types[(index + variant + row) % types.length]);
+        return rotated.map((type, column) => {
+          const lane = lanes[column];
+          const offset = Math.round((random() - .5) * 5);
+          return {
+            id: `a${act}n${row}-${column}`, act, row, column, lane, type,
+            offset, visualY: 17 + lane * 16.5 + offset, connections: [],
+          };
+        });
       });
-      const boss = { id: `a${act}boss`, act, row: rows.length, column: 1.5, lane: null, type: 'boss', offset: 0, connections: [] };
-      rows.forEach((nodes, rowIndex) => nodes.forEach((node, column) => {
-        if (rowIndex === rows.length - 1) node.connections = [boss.id];
-        else {
-          const next = rows[rowIndex + 1];
-          const neighbor = column === 0 ? 1 : column === next.length - 1 ? column - 1
-            : column + (((rowIndex + column + variant) % 2) ? 1 : -1);
-          node.connections = [next[column].id, next[neighbor].id];
+      const boss = { id: `a${act}boss`, act, row: rows.length, column: 0, lane: 2, visualY: 50, type: 'boss', offset: 0, connections: [] };
+      const connectBands = (nodes, next) => {
+        if (nodes.length === 3 && next.length === 2) return [[0], [0, 1], [1]];
+        if (nodes.length === 2 && next.length === 3) return [[0, 1], [1, 2]];
+        if (nodes.length === 3 && next.length === 3) return [[0, 1], [1], [1, 2]];
+        return [[0], [1]];
+      };
+      rows.forEach((nodes, rowIndex) => {
+        if (rowIndex === rows.length - 1) {
+          nodes.forEach((node) => { node.connections = [boss.id]; });
+          return;
         }
-      }));
+        const next = rows[rowIndex + 1];
+        const connections = connectBands(nodes, next);
+        nodes.forEach((node, column) => { node.connections = connections[column].map((target) => next[target].id); });
+      });
       return refreshMapReachability({
         act, templateId: `act-${act}-v${variant + 1}`, progress: 0, rows, boss,
-        routeRules: { minimumBattles: 5, maximumShops: 1, maximumEvents: 3, lateCampfire: 12 },
+        routeRules: { minimumBattles: 5, maximumShops: 1, maximumEvents: 3, lateCampfire: 9 },
         visited: [], visitedEdges: [], available: rows[0].map((node) => node.id),
       });
     }

@@ -248,7 +248,7 @@ body.game-open { overflow: hidden; }
 .infernal-hud strong { color: #f0e3c9; }
 .infernal-hud .debt { color: #d2644d; }
 .infernal-main { position: relative; min-height: 0; overflow: hidden; }
-#infernal-canvas { position: absolute; inset: 0; width: 100%; height: 100%; outline: none; image-rendering: pixelated; }
+#infernal-canvas { position: absolute; inset: 0; width: 100%; height: 100%; outline: none; image-rendering: auto; }
 .infernal-screen { position: absolute; z-index: 2; inset: 0; }
 .infernal-screen[hidden] { display: none; }
 .infernal-intro, .infernal-choice, .infernal-outcome { position: absolute; z-index: 4; top: 50%; left: 50%; width: min(92%, 580px); padding: clamp(24px, 4vw, 48px); transform: translate(-50%, -50%); border: 1px solid #6d5839; background: linear-gradient(145deg, rgba(32,25,18,.98), rgba(14,11,9,.98)); box-shadow: 16px 16px 0 rgba(88,25,23,.55); text-align: center; }
@@ -297,17 +297,20 @@ body.game-open { overflow: hidden; }
 .infernal-map-floor-label span { color: #756348; font: 800 8px var(--mono); }
 .infernal-map-floor-label small { margin-top: 3px; color: #5e513e; font: 700 6px var(--mono); letter-spacing: .09em; }
 .infernal-map-column.boss-column .infernal-map-floor-label span, .infernal-map-column.boss-column .infernal-map-floor-label small { color: #b18d4c; }
-.infernal-map-node { position: absolute; top: var(--node-y, 50%); left: 50%; display: grid; width: clamp(82px, 7.1vw, 112px); min-height: 58px; grid-template-columns: 30px 1fr; align-items: center; gap: 7px; border: 1px solid #59472f; border-radius: 7px; padding: 7px 8px; transform: translate(-50%, -50%); background: linear-gradient(145deg, rgba(38,28,20,.98), rgba(12,9,8,.98)); color: #c8b897; cursor: pointer; box-shadow: 0 5px 0 rgba(8,5,4,.62), inset 0 0 0 2px rgba(181,142,71,.035); text-align: left; text-transform: uppercase; transition: border-color .16s ease, box-shadow .16s ease, filter .16s ease, transform .16s ease; }
+.infernal-map-node { position: absolute; top: var(--node-y, 50%); left: 50%; display: grid; width: clamp(118px, 9.2vw, 142px); min-height: 68px; grid-template-columns: 34px 1fr; align-items: center; gap: 8px; border: 1px solid #59472f; border-radius: 10px 3px 10px 3px; padding: 13px 8px 8px; transform: translate(-50%, -50%); background: linear-gradient(145deg, rgba(38,28,20,.98), rgba(12,9,8,.98)); color: #c8b897; cursor: pointer; box-shadow: 0 5px 0 rgba(8,5,4,.62), inset 0 0 0 2px rgba(181,142,71,.035); text-align: left; text-transform: uppercase; transition: border-color .16s ease, box-shadow .16s ease, filter .16s ease, transform .16s ease; }
 .infernal-map-node::before, .infernal-map-node::after { position: absolute; top: 50%; width: 6px; height: 6px; transform: translateY(-50%); border: 1px solid #826944; border-radius: 50%; background: #17110d; content: ''; }
 .infernal-map-node::before { left: -5px; }
 .infernal-map-node::after { right: -5px; }
-.infernal-map-node-icon { display: grid; width: 29px; height: 29px; place-items: center; border: 1px solid #675236; border-radius: 50%; background: #17110d; color: #a78d59; font: 800 14px var(--mono); }
+.infernal-icon { display: block; width: 1em; height: 1em; fill: currentColor; }
+.infernal-map-node-icon { display: grid; width: 32px; height: 32px; place-items: center; border: 1px solid #675236; border-radius: 50%; background: radial-gradient(circle, #241813, #0c0908); color: #b99b5d; }
+.infernal-map-node-icon .infernal-icon { width: 20px; height: 20px; }
+.infernal-map-option-badge { position: absolute; top: -1px; left: 8px; border: 1px solid #d0a652; border-top: 0; padding: 2px 5px; background: #6b2c20; color: #ffe09a; font: 900 6px var(--mono); letter-spacing: .09em; }
 .infernal-map-node-copy { min-width: 0; }
 .infernal-map-node-copy strong, .infernal-map-node-copy small { display: block; }
 .infernal-map-node-copy strong { color: #d5c5a4; font: 800 8px/1.05 var(--mono); }
-.infernal-map-node-copy small { margin-top: 4px; overflow: hidden; color: #766b57; font: 600 5px/1.1 var(--mono); letter-spacing: .02em; white-space: nowrap; }
+.infernal-map-node-copy small { margin-top: 4px; color: #8d7d61; font: 700 5px/1.25 var(--mono); letter-spacing: .01em; white-space: normal; }
 .infernal-map-node:hover:not(:disabled), .infernal-map-node.available { z-index: 4; transform: translate(-50%, calc(-50% - 3px)); border-color: #d3ab58; color: #f3d985; box-shadow: 0 8px 0 rgba(25,10,7,.72), 0 0 24px rgba(184,92,45,.28), inset 0 0 0 2px rgba(221,176,87,.12); }
-.infernal-map-node.available .infernal-map-node-icon { border-color: #dfb65a; background: radial-gradient(circle, #6b2a20, #1d100c); color: #ffe18a; box-shadow: 0 0 10px rgba(218,166,74,.28); }
+.infernal-map-node.available .infernal-map-node-icon { border-color: #dfb65a; background-color: #1d100c; color: #ffe083; box-shadow: 0 0 10px rgba(218,166,74,.28); }
 .infernal-map-node.available::before, .infernal-map-node.available::after { border-color: #e0b961; background: #e0b961; box-shadow: 0 0 5px rgba(224,185,97,.55); }
 .infernal-map-node.type-event { border-color: #665079; background: linear-gradient(145deg, #241b2b, #0d0a0f); }
 .infernal-map-node.type-event .infernal-map-node-icon { color: #c7a4d9; }
@@ -332,18 +335,23 @@ body.game-open { overflow: hidden; }
 .infernal-map-legend > span { display: flex; align-items: center; gap: 6px; }
 .infernal-map-legend i { display: block; width: 22px; height: 2px; background: #5a4b35; }
 .infernal-map-legend i.available { height: 3px; background: #d0aa59; box-shadow: 0 0 5px rgba(208,170,89,.4); }
-.infernal-map-legend b { color: #b87051; }
+.infernal-map-legend .infernal-icon { width: 13px; height: 13px; color: #b87051; }
 .infernal-map-legend > small { margin-left: auto; color: #685b48; font: inherit; }
 .infernal-combat { pointer-events: none; }
 .infernal-combat::after { position: absolute; z-index: 0; right: 0; bottom: 0; left: 0; height: 31%; border-top: 1px solid rgba(133,117,91,.28); background: linear-gradient(180deg, rgba(12,9,8,.2), rgba(5,4,3,.94) 20%), repeating-linear-gradient(90deg, rgba(102,86,62,.06) 0 1px, transparent 1px 90px); box-shadow: inset 0 14px 28px rgba(0,0,0,.7); content: ''; }
-.infernal-actor-plate { position: absolute; z-index: 3; top: 1.5%; width: min(30%, 380px); height: 100px; min-height: 100px; isolation: isolate; padding: 0; color: #d8d1c3; filter: saturate(.72); font: 700 9px var(--mono); text-shadow: 0 2px 2px #000; text-transform: uppercase; }
+.infernal-actor-plate { position: absolute; z-index: 3; top: 1.5%; width: min(34%, 430px); height: 108px; min-height: 108px; isolation: isolate; padding: 0; color: #d8d1c3; filter: saturate(.72); font: 700 9px var(--mono); text-shadow: 0 2px 2px #000; text-transform: uppercase; }
 .infernal-actor-plate::before { position: absolute; z-index: -1; inset: 0; box-sizing: border-box; border: clamp(17px, 2vw, 28px) solid transparent; border-right-width: clamp(25px, 3.2vw, 44px); border-left-width: clamp(25px, 3.2vw, 44px); border-image: url("games/infernal-ledger/assets/combat-hud-plate.png") 84 150 90 150 fill / 1 stretch; content: ''; filter: drop-shadow(0 6px 7px rgba(0,0,0,.8)); pointer-events: none; }
-.infernal-actor-plate.player { left: 2.5%; }
+.infernal-actor-plate.player { left: 2.5%; width: min(54%, 650px); }
 .infernal-actor-plate.enemy { right: 2.5%; }
 .infernal-actor-plate > div:first-child { position: absolute; z-index: 2; top: 29px; right: 44px; left: 44px; display: flex; justify-content: space-between; gap: 10px; color: #fff0d9; font-size: 10px; text-shadow: 1px 2px #000, 0 0 5px #000; }
 .infernal-actor-plate > div:first-child span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .infernal-actor-plate > div:first-child strong { flex: none; color: #fff1dc; font-size: 11px; }
 .infernal-health { position: absolute; z-index: 1; top: 47px; right: 43px; left: 43px; height: 23px; overflow: hidden; border: 1px solid #26201b; border-radius: 7px; background: linear-gradient(180deg, #080707, #1b0c0c); box-shadow: inset 0 3px 5px #000, 0 0 0 1px #706452; }
+.infernal-actor-plate.player > div:first-child { right: 42px; }
+.infernal-vitals-frame { position: absolute; z-index: 1; top: 43px; right: 39px; left: 39px; display: grid; height: 43px; grid-template-columns: minmax(112px, 1fr) minmax(210px, 220px); align-items: stretch; gap: 10px; }
+.infernal-health-module { display: flex; min-width: 0; align-items: center; }
+.infernal-health-module .infernal-health { position: relative; top: auto; right: auto; left: auto; width: 100%; height: 23px; }
+.infernal-actor-plate.player .infernal-health-module .infernal-health { top: auto; right: auto; left: auto; }
 .infernal-health::before { display: block; width: var(--health, 100%); height: 100%; background: linear-gradient(180deg, #bb6459 0, #84271f 45%, #4d100f 100%); box-shadow: inset 0 2px rgba(255,220,193,.2), inset 0 -2px rgba(0,0,0,.55); content: ''; transition: width .2s ease; }
 .infernal-health::after { position: absolute; inset: 2px 10px 55% 8px; border-radius: 50%; background: rgba(255,255,255,.12); content: ''; }
 .infernal-block { position: absolute; top: 47px; display: grid; width: 34px; height: 38px; place-items: center; border: 2px solid #737d80; clip-path: polygon(50% 0, 92% 18%, 82% 76%, 50% 100%, 18% 76%, 8% 18%); background: linear-gradient(145deg, #34464c, #111a1e); color: #cfe3e5; box-shadow: inset 0 0 0 3px #11181b; opacity: .42; font: 800 9px var(--mono); text-shadow: 0 1px #000; }
@@ -351,27 +359,30 @@ body.game-open { overflow: hidden; }
 .infernal-actor-plate.player .infernal-block { right: -34px; }
 .infernal-actor-plate.enemy .infernal-block { left: -34px; }
 .infernal-statuses { position: absolute; top: calc(100% + 5px); right: 38px; left: 38px; display: flex; min-height: 25px; gap: 5px; margin: 0; pointer-events: auto; }
+.infernal-actor-plate.player .infernal-statuses { right: 38px; }
 .infernal-actor-plate.enemy .infernal-statuses { justify-content: flex-end; }
 .infernal-status-chip { display: inline-flex; min-width: 44px; height: 28px; align-items: center; justify-content: center; gap: 6px; border: 1px solid #817666; border-radius: 2px; padding: 0 9px; background: linear-gradient(180deg, rgba(66,60,50,.98), rgba(16,14,12,.98)); color: #f0e3ca; cursor: help; box-shadow: inset 0 0 0 1px #171411, 0 3px 5px rgba(0,0,0,.72); font: 800 9px var(--mono); }
 .infernal-status-chip span { color: #dc9d60; font-size: 13px; }
+.infernal-status-chip .infernal-icon { width: 15px; height: 15px; }
 .infernal-status-chip[data-polarity="negative"] { border-color: #9d493e; background: linear-gradient(180deg, rgba(78,43,39,.98), rgba(20,13,12,.98)); }
 .infernal-status-chip[data-polarity="positive"] { border-color: #688359; background: linear-gradient(180deg, rgba(48,67,43,.98), rgba(14,19,13,.98)); }
 .infernal-status-chip[data-polarity="resource"] { border-color: #9b8348; background: linear-gradient(180deg, rgba(75,64,36,.98), rgba(18,16,11,.98)); }
 .infernal-gimmick-chip { min-width: 74px; letter-spacing: .04em; }
-.infernal-resource-tokens { position: absolute; z-index: 5; bottom: 42%; left: 50%; display: flex; align-items: center; gap: 24px; transform: translateX(-50%); pointer-events: none; }
-.infernal-resource-orb { position: relative; display: grid; width: 96px; height: 96px; place-content: center; border: 0; border-radius: 50%; background: #090707; box-shadow: 0 10px 22px rgba(0,0,0,.82), inset 0 0 17px #000; color: #f2e8d8; isolation: isolate; overflow: visible; text-align: center; }
+.infernal-resource-tokens { position: relative; z-index: 4; display: grid; min-width: 210px; grid-template-columns: 78px minmax(112px, 1fr); align-items: center; gap: 8px; border-left: 1px solid rgba(194,160,92,.35); padding-left: 7px; pointer-events: none; }
+.infernal-resource-orb { position: relative; display: grid; width: 58px; height: 58px; place-self: center; place-content: center; border: 0; border-radius: 50%; background: #090707; box-shadow: 0 7px 16px rgba(0,0,0,.82), inset 0 0 17px #000; color: #f2e8d8; isolation: isolate; overflow: visible; text-align: center; }
 .infernal-resource-orb::before { position: absolute; z-index: -2; inset: 7px; border-radius: 50%; clip-path: inset(calc(100% - var(--orb-fill, 100%)) 0 0); content: ''; transition: clip-path .25s ease; }
 .infernal-resource-orb::after { position: absolute; z-index: -1; inset: 12px 19px 49% 18px; border-radius: 50%; background: linear-gradient(135deg, rgba(255,255,255,.25), transparent 62%); content: ''; }
-.infernal-orb-frame { position: absolute; z-index: 6; inset: -16px; background: url("games/infernal-ledger/assets/combat-hud-orb.png") center / 100% 100% no-repeat; filter: drop-shadow(0 7px 6px rgba(0,0,0,.85)); }
-.infernal-resource-orb small { position: relative; z-index: 3; color: #ded5c8; font: 800 7px/1.05 var(--mono); letter-spacing: .08em; text-shadow: 0 2px 3px #000; }
-.infernal-resource-orb small em { display: block; color: #ffbd58; font: inherit; font-style: normal; }
-.infernal-resource-orb strong { position: relative; z-index: 3; color: #fff4e5; font: 900 14px var(--mono); text-shadow: 0 2px 3px #000; }
-.infernal-hp-orb::before { background: radial-gradient(circle at 35% 24%, #ff7260, #a31520 50%, #3a070b 100%); }
+.infernal-orb-frame { position: absolute; z-index: 6; inset: -9px; background: url("games/infernal-ledger/assets/combat-hud-orb.png") center / 100% 100% no-repeat; filter: drop-shadow(0 5px 5px rgba(0,0,0,.85)); }
+.infernal-resource-orb strong { position: relative; z-index: 3; color: #fff4e5; font: 900 12px var(--mono); text-shadow: 0 2px 3px #000; }
+.infernal-resource-copy { display: grid; min-width: 0; gap: 3px; }
+.infernal-resource-copy > span { display: grid; min-width: 0; grid-template-columns: minmax(0, 1fr) auto; align-items: baseline; gap: 4px; }
+.infernal-resource-label { min-width: 0; overflow: visible; color: #e0c27a; font: 900 8px/1 var(--mono); letter-spacing: .02em; white-space: nowrap; }
+.infernal-resource-copy strong { color: #fff0cf; font: 900 10px/1 var(--mono); white-space: nowrap; }
+.infernal-resource-debt .infernal-resource-label, .infernal-resource-debt strong { color: #dfa7d4; }
 .infernal-mana-orb::before { background: radial-gradient(circle at 35% 24%, #ffd46b, #d06119 48%, #50140d 100%); }
 .infernal-mana-orb.has-debt { box-shadow: 0 0 24px rgba(134,69,143,.55), inset 0 0 17px #000; }
 .infernal-mana-orb > i { position: absolute; z-index: 1; inset: 8px; border-radius: 50%; opacity: 0; background: repeating-conic-gradient(from 12deg, transparent 0 19deg, rgba(42,8,49,.9) 20deg 22deg, transparent 23deg 51deg); }
 .infernal-mana-orb.has-debt > i { opacity: .75; }
-.infernal-orb-debt { position: relative; z-index: 3; margin-top: 3px; color: #e3afd9; font: 800 6px var(--mono); letter-spacing: .04em; text-shadow: 0 1px 2px #000; }
 .infernal-loot-banner { display: flex; width: min(760px, 94%); justify-content: center; gap: 18px; margin: 8px auto 2px; border: 1px solid #8e6b35; padding: 8px 12px; background: linear-gradient(90deg, transparent, rgba(91,55,20,.42), transparent); color: #c4aa75; font: 700 9px var(--mono); letter-spacing: .06em; text-transform: uppercase; }
 .infernal-loot-banner strong { color: #f2cb65; }
 .infernal-status-detail { position: absolute; z-index: 7; top: 14%; left: 50%; display: flex; max-width: 340px; gap: 8px; transform: translateX(-50%); border: 1px solid #5f4a32; padding: 6px 9px; background: rgba(15,11,9,.9); color: #b8a88c; font: 600 8px/1.3 var(--mono); pointer-events: none; }
@@ -384,7 +395,35 @@ body.game-open { overflow: hidden; }
 .infernal-intent { position: absolute; z-index: 4; top: calc(1.5% + 112px); right: 18%; min-width: 170px; max-width: 250px; isolation: isolate; padding: 15px 21px; border: 0; background: rgba(15,12,10,.94); color: #d8cabc; box-shadow: inset 0 0 0 1px var(--intent-accent, #6d6255), 0 0 15px color-mix(in srgb, var(--intent-accent, #6d6255) 28%, transparent); filter: saturate(.72); font: 600 10px/1.4 var(--mono); text-align: right; text-shadow: 0 2px 2px #000; }
 .infernal-intent::before, .infernal-end-turn::before { position: absolute; z-index: -1; inset: -12px; box-sizing: border-box; border: 18px solid transparent; border-right-width: 24px; border-left-width: 24px; border-image: url("games/infernal-ledger/assets/combat-hud-plaque.png") 92 112 96 112 fill / 1 stretch; content: ''; filter: drop-shadow(0 6px 6px rgba(0,0,0,.82)); pointer-events: none; }
 .infernal-hand { position: absolute; right: 11%; bottom: 8px; left: 5%; display: flex; align-items: end; justify-content: center; gap: clamp(5px, .8vw, 12px); pointer-events: auto; touch-action: pan-x; }
+.infernal-combat-piles { position: absolute; z-index: 8; right: 2.5%; bottom: 14px; left: 2.5%; display: flex; justify-content: space-between; pointer-events: none; }
+.infernal-combat-pile { display: grid; min-width: 86px; grid-template-columns: 19px 1fr auto; align-items: center; gap: 7px; border: 1px solid #69573d; padding: 6px 8px; background: rgba(14,10,8,.92); color: #c9b996; box-shadow: 0 4px 10px rgba(0,0,0,.55); font: 800 7px var(--mono); letter-spacing: .08em; pointer-events: auto; cursor: pointer; }
+.infernal-combat-pile .infernal-icon { width: 18px; height: 18px; color: #c9a65b; }
+.infernal-combat-pile strong { color: #f2cf79; font-size: 12px; }
+.infernal-combat-pile.draw { border-color: #81714f; }
+.infernal-combat-pile.exhaust { border-color: #8b493e; }
+.infernal-combat-pile.exhaust strong { color: #ea927d; }
+.infernal-combat-pile:hover, .infernal-combat-pile:focus-visible { border-color: #e5bf68; transform: translateY(-2px); }
+.infernal-combat-effects { position: absolute; z-index: 12; inset: 0; overflow: hidden; pointer-events: none; }
+.infernal-combat-effect { position: absolute; top: 34%; border: 1px solid currentColor; padding: 5px 8px; background: rgba(16,8,7,.9); box-shadow: 0 4px 12px rgba(0,0,0,.7); font: 900 clamp(13px, 1.6vw, 22px) var(--mono); text-shadow: 0 2px 2px #000; animation: infernal-combat-effect .85s ease-out both; }
+.infernal-combat-effect[data-target="enemy"] { right: calc(23% + var(--effect-index) * 8px); }
+.infernal-combat-effect[data-target="player"] { left: calc(18% + var(--effect-index) * 8px); }
+.infernal-combat-effect.damage { color: #ff725f; }
+.infernal-combat-effect.block, .infernal-combat-effect.absorbed { color: #8bd8f2; }
+.infernal-combat-effect.debt { color: #f3a767; }
+.infernal-combat-effect.heal { color: #84dc94; }
+.infernal-combat-effect.weak, .infernal-combat-effect.vulnerable, .infernal-combat-effect.bleed { color: #dba0ed; }
+.infernal-card-flight { position: absolute; z-index: 2; bottom: 23%; left: 31%; display: grid; width: 72px; height: 102px; place-items: end center; overflow: hidden; border: 2px solid #d1a552; padding: 6px; background: linear-gradient(145deg, rgba(119,39,31,.96), rgba(25,14,10,.96)), url("games/infernal-ledger/assets/card-atlas.png") center / 250% auto; box-shadow: 0 8px 17px rgba(0,0,0,.74), 0 0 18px rgba(245,151,68,.45); color: #fff0cf; font: 800 7px/1.1 var(--mono); text-align: center; text-transform: uppercase; animation: infernal-card-flight .28s cubic-bezier(.18,.78,.25,1) both; }
+.infernal-card-flight.card { animation-name: infernal-card-flight-self; }
+@keyframes infernal-combat-effect { from { opacity: 0; transform: translateY(20px) scale(.72); } 16% { opacity: 1; } to { opacity: 0; transform: translateY(-72px) scale(1.18); } }
+@keyframes infernal-card-flight { from { opacity: .2; transform: translate(-10%, 34%) rotate(-13deg) scale(.48); } to { opacity: 0; transform: translate(255%, -145%) rotate(18deg) scale(1.15); } }
+@keyframes infernal-card-flight-self { from { opacity: .2; transform: translate(-10%, 34%) rotate(-13deg) scale(.48); } to { opacity: 0; transform: translate(24%, -92%) rotate(10deg) scale(1.05); } }
 .infernal-card { position: relative; width: clamp(112px, 13vw, 174px); height: clamp(164px, 20vw, 244px); flex: 0 1 174px; border: 2px solid #a28b55; border-radius: 10px; padding: 0; transform-origin: 50% 110%; background: #211710; color: #f6ead0; cursor: pointer; box-shadow: 0 7px 0 #120b08, inset 0 0 0 3px rgba(48,31,18,.22); text-align: left; touch-action: manipulation; -webkit-user-select: none; user-select: none; transition: transform .16s ease, filter .16s ease; }
+.infernal-card.common { border-color: #8d9a8c; box-shadow: 0 7px 0 #120b08, 0 0 12px rgba(141,154,140,.22), inset 0 0 0 3px rgba(48,31,18,.22); }
+.infernal-card.uncommon { border-color: #4e9a91; box-shadow: 0 7px 0 #120b08, 0 0 15px rgba(58,170,154,.34), inset 0 0 0 3px rgba(28,75,67,.34); }
+.infernal-card.rare { border-color: #c79b45; box-shadow: 0 7px 0 #120b08, 0 0 19px rgba(235,186,71,.45), inset 0 0 0 3px rgba(111,72,17,.42); }
+.infernal-card.common .infernal-card-rarity { color: #b9c8b7; }
+.infernal-card.uncommon .infernal-card-rarity { color: #78e2d5; }
+.infernal-card.rare .infernal-card-rarity { color: #ffdc7e; }
 .infernal-card:nth-child(odd) { transform: rotate(-1.5deg); }
 .infernal-card:nth-child(even) { transform: rotate(1.5deg); }
 .infernal-card.selected { z-index: 4; transform: translateY(-26px) scale(1.05); filter: brightness(1.08); }
@@ -588,7 +627,11 @@ body.game-open { overflow: hidden; }
 .infernal-footer { min-height: 35px; display: flex; align-items: center; justify-content: space-between; gap: 14px; border-top: 1px solid rgba(214,184,126,.15); color: #9c8a70; font: 500 9px var(--mono); }
 .infernal-footer p { max-width: 65%; margin: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .infernal-footer p.bark { color: #f0cf79; }
-#infernal-relics { color: #d3b363; }
+#infernal-relics { display: flex; max-width: 52%; align-items: center; justify-content: flex-end; gap: 5px; overflow-x: auto; color: #d3b363; scrollbar-width: thin; }
+.infernal-benefit-chip { flex: none; border: 1px solid #55452f; padding: 3px 6px; background: #18110d; font-size: 7px; white-space: nowrap; }
+.infernal-relic-chip { display: grid; min-width: 34px; min-height: 30px; flex: none; grid-template-columns: 26px auto; align-items: center; gap: 5px; border: 1px solid #786039; padding: 2px 6px 2px 2px; background: #1b120d; color: #d9bc72; cursor: help; font: 700 7px var(--mono); }
+.infernal-relic-chip > span { width: 26px; height: 26px; background: url("games/infernal-ledger/assets/relic-atlas-v2.png") var(--relic-x) var(--relic-y) / 400% 300% no-repeat; }
+.infernal-relic-chip strong { max-width: 110px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
 @media (max-width: 760px) {
   .infernal-shell { padding: 9px 10px; }
@@ -599,7 +642,7 @@ body.game-open { overflow: hidden; }
   .infernal-map-heading h3 { font-size: 22px; }
   .infernal-map-scroll { inset: 12% 1% 3%; }
   .infernal-map-paths, .infernal-map-grid { width: var(--map-rail-width, 2640px); min-width: var(--map-rail-width, 2640px); }
-  .infernal-map-node { width: 108px; min-height: 60px; font-size: 7px; }
+  .infernal-map-node { width: 128px; min-height: 68px; font-size: 7px; }
   .infernal-map-node-copy strong { font-size: 8px; }
   .infernal-map-node-copy small { font-size: 6px; }
   .infernal-map-legend > small { display: none; }
@@ -617,32 +660,36 @@ body.game-open { overflow: hidden; }
   .infernal-camp-upgrades { display: flex; overflow-x: auto; padding: 12px 7px 24px; scroll-snap-type: x mandatory; }
   .infernal-camp-upgrade-card { width: 172px; min-width: 172px; scroll-snap-align: center; }
   .infernal-hand { right: 1%; bottom: 6px; left: 1%; justify-content: flex-start; overflow-x: auto; padding: 25px 8px 10px; scroll-snap-type: x mandatory; }
-  .infernal-resource-tokens { bottom: 39%; gap: 2px; }
-  .infernal-resource-orb { width: 56px; height: 56px; }
-  .infernal-orb-frame { inset: -11px; }
-  .infernal-mana-orb .infernal-orb-debt { position: absolute; top: calc(100% + 4px); left: 50%; width: max-content; margin: 0; border: 1px solid #6e466d; padding: 2px 5px; transform: translateX(-50%); background: rgba(24,12,24,.95); box-shadow: 0 2px 5px #000; }
-  .infernal-resource-orb strong { font-size: 11px; }
-  .infernal-resource-orb small, .infernal-orb-debt { font-size: 10px; }
+  .infernal-resource-tokens { min-width: 180px; grid-template-columns: 64px minmax(105px, 1fr); gap: 6px; padding-left: 4px; }
+  .infernal-resource-orb { width: 46px; height: 46px; }
+  .infernal-orb-frame { inset: -8px; }
+  .infernal-resource-orb strong { font-size: 12px; }
+  .infernal-resource-label { font-size: 8px; letter-spacing: .01em; }
+  .infernal-resource-copy strong { font-size: 9px; }
   .infernal-card { width: 126px; min-width: 126px; height: 178px; flex-basis: 126px; scroll-snap-align: center; }
   .infernal-card > p { padding: 5px 6px; font-size: 10px; }
   .infernal-card:hover, .infernal-card:focus-visible, .infernal-card.selected { transform: translateY(-10px) scale(1.02); }
   .infernal-end-turn { right: 5px; bottom: 196px; font-size: 10px; }
-  .infernal-actor-plate { top: 1.5%; width: 49%; height: 80px; min-height: 80px; padding: 0; font-size: 8px; }
-  .infernal-actor-plate.player { left: .5%; }
-  .infernal-actor-plate.enemy { right: .5%; }
+  .infernal-actor-plate { top: 1.5%; width: 100%; height: 84px; min-height: 84px; padding: 0; font-size: 8px; }
+  .infernal-actor-plate.player { left: 0; width: 100%; }
+  .infernal-actor-plate.enemy { top: 22%; right: 0; width: 100%; }
   .infernal-actor-plate > div:first-child { top: 22px; right: 8px; left: 8px; gap: 2px; font-size: 10px; }
+  .infernal-actor-plate.player > div:first-child { right: 30px; left: 30px; }
   .infernal-actor-plate > div:first-child strong { font-size: 10px; }
   .infernal-health { top: 38px; right: 27px; left: 27px; height: 18px; }
+  .infernal-vitals-frame { top: 37px; right: 28px; left: 28px; height: 34px; grid-template-columns: minmax(82px, 1fr) minmax(180px, 190px); gap: 8px; }
+  .infernal-health-module .infernal-health { height: 18px; }
   .infernal-statuses { top: calc(100% + 3px); right: 25px; left: 25px; min-height: 20px; }
+  .infernal-actor-plate.player .infernal-statuses { right: 18px; left: 18px; }
   .infernal-status-chip { min-width: 44px; height: 44px; padding: 0 8px; font-size: 10px; }
   .infernal-permanent-detail { grid-template-columns: 1fr; }
   .infernal-block { top: 38px; width: 23px; height: 23px; font-size: 8px; }
   .infernal-actor-plate.player .infernal-block { right: -26px; }
   .infernal-actor-plate.enemy .infernal-block { left: -26px; }
-  .infernal-intent { top: calc(1.5% + 108px); right: 4%; min-width: 145px; max-width: 48%; padding: 11px 15px; font-size: 10px; }
-  .infernal-combat-bark { top: 15%; max-width: 43%; padding: 7px 9px; font-size: 9px; }
+  .infernal-intent { top: calc(22% + 135px); right: 4%; min-width: 180px; max-width: 70%; padding: 11px 15px; font-size: 10px; }
+  .infernal-combat-bark { top: 65%; max-width: 43%; padding: 7px 9px; font-size: 9px; }
   .infernal-combat-bark.hero { left: 4%; }
-  .infernal-combat-bark.enemy { top: 215px; right: 4%; }
+  .infernal-combat-bark.enemy { top: 65%; right: 4%; }
   .infernal-intro, .infernal-choice, .infernal-outcome { padding: 25px 17px; }
   .infernal-choice.reward-mode { width: 98%; }
   .infernal-reward-grid { display: flex; justify-content: flex-start; overflow-x: auto; padding: 15px 7px 25px; scroll-snap-type: x mandatory; }
@@ -676,16 +723,18 @@ body.game-open { overflow: hidden; }
   .infernal-card:hover, .infernal-card:focus-visible, .infernal-card.selected { transform: translateY(-6px); }
   .infernal-card-art { height: auto; }
   .infernal-end-turn { top: 2px; right: auto; bottom: auto; left: 50%; min-width: 104px; min-height: 44px; padding: 0 12px; transform: translateX(-50%); }
-  .infernal-resource-tokens { bottom: 6px; left: auto; right: 8px; gap: 4px; transform: none; }
-  .infernal-resource-orb { width: 50px; height: 50px; border-width: 2px; }
-  .infernal-orb-frame { inset: -9px; }
+  .infernal-resource-tokens { top: auto; right: auto; bottom: auto; left: auto; min-width: 160px; grid-template-columns: 54px minmax(97px, 1fr); gap: 4px; padding-left: 4px; transform: none; }
+  .infernal-resource-orb { width: 37px; height: 37px; border-width: 2px; }
+  .infernal-orb-frame { inset: -7px; }
   .infernal-resource-orb strong { font-size: 10px; }
-  .infernal-resource-orb small { font-size: 10px; }
-  .infernal-orb-debt { font-size: 10px; }
   .infernal-actor-plate { width: 32%; height: 64px; min-height: 64px; padding: 0; }
+  .infernal-actor-plate.player { width: 38%; }
   .infernal-actor-plate > div:first-child { top: 19px; right: 25px; left: 25px; padding: 0; font-size: 10px; }
+  .infernal-actor-plate.player > div:first-child { right: 20px; left: 20px; }
   .infernal-actor-plate > div:first-child strong { font-size: 10px; }
   .infernal-health { top: 31px; right: 25px; left: 25px; height: 15px; }
+  .infernal-vitals-frame { top: 29px; right: 18px; left: 18px; height: 28px; grid-template-columns: minmax(48px, 1fr) minmax(160px, 164px); gap: 4px; }
+  .infernal-actor-plate.player .infernal-health-module .infernal-health { top: auto; right: auto; left: auto; height: 15px; }
   .infernal-block { top: 30px; }
   .infernal-actor-plate .infernal-statuses { top: calc(100% + 2px); min-height: 12px; margin: 0; }
   .infernal-intent { top: 70px; right: 34%; left: auto; min-width: 150px; max-width: 190px; padding: 7px 14px; transform: none; font-size: 10px; text-align: center; }

@@ -1,436 +1,88 @@
 <!doctype html>
 <html lang="fr">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Rapport Immobilier IDF 2026</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Atlas statistique de l'immobilier parisien fondé sur les données DVF officielles 2021–2025.">
+  <title>Atlas DVF Paris</title>
   <style>
-    :root {
-      --bg: #f4efe6;
-      --ink: #1f2b34;
-      --muted: #5d6a73;
-      --paper: #fffaf3;
-      --line: #dfd6c7;
-      --accent: #b2481f;
-      --accent2: #155f70;
-      --ok: #2f7b44;
-      --bad: #a03232;
-    }
-    * { box-sizing: border-box; }
-    body {
-      margin: 0;
-      color: var(--ink);
-      font-family: "IBM Plex Sans", "Avenir Next", sans-serif;
-      background:
-        radial-gradient(1200px 520px at -10% -20%, #e8d9c5 0%, transparent 55%),
-        radial-gradient(900px 480px at 110% -10%, #d8e5e7 0%, transparent 55%),
-        var(--bg);
-    }
-    .wrap { max-width: 1280px; margin: 0 auto; padding: 22px 16px 40px; }
-    header {
-      position: relative;
-      overflow: hidden;
-      border-radius: 20px;
-      padding: 28px 30px;
-      color: #1f2b34;
-      background:
-        radial-gradient(900px 360px at -10% 0%, rgba(121, 183, 196, .22) 0%, transparent 62%),
-        radial-gradient(800px 380px at 115% 100%, rgba(244, 163, 64, .16) 0%, transparent 65%),
-        linear-gradient(130deg, #fdfaf4 0%, #f8f1e6 48%, #f3ebdd 100%);
-      border: 1px solid #d7ccb9;
-      box-shadow: 0 14px 28px rgba(52, 45, 35, 0.14);
-    }
-    header::before {
-      content: "";
-      position: absolute;
-      inset: 0;
-      background:
-        linear-gradient(transparent 96%, rgba(32,49,64,.045) 97%) 0 0 / 100% 22px,
-        linear-gradient(90deg, transparent 96%, rgba(32,49,64,.04) 97%) 0 0 / 22px 100%;
-      pointer-events: none;
-      opacity: .35;
-    }
-    h1 { margin: 10px 0 10px; font-family: "IBM Plex Serif", Georgia, serif; font-size: clamp(1.8rem, 3.4vw, 3.2rem); letter-spacing: -.02em; line-height: 1.08; }
-    h2 { margin: 26px 0 12px; font-family: "IBM Plex Serif", Georgia, serif; font-size: 1.3rem; }
-    .hero-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      border: 1px solid #bfd3dc;
-      background: rgba(228, 241, 246, .85);
-      color: #1c6d87;
-      border-radius: 999px;
-      padding: 7px 12px;
-      font-size: .78rem;
-      text-transform: uppercase;
-      letter-spacing: .06em;
-      font-weight: 700;
-      backdrop-filter: none;
-    }
-    .hero-badge::before {
-      content: "";
-      width: 8px;
-      height: 8px;
-      border-radius: 999px;
-      background: #1f94b6;
-      box-shadow: 0 0 8px rgba(31,148,182,.35);
-      display: inline-block;
-    }
-    .sub { margin: 0; color: #3e4f5a; font-size: clamp(1rem, 1.1vw, 1.18rem); max-width: 980px; }
-    .meta {
-      margin-top: 12px;
-      color: #667683;
-      font-size: .88rem;
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-    }
-    .meta span {
-      background: #f2eadf;
-      border: 1px solid #dacdbb;
-      border-radius: 999px;
-      padding: 5px 10px;
-      line-height: 1;
-    }
-
-    .kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; margin-top: 18px; }
-    .kpi {
-      position: relative;
-      overflow: hidden;
-      background: rgba(255,255,255,.74);
-      border: 1px solid #d6c9b8;
-      border-radius: 12px;
-      padding: 12px 14px;
-      backdrop-filter: none;
-      box-shadow: inset 0 1px 0 rgba(255,255,255,.6);
-    }
-    .kpi::before {
-      content: "";
-      position: absolute;
-      left: 0;
-      top: 0;
-      width: 4px;
-      height: 100%;
-      background: #4ab4ff;
-    }
-    .kpi.kpi-b::before { background: #f4a340; }
-    .kpi.kpi-c::before { background: #9f7bff; }
-    .kpi.kpi-d::before { background: #35c9a7; }
-    .kpi .v { font-size: clamp(1.55rem, 2.1vw, 2.0rem); font-weight: 800; letter-spacing: -.01em; color: #22323d; }
-    .kpi .l { color: #5f6f7a; font-size: .78rem; text-transform: uppercase; letter-spacing: .06em; font-weight: 700; margin-top: 3px; }
-
-    .panel { margin-top: 14px; background: var(--paper); border: 1px solid var(--line); border-radius: 14px; padding: 14px; box-shadow: 0 6px 16px rgba(33, 31, 24, .06); }
-    .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-    .grid3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
-    .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; }
-    .card { background: #fff; border: 1px solid var(--line); border-radius: 10px; padding: 10px; }
-    .card h4 { margin: 0 0 6px; color: var(--accent2); font-size: 1.15rem; }
-
-    .insights { display: grid; gap: 8px; }
-    .insight { background: #fff; border-left: 4px solid var(--accent); border-radius: 8px; padding: 9px 10px; }
-    .insight-board { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
-    .insight-card {
-      position: relative;
-      overflow: hidden;
-      background: linear-gradient(180deg, #fffdf9 0%, #f9f4eb 100%);
-      border: 1px solid #d8ccb9;
-      border-radius: 14px;
-      padding: 14px 14px 12px;
-      box-shadow: 0 10px 20px rgba(34, 28, 20, 0.08);
-    }
-    .insight-card::before {
-      content: "";
-      position: absolute;
-      left: 0;
-      top: 0;
-      width: 100%;
-      height: 4px;
-      background: linear-gradient(90deg, var(--accent2), #2e8697);
-    }
-    .insight-card.price::before { background: linear-gradient(90deg, #2f7b44, #8bc4a0); }
-    .insight-card.trend::before { background: linear-gradient(90deg, #b2481f, #ef9755); }
-    .insight-card.liquidity::before { background: linear-gradient(90deg, #155f70, #79b7c4); }
-    .insight-card.risk::before { background: linear-gradient(90deg, #7f2f4a, #c26d8a); }
-    .insight-card h4 {
-      margin: 2px 0 8px;
-      font-size: 1.02rem;
-      color: #1f2b34;
-      letter-spacing: .01em;
-      border-bottom: 1px dashed #d9cdbd;
-      padding-bottom: 7px;
-    }
-    .insight-card p {
-      margin: 0 0 8px;
-      font-size: .82rem;
-      color: #6a7780;
-      text-transform: uppercase;
-      letter-spacing: .05em;
-      font-weight: 700;
-    }
-    .insight-card ul {
-      margin: 0;
-      padding: 0;
-      list-style: none;
-      display: grid;
-      gap: 7px;
-      font-size: .95rem;
-    }
-    .insight-card li {
-      position: relative;
-      padding-left: 16px;
-      line-height: 1.35;
-      color: #2f3941;
-    }
-    .insight-card li::before {
-      content: "";
-      position: absolute;
-      left: 0;
-      top: .5em;
-      width: 7px;
-      height: 7px;
-      border-radius: 999px;
-      background: #1f2b34;
-      opacity: .65;
-    }
-    .insight-chip {
-      display: inline-block;
-      border: 1px solid #d4c8b5;
-      background: #f2eadf;
-      color: #32424d;
-      border-radius: 999px;
-      padding: 5px 10px;
-      font-size: .76rem;
-      margin-bottom: 10px;
-      text-transform: uppercase;
-      letter-spacing: .05em;
-      font-weight: 700;
-    }
-
-    table { width: 100%; border-collapse: collapse; font-size: .9rem; }
-    th, td { border-bottom: 1px solid var(--line); padding: 7px; text-align: left; vertical-align: middle; }
-    th { position: sticky; top: 0; background: #efe6d6; z-index: 1; }
-    .table-wrap { max-height: 540px; overflow: auto; border: 1px solid var(--line); border-radius: 10px; }
-
-    .bar { height: 10px; border-radius: 999px; }
-    .bar.price { background: linear-gradient(90deg, #ef9755, #b2481f); }
-    .bar.liq { background: linear-gradient(90deg, #80bdc9, #155f70); }
-
-    .small { color: var(--muted); font-size: .86rem; }
-    .budget-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 10px; }
-    .budget-card { background: #fff; border: 1px solid var(--line); border-radius: 10px; padding: 10px; }
-    .budget-card h4 { margin: 0 0 6px; color: var(--accent2); }
-    .viz-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
-    .viz-card { background: #fff; border: 1px solid var(--line); border-radius: 10px; padding: 10px; }
-    .viz-card h4 { margin: 0 0 8px; color: var(--accent2); }
-    .viz-box { max-height: 420px; overflow: auto; }
-    .viz-row { display: grid; grid-template-columns: 40px 1fr 90px; align-items: center; gap: 6px; margin: 4px 0; }
-    .viz-label { font-weight: 600; font-size: .85rem; }
-    .viz-value { font-size: .82rem; text-align: right; color: var(--muted); }
-    .viz-track { height: 10px; background: #efe7d8; border-radius: 999px; overflow: hidden; }
-    .viz-fill { height: 10px; border-radius: 999px; }
-    .viz-fill.price { background: linear-gradient(90deg, #ef9755, #b2481f); }
-    .viz-fill.budget { background: linear-gradient(90deg, #8bc4a0, #2f7b44); }
-    .viz-fill.neg { background: linear-gradient(90deg, #d47474, #a03232); }
-    .viz-fill.pos { background: linear-gradient(90deg, #7fc08f, #2f7b44); }
-    .legend { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px; }
-    .legend span { background: #fff; border: 1px solid var(--line); border-radius: 999px; padding: 4px 8px; font-size: .78rem; color: var(--muted); }
-
-    @media (max-width: 920px) {
-      .grid2, .grid3, .viz-grid, .insight-board { grid-template-columns: 1fr; }
-      .wrap { padding: 12px; }
-      header { padding: 18px 16px; border-radius: 14px; }
-      h1 { margin-top: 8px; margin-bottom: 8px; font-size: clamp(1.6rem, 8vw, 2.2rem); }
-      .meta { gap: 6px; }
-      .meta span { font-size: .8rem; }
-    }
+    :root{--ink:#102f35;--deep:#123942;--paper:#f6f2e8;--white:#fffdf7;--orange:#ee6b3b;--mint:#a7d6c7;--yellow:#f2d56b;--muted:#687c80;--line:rgba(16,47,53,.16);--shadow:0 20px 55px rgba(16,47,53,.11)}
+    *{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;color:var(--ink);background:var(--paper);font-family:"Avenir Next",Avenir,"Segoe UI",sans-serif;line-height:1.45}button,input,select{font:inherit}button{color:inherit}a{color:inherit}:focus-visible{outline:3px solid var(--orange);outline-offset:3px}.wrap{width:min(1500px,calc(100% - 32px));margin:auto}.serif{font-family:Georgia,"Times New Roman",serif;font-weight:400;letter-spacing:-.045em}.eyebrow{margin:0 0 10px;color:var(--orange);font-size:.7rem;font-weight:900;letter-spacing:.14em;text-transform:uppercase}.muted{color:var(--muted)}
+    header{color:#fff;background:var(--deep);border-bottom:1px solid rgba(255,255,255,.16)}header .wrap{display:flex;align-items:center;justify-content:space-between;min-height:72px}.brand{font-weight:900}.brand span{color:var(--mint)}nav{display:flex;gap:20px;font-size:.76rem;color:rgba(255,255,255,.7)}nav a{text-underline-offset:5px}
+    .hero{position:relative;overflow:hidden;padding:88px 0 74px;color:#fff;background:var(--deep)}.hero:after{content:"20";position:absolute;right:-1vw;bottom:-.28em;color:transparent;font-family:Georgia,serif;font-size:min(43vw,590px);line-height:1;-webkit-text-stroke:1px rgba(255,255,255,.12)}.hero-grid{position:relative;z-index:1;display:grid;grid-template-columns:1.15fr .85fr;gap:80px;align-items:end}.hero h1{max-width:900px;margin:0;font-size:clamp(4rem,9vw,8.7rem);line-height:.86}.hero h1 em{color:var(--yellow);font-weight:400}.hero-copy{max-width:600px;padding:0 0 8px 28px;border-left:1px solid rgba(255,255,255,.3)}.hero-copy strong{display:block;margin-bottom:12px;font-family:Georgia,serif;font-size:1.7rem;font-weight:400}.hero-copy p{margin:0;color:rgba(255,255,255,.68)}
+    .toolbar{position:sticky;z-index:20;top:0;color:#fff;background:#0c2930;box-shadow:0 10px 35px rgba(10,35,42,.18)}.toolbar-grid{display:grid;grid-template-columns:1fr 1.2fr 1.2fr 1.2fr;min-height:88px}.tool{display:flex;flex-direction:column;justify-content:center;padding:14px 24px;border-right:1px solid rgba(255,255,255,.14)}.tool:last-child{border-right:0}.tool label{margin-bottom:6px;color:rgba(255,255,255,.52);font-size:.64rem;font-weight:900;letter-spacing:.1em;text-transform:uppercase}.tool select{width:100%;padding:0;border:0;color:#fff;background:transparent;font-family:Georgia,serif;font-size:1.25rem}.tool input[type=range]{width:100%;accent-color:var(--orange)}.tool output{font-family:Georgia,serif;font-size:1.15rem}.range-line{display:flex;align-items:center;gap:12px}
+    main{padding:60px 0 100px}.kpis{display:grid;grid-template-columns:repeat(5,1fr);overflow:hidden;margin-bottom:24px;background:var(--white);border:1px solid var(--line);border-radius:24px;box-shadow:var(--shadow)}.kpi{padding:25px;border-right:1px solid var(--line)}.kpi:last-child{border:0}.kpi b{display:block;font-family:Georgia,serif;font-size:clamp(1.7rem,2.6vw,2.8rem);font-weight:400;letter-spacing:-.05em;line-height:1}.kpi span{display:block;margin-top:10px;color:var(--muted);font-size:.7rem}.delta.up{color:#b34329}.delta.down{color:#287467}
+    .quality-banner{display:grid;grid-template-columns:180px 1fr;gap:24px;align-items:center;margin:0 0 24px;padding:20px 24px;color:#fff;background:#1c5559;border-radius:18px}.quality-banner strong{font-family:Georgia,serif;font-size:1.35rem;font-weight:400}.quality-rules{display:flex;flex-wrap:wrap;gap:8px}.quality-rules span{padding:6px 9px;border:1px solid rgba(255,255,255,.22);border-radius:99px;color:rgba(255,255,255,.82);font-size:.65rem}.quality-rules b{color:var(--yellow)}.quality-pill{display:inline-block;padding:4px 7px;border-radius:99px;font-size:.64rem;font-weight:900}.quality-pill.high{color:#15594f;background:#d8eee8}.quality-pill.medium{color:#705b16;background:#f7e8a8}.quality-pill.low{color:#9a3b25;background:#f9d9cf}
+    .grid-main{display:grid;grid-template-columns:1.15fr .85fr;gap:24px}.card{min-width:0;padding:30px;background:var(--white);border:1px solid var(--line);border-radius:24px}.card.dark{color:#fff;background:var(--deep);border-color:transparent}.card h2,.card h3{margin:0;font-family:Georgia,serif;font-weight:400;letter-spacing:-.035em}.card h2{font-size:2.2rem}.card h3{font-size:1.5rem}.card-head{display:flex;align-items:flex-start;justify-content:space-between;gap:30px;margin-bottom:24px}.card-head p{max-width:430px;margin:5px 0 0;color:var(--muted);font-size:.76rem}.dark .card-head p{color:rgba(255,255,255,.58)}.metric-switch{display:flex;padding:4px;border:1px solid var(--line);border-radius:99px}.metric-switch button{padding:7px 11px;border:0;border-radius:99px;background:transparent;font-size:.68rem;cursor:pointer}.metric-switch button.active{color:#fff;background:var(--orange)}
+    .chart{position:relative;width:100%;min-height:350px}.chart svg{display:block;width:100%;height:350px;overflow:visible}.grid-line{stroke:rgba(16,47,53,.12);stroke-width:1}.axis-label{fill:var(--muted);font-size:10px}.dot{cursor:pointer;transition:r .18s}.dot:hover{r:10}.dot-label{fill:var(--ink);font-size:10px;font-weight:800}.line-a{fill:none;stroke:var(--orange);stroke-width:4}.line-b{fill:none;stroke:#4e9f92;stroke-width:4}.point-a{fill:var(--orange)}.point-b{fill:#4e9f92}.legend-inline{display:flex;gap:20px;font-size:.72rem}.legend-inline i{display:inline-block;width:9px;height:9px;margin-right:6px;border-radius:50%}
+    .rank-bars{display:grid;gap:9px}.rank-row{display:grid;grid-template-columns:42px 1fr 82px;gap:10px;align-items:center;font-size:.72rem}.rank-row b{font-family:Georgia,serif;font-size:1rem;font-weight:400}.bar{height:13px;border-radius:20px;background:rgba(255,255,255,.12)}.bar i{display:block;height:100%;border-radius:inherit;background:var(--yellow)}.rank-row span{text-align:right;color:rgba(255,255,255,.75)}
+    .compare-section{margin-top:24px}.compare-controls{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px}.compare-controls select{width:100%;padding:12px;border:1px solid var(--line);border-radius:10px;background:var(--white)}.compare-cards{display:grid;grid-template-columns:1fr 1fr;gap:14px}.compare-card{padding:20px;border-radius:17px;background:#eef1e9}.compare-card:nth-child(2){background:#e7f2ef}.compare-name{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:14px}.compare-name strong{font-family:Georgia,serif;font-size:2.1rem;font-weight:400}.compare-name span{font-size:.68rem}.compare-stat{display:flex;justify-content:space-between;padding:8px 0;border-top:1px solid var(--line);font-size:.72rem}.compare-stat b{font-weight:800}
+    .wide{margin-top:24px}.table-wrap{overflow:auto;max-height:690px;border:1px solid var(--line);border-radius:18px}table{width:100%;border-collapse:collapse;font-size:.75rem}th,td{padding:13px 14px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap}th:first-child,td:first-child{text-align:left}th{position:sticky;z-index:2;top:0;color:#fff;background:var(--deep);font-size:.63rem;letter-spacing:.05em;text-transform:uppercase;cursor:pointer}tbody tr{cursor:pointer}tbody tr:hover{background:#eef1e9}.pill{display:inline-block;min-width:55px;padding:4px 7px;border-radius:30px;text-align:center;font-weight:800}.pill.good{color:#1d655b;background:#d9ede7}.pill.bad{color:#9f3c24;background:#fde1d7}
+    .heatmap{display:grid;grid-template-columns:90px repeat(5,1fr);overflow:auto;margin-top:18px;border:1px solid var(--line);border-radius:16px}.heat-cell{display:grid;place-items:center;min-width:76px;min-height:42px;padding:7px;border-right:1px solid var(--line);border-bottom:1px solid var(--line);font-size:.67rem}.heat-cell.head{position:sticky;top:0;color:#fff;background:var(--deep);font-weight:800}.heat-cell.arr{justify-content:start;padding-left:14px;background:var(--white);font-weight:900}
+    .method{display:grid;grid-template-columns:.7fr 1.3fr;gap:80px;margin-top:90px;padding-top:55px;border-top:1px solid var(--line)}.method h2{margin:0;font-size:clamp(2.8rem,5vw,5rem);line-height:.92}.source{display:grid;grid-template-columns:35px 1fr auto;gap:15px;padding:18px 0;border-bottom:1px solid var(--line);text-decoration:none}.source small{color:var(--orange);font-family:Georgia,serif;font-style:italic}.source b{display:block}.source span span{display:block;margin-top:3px;color:var(--muted);font-size:.7rem}.note{margin-top:22px;color:var(--muted);font-size:.7rem}
+    footer{padding:28px 0;color:rgba(255,255,255,.6);background:var(--deep);font-size:.7rem}footer .wrap{display:flex;justify-content:space-between}
+    @media(max-width:1050px){.hero-grid,.grid-main,.method{grid-template-columns:1fr}.hero-copy{max-width:680px}.kpis{grid-template-columns:repeat(3,1fr)}.kpi:nth-child(3){border-right:0}.toolbar-grid{grid-template-columns:repeat(2,1fr)}.tool:nth-child(2){border-right:0}.grid-main{gap:24px}}
+    @media(max-width:680px){.wrap{width:min(100% - 20px,1500px)}nav{display:none}.hero{padding:60px 0}.hero h1{font-size:clamp(4rem,21vw,6rem)}.hero-grid{gap:40px}.toolbar{position:relative}.toolbar-grid{grid-template-columns:1fr}.tool{min-height:78px;border-right:0;border-bottom:1px solid rgba(255,255,255,.14)}.quality-banner{grid-template-columns:1fr}.kpis{grid-template-columns:1fr 1fr}.kpi{padding:20px}.kpi:nth-child(odd){border-right:1px solid var(--line)}.kpi:nth-child(even){border-right:0}.kpi:last-child{grid-column:1/-1}.card{padding:22px 18px}.card-head{display:block}.metric-switch{width:max-content;margin-top:14px}.compare-cards{grid-template-columns:1fr}.chart svg{height:310px}.method{gap:35px}.heatmap{grid-template-columns:70px repeat(5,75px)}footer .wrap{flex-direction:column;gap:10px}}
+    @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.dot{transition:none}}
   </style>
 </head>
 <body>
-  <div class="wrap">
-    <header>
-      <span class="hero-badge">Rapport Mars 2026</span>
-      <h1>Analyse immobiliere Ile-de-France</h1>
-      <p class="sub">Base DVF geolocalisee (mutations dedupliquees), focus prioritaire arrondissements de Paris.</p>
-      <p class="meta"><span>Fenetre: 2020-07-01 -> 2025-06-30 (2025 partiel)</span><span>Genere le 02/03/2026</span></p>
-      <div class="kpis">
-        <div class="kpi kpi-a"><div class="v">1 001 873</div><div class="l">Mutations uniques IDF</div></div>
-        <div class="kpi kpi-b"><div class="v">265 000 EUR</div><div class="l">Valeur mediane IDF</div></div>
-        <div class="kpi kpi-c"><div class="v">720 000 EUR</div><div class="l">P90 IDF</div></div>
-        <div class="kpi kpi-d"><div class="v">150 408</div><div class="l">Ventes appart. Paris</div></div>
-      </div>
-    </header>
+<header><div class="wrap"><div class="brand">ATLAS <span>DVF</span> / PARIS</div><nav><a href="#dashboard">Dashboard</a><a href="#tableau">20 arrondissements</a><a href="#sources">Sources & méthode</a></nav></div></header>
+<section class="hero"><div class="wrap hero-grid"><div><p class="eyebrow">150 835 ventes d'appartements étudiées</p><h1 class="serif">Paris,<br><em>20 marchés.</em></h1></div><div class="hero-copy"><strong>Le terrain de jeu statistique pour comparer Paris entre amis.</strong><p>Prix résidentiels, volumes, dynamique, volatilité et tickets par surface. Les locaux commerciaux restent dans une colonne séparée et ne contaminent jamais les classements.</p></div></div></section>
+<section class="toolbar" aria-label="Filtres globaux"><div class="wrap toolbar-grid">
+  <div class="tool"><label for="yearSelect">Année observée</label><select id="yearSelect"><option>2021</option><option>2022</option><option>2023</option><option>2024</option><option selected>2025</option></select></div>
+  <div class="tool"><label for="surface">Surface cible</label><div class="range-line"><input id="surface" type="range" min="20" max="120" value="50"><output id="surfaceValue">50 m²</output></div></div>
+  <div class="tool"><label for="budget">Budget disponible</label><div class="range-line"><input id="budget" type="range" min="200000" max="1500000" step="10000" value="500000"><output id="budgetValue">500 k€</output></div></div>
+  <div class="tool"><label>Dataset</label><output>DVF · 2021–2025</output></div>
+</div></section>
+<main class="wrap" id="dashboard">
+  <aside class="quality-banner" id="qualityBanner"><strong>Filtre anti-bruit actif</strong><div class="quality-rules"><span><b>Appartements uniquement</b></span><span>Médianes, jamais moyennes</span><span>Mutations mono-bien</span><span>Prix DVF ≤ 100 k€/m²</span><span><b>Locaux commerciaux exclus des classements</b></span><span>Fiabilité signalée par volume + volatilité</span></div></aside>
+  <section class="kpis" aria-label="Indicateurs Paris"><article class="kpi"><b id="kpiPrice">—</b><span>prix médian pondéré / m²</span></article><article class="kpi"><b id="kpiSales">—</b><span>ventes d'appartements</span></article><article class="kpi"><b id="kpiChange">—</b><span>évolution annuelle</span></article><article class="kpi"><b id="kpiAffordable">—</b><span>arrondissements dans le budget</span></article><article class="kpi"><b id="kpiPeak">—</b><span>écart au niveau 2021</span></article></section>
 
-    <section class="panel">
-      <h2>Insights clefs pour acheter en 2026</h2>
-      <span class="insight-chip">Vue synthetique des signaux marche</span>
-      <div class="insight-board">
-        <article class="insight-card price">
-          <h4>Prix et Positionnement</h4>
-          <p>Niveau de prix relatif</p>
-          <ul>
-            <li><strong>Plus accessibles (median EUR/m2):</strong> 19e, 20e, 13e, 18e, 12e</li>
-            <li><strong>Premium:</strong> 6e, 7e, 4e, 1e, 8e</li>
-            <li><strong>Discount vs mediane Paris:</strong> 19e (-16.1%), 20e (-13.8%), 13e (-11.0%), 18e (-8.0%), 12e (-6.7%)</li>
-            <li><strong>Premium vs mediane Paris:</strong> 6e (+42.9%), 7e (+39.9%), 4e (+25.0%), 1e (+23.4%), 8e (+21.7%)</li>
-          </ul>
-        </article>
-        <article class="insight-card trend">
-          <h4>Dynamique de Prix</h4>
-          <p>Evolution recente des medians</p>
-          <ul>
-            <li><strong>Baisses 2024-&gt;2025 (signal nego):</strong> 6e (-3.5%), 1e (-3.3%), 5e (-1.6%), 8e (-0.3%), 2e (-0.3%)</li>
-            <li><strong>Hausses 2024-&gt;2025:</strong> 7e (+3.7%), 3e (+2.1%), 16e (+1.7%), 11e (+1.1%), 18e (+1.1%)</li>
-            <li><strong>Tendances les plus stables:</strong> 15e (+0.0%), 4e (-0.1%), 17e (-0.1%), 13e (-0.2%), 2e (-0.3%)</li>
-            <li><strong>Note:</strong> 2025 couvre S1 uniquement.</li>
-          </ul>
-        </article>
-        <article class="insight-card liquidity">
-          <h4>Liquidite et Budget</h4>
-          <p>Facilite de recherche active</p>
-          <ul>
-            <li><strong>Zones les plus liquides:</strong> 18e, 15e, 17e, 16e, 11e</li>
-            <li><strong>Meilleure profondeur sous 500k:</strong> 18e (73%), 20e (73%), 19e (72%), 13e (70%), 12e (65%)</li>
-            <li><strong>Usage:</strong> plus de liquidite = plus de comparables et de marge de nego.</li>
-          </ul>
-        </article>
-        <article class="insight-card risk">
-          <h4>Risque et Variance</h4>
-          <p>Heterogeneite intra-arrondissement</p>
-          <ul>
-            <li><strong>Dispersion faible (prix lisibles):</strong> 12e (51.1%), 11e (52.4%), 15e (52.5%), 20e (52.6%), 14e (56.8%)</li>
-            <li><strong>Dispersion forte (micro-marche heterogene):</strong> 8e (87.5%), 1e (85.6%), 7e (83.4%), 6e (82.6%), 4e (72.8%)</li>
-            <li><strong>Approche:</strong> combiner discount vs Paris + liquidite + tendance stable/baissiere.</li>
-          </ul>
-        </article>
-      </div>
-    </section>
+  <section class="grid-main">
+    <article class="card"><div class="card-head"><div><p class="eyebrow">Carte prix × activité</p><h2>Où le marché bouge-t-il&nbsp;?</h2><p>Chaque cercle représente un arrondissement. Horizontalement le prix, verticalement le nombre de ventes. La taille reflète l'activité.</p></div></div><div class="chart" id="scatterChart" aria-label="Nuage prix volume"></div></article>
+    <article class="card dark"><div class="card-head"><div><p class="eyebrow">Classement instantané</p><h2>Le top 20</h2><p>Changez la métrique pour reclasser les arrondissements.</p></div><div class="metric-switch" id="metricSwitch"><button class="active" data-metric="price">Prix</button><button data-metric="sales">Volume</button><button data-metric="change">Évolution</button></div></div><div class="rank-bars" id="rankBars"></div></article>
+  </section>
 
-    <section class="panel">
-      <h2>Shortlists par budget (signal opportunite)</h2>
-      <p class="small">Chaque shortlist combine score acheteur et probabilite de trouver des transactions sous budget dans les donnees observees.</p>
-      <div class="budget-grid"><div class='budget-card'><h4>Budget &lt;= 300 000 EUR</h4><p>15e (27%), 18e (41%), 20e (39%), 19e (39%), 13e (37%)</p></div><div class='budget-card'><h4>Budget &lt;= 500 000 EUR</h4><p>15e (57%), 18e (73%), 20e (73%), 19e (72%), 13e (70%)</p></div><div class='budget-card'><h4>Budget &lt;= 700 000 EUR</h4><p>15e (76%), 18e (87%), 20e (91%), 19e (89%), 13e (87%)</p></div><div class='budget-card'><h4>Budget &lt;= 1 000 000 EUR</h4><p>15e (91%), 18e (95%), 20e (98%), 19e (97%), 13e (96%)</p></div></div>
-    </section>
+  <section class="grid-main compare-section">
+    <article class="card"><div class="card-head"><div><p class="eyebrow">Face-à-face</p><h2>Deux arrondissements au microscope</h2></div></div><div class="compare-controls"><select id="compareA" aria-label="Premier arrondissement"></select><select id="compareB" aria-label="Second arrondissement"></select></div><div class="compare-cards" id="compareCards"></div></article>
+    <article class="card"><div class="card-head"><div><p class="eyebrow">Historique annuel</p><h2>Trajectoires comparées</h2><p>Prix médian mensuel pondéré par les volumes de vente.</p></div><div class="legend-inline" id="trendLegend"></div></div><div class="chart" id="trendChart" aria-label="Courbes de prix comparées"></div></article>
+  </section>
 
-    <section class="panel">
-      <h2>Infographies rapides</h2>
-      <div class="viz-grid">
-        <div class="viz-card">
-          <h4>Distribution prix median EUR/m2 (par arrondissement)</h4>
-          <div class="viz-box"><div class='viz-row'><span class='viz-label'>19e</span><div class='viz-track'><div class='viz-fill price' style='width:58%'></div></div><span class='viz-value'>8 756</span></div><div class='viz-row'><span class='viz-label'>20e</span><div class='viz-track'><div class='viz-fill price' style='width:60%'></div></div><span class='viz-value'>9 000</span></div><div class='viz-row'><span class='viz-label'>13e</span><div class='viz-track'><div class='viz-fill price' style='width:62%'></div></div><span class='viz-value'>9 286</span></div><div class='viz-row'><span class='viz-label'>18e</span><div class='viz-track'><div class='viz-fill price' style='width:64%'></div></div><span class='viz-value'>9 597</span></div><div class='viz-row'><span class='viz-label'>12e</span><div class='viz-track'><div class='viz-fill price' style='width:65%'></div></div><span class='viz-value'>9 737</span></div><div class='viz-row'><span class='viz-label'>14e</span><div class='viz-track'><div class='viz-fill price' style='width:67%'></div></div><span class='viz-value'>10 130</span></div><div class='viz-row'><span class='viz-label'>10e</span><div class='viz-track'><div class='viz-fill price' style='width:68%'></div></div><span class='viz-value'>10 145</span></div><div class='viz-row'><span class='viz-label'>15e</span><div class='viz-track'><div class='viz-fill price' style='width:68%'></div></div><span class='viz-value'>10 214</span></div><div class='viz-row'><span class='viz-label'>11e</span><div class='viz-track'><div class='viz-fill price' style='width:70%'></div></div><span class='viz-value'>10 549</span></div><div class='viz-row'><span class='viz-label'>17e</span><div class='viz-track'><div class='viz-fill price' style='width:72%'></div></div><span class='viz-value'>10 877</span></div><div class='viz-row'><span class='viz-label'>9e</span><div class='viz-track'><div class='viz-fill price' style='width:76%'></div></div><span class='viz-value'>11 389</span></div><div class='viz-row'><span class='viz-label'>16e</span><div class='viz-track'><div class='viz-fill price' style='width:76%'></div></div><span class='viz-value'>11 463</span></div><div class='viz-row'><span class='viz-label'>2e</span><div class='viz-track'><div class='viz-fill price' style='width:78%'></div></div><span class='viz-value'>11 750</span></div><div class='viz-row'><span class='viz-label'>5e</span><div class='viz-track'><div class='viz-fill price' style='width:82%'></div></div><span class='viz-value'>12 334</span></div><div class='viz-row'><span class='viz-label'>3e</span><div class='viz-track'><div class='viz-fill price' style='width:82%'></div></div><span class='viz-value'>12 342</span></div><div class='viz-row'><span class='viz-label'>8e</span><div class='viz-track'><div class='viz-fill price' style='width:85%'></div></div><span class='viz-value'>12 703</span></div><div class='viz-row'><span class='viz-label'>1e</span><div class='viz-track'><div class='viz-fill price' style='width:86%'></div></div><span class='viz-value'>12 875</span></div><div class='viz-row'><span class='viz-label'>4e</span><div class='viz-track'><div class='viz-fill price' style='width:87%'></div></div><span class='viz-value'>13 043</span></div><div class='viz-row'><span class='viz-label'>7e</span><div class='viz-track'><div class='viz-fill price' style='width:97%'></div></div><span class='viz-value'>14 599</span></div><div class='viz-row'><span class='viz-label'>6e</span><div class='viz-track'><div class='viz-fill price' style='width:100%'></div></div><span class='viz-value'>14 917</span></div></div>
-        </div>
-        <div class="viz-card">
-          <h4>Part des transactions <= 500k</h4>
-          <div class="viz-box"><div class='viz-row'><span class='viz-label'>18e</span><div class='viz-track'><div class='viz-fill budget' style='width:73%'></div></div><span class='viz-value'>73%</span></div><div class='viz-row'><span class='viz-label'>20e</span><div class='viz-track'><div class='viz-fill budget' style='width:72%'></div></div><span class='viz-value'>73%</span></div><div class='viz-row'><span class='viz-label'>19e</span><div class='viz-track'><div class='viz-fill budget' style='width:72%'></div></div><span class='viz-value'>72%</span></div><div class='viz-row'><span class='viz-label'>13e</span><div class='viz-track'><div class='viz-fill budget' style='width:70%'></div></div><span class='viz-value'>70%</span></div><div class='viz-row'><span class='viz-label'>12e</span><div class='viz-track'><div class='viz-fill budget' style='width:65%'></div></div><span class='viz-value'>65%</span></div><div class='viz-row'><span class='viz-label'>11e</span><div class='viz-track'><div class='viz-fill budget' style='width:65%'></div></div><span class='viz-value'>65%</span></div><div class='viz-row'><span class='viz-label'>14e</span><div class='viz-track'><div class='viz-fill budget' style='width:63%'></div></div><span class='viz-value'>63%</span></div><div class='viz-row'><span class='viz-label'>10e</span><div class='viz-track'><div class='viz-fill budget' style='width:62%'></div></div><span class='viz-value'>63%</span></div><div class='viz-row'><span class='viz-label'>2e</span><div class='viz-track'><div class='viz-fill budget' style='width:58%'></div></div><span class='viz-value'>59%</span></div><div class='viz-row'><span class='viz-label'>15e</span><div class='viz-track'><div class='viz-fill budget' style='width:57%'></div></div><span class='viz-value'>57%</span></div><div class='viz-row'><span class='viz-label'>5e</span><div class='viz-track'><div class='viz-fill budget' style='width:53%'></div></div><span class='viz-value'>54%</span></div><div class='viz-row'><span class='viz-label'>17e</span><div class='viz-track'><div class='viz-fill budget' style='width:52%'></div></div><span class='viz-value'>53%</span></div><div class='viz-row'><span class='viz-label'>3e</span><div class='viz-track'><div class='viz-fill budget' style='width:50%'></div></div><span class='viz-value'>50%</span></div><div class='viz-row'><span class='viz-label'>9e</span><div class='viz-track'><div class='viz-fill budget' style='width:48%'></div></div><span class='viz-value'>48%</span></div><div class='viz-row'><span class='viz-label'>4e</span><div class='viz-track'><div class='viz-fill budget' style='width:45%'></div></div><span class='viz-value'>45%</span></div><div class='viz-row'><span class='viz-label'>1e</span><div class='viz-track'><div class='viz-fill budget' style='width:44%'></div></div><span class='viz-value'>45%</span></div><div class='viz-row'><span class='viz-label'>6e</span><div class='viz-track'><div class='viz-fill budget' style='width:34%'></div></div><span class='viz-value'>35%</span></div><div class='viz-row'><span class='viz-label'>8e</span><div class='viz-track'><div class='viz-fill budget' style='width:31%'></div></div><span class='viz-value'>32%</span></div><div class='viz-row'><span class='viz-label'>16e</span><div class='viz-track'><div class='viz-fill budget' style='width:31%'></div></div><span class='viz-value'>32%</span></div><div class='viz-row'><span class='viz-label'>7e</span><div class='viz-track'><div class='viz-fill budget' style='width:29%'></div></div><span class='viz-value'>30%</span></div></div>
-        </div>
-        <div class="viz-card">
-          <h4>Tendance 2024->2025 (EUR/m2)</h4>
-          <div class="viz-box"><div class='viz-row'><span class='viz-label'>6e</span><div class='viz-track'><div class='viz-fill neg' style='width:96%'></div></div><span class='viz-value'>-3.5%</span></div><div class='viz-row'><span class='viz-label'>1e</span><div class='viz-track'><div class='viz-fill neg' style='width:91%'></div></div><span class='viz-value'>-3.3%</span></div><div class='viz-row'><span class='viz-label'>5e</span><div class='viz-track'><div class='viz-fill neg' style='width:44%'></div></div><span class='viz-value'>-1.6%</span></div><div class='viz-row'><span class='viz-label'>8e</span><div class='viz-track'><div class='viz-fill neg' style='width:7%'></div></div><span class='viz-value'>-0.3%</span></div><div class='viz-row'><span class='viz-label'>2e</span><div class='viz-track'><div class='viz-fill neg' style='width:7%'></div></div><span class='viz-value'>-0.3%</span></div><div class='viz-row'><span class='viz-label'>13e</span><div class='viz-track'><div class='viz-fill neg' style='width:5%'></div></div><span class='viz-value'>-0.2%</span></div><div class='viz-row'><span class='viz-label'>17e</span><div class='viz-track'><div class='viz-fill neg' style='width:2%'></div></div><span class='viz-value'>-0.1%</span></div><div class='viz-row'><span class='viz-label'>4e</span><div class='viz-track'><div class='viz-fill neg' style='width:1%'></div></div><span class='viz-value'>-0.1%</span></div><div class='viz-row'><span class='viz-label'>15e</span><div class='viz-track'><div class='viz-fill pos' style='width:1%'></div></div><span class='viz-value'>+0.0%</span></div><div class='viz-row'><span class='viz-label'>12e</span><div class='viz-track'><div class='viz-fill pos' style='width:7%'></div></div><span class='viz-value'>+0.3%</span></div><div class='viz-row'><span class='viz-label'>9e</span><div class='viz-track'><div class='viz-fill pos' style='width:15%'></div></div><span class='viz-value'>+0.5%</span></div><div class='viz-row'><span class='viz-label'>20e</span><div class='viz-track'><div class='viz-fill pos' style='width:18%'></div></div><span class='viz-value'>+0.7%</span></div><div class='viz-row'><span class='viz-label'>10e</span><div class='viz-track'><div class='viz-fill pos' style='width:19%'></div></div><span class='viz-value'>+0.7%</span></div><div class='viz-row'><span class='viz-label'>19e</span><div class='viz-track'><div class='viz-fill pos' style='width:21%'></div></div><span class='viz-value'>+0.8%</span></div><div class='viz-row'><span class='viz-label'>14e</span><div class='viz-track'><div class='viz-fill pos' style='width:24%'></div></div><span class='viz-value'>+0.9%</span></div><div class='viz-row'><span class='viz-label'>18e</span><div class='viz-track'><div class='viz-fill pos' style='width:28%'></div></div><span class='viz-value'>+1.1%</span></div><div class='viz-row'><span class='viz-label'>11e</span><div class='viz-track'><div class='viz-fill pos' style='width:30%'></div></div><span class='viz-value'>+1.1%</span></div><div class='viz-row'><span class='viz-label'>16e</span><div class='viz-track'><div class='viz-fill pos' style='width:46%'></div></div><span class='viz-value'>+1.7%</span></div><div class='viz-row'><span class='viz-label'>3e</span><div class='viz-track'><div class='viz-fill pos' style='width:57%'></div></div><span class='viz-value'>+2.1%</span></div><div class='viz-row'><span class='viz-label'>7e</span><div class='viz-track'><div class='viz-fill pos' style='width:100%'></div></div><span class='viz-value'>+3.7%</span></div></div>
-        </div>
-      </div>
-      <div class="legend">
-        <span>Barres prix: plus long = plus cher</span>
-        <span>Barres budget: plus long = plus de biens sous 500k</span>
-        <span>Tendance: vert = hausse, rouge = baisse</span>
-      </div>
-    </section>
+  <section class="card wide" id="tableau"><div class="card-head"><div><p class="eyebrow">La matrice complète</p><h2>Les 20 arrondissements, sans raccourci</h2><p>Cliquez une colonne pour trier. Les classements et tickets utilisent exclusivement les ventes d'appartements. Les locaux commerciaux sont affichés pour information, jamais mélangés.</p></div></div><div class="table-wrap"><table id="statsTable"><thead><tr><th data-sort="id">Arr.</th><th data-sort="price">Prix / m²</th><th data-sort="sales">Ventes</th><th data-sort="quality">Fiabilité</th><th data-sort="change">Évol. / an</th><th data-sort="since">Depuis 2021</th><th data-sort="volatility">Volatilité</th><th data-sort="local">Locaux commerciaux / m²<br><small>hors score</small></th><th data-sort="ticket">Ticket <span id="surfaceHeader">50 m²</span></th><th data-sort="margin">Marge budget</th></tr></thead><tbody></tbody></table></div></section>
 
-    <section class="panel">
-      <h2>Top arrondissements (score acheteur 2026)</h2>
-      <div class="cards"><article class='card'><h4>15e</h4><p><strong>Score:</strong> 0.79</p><p><strong>Median m2:</strong> 10 214 EUR/m2</p><p><strong>Budget <=500k:</strong> 57%</p><p><strong>Trend 24->25:</strong> 0.0%</p><p><strong>Liquidite:</strong> 15 647 mutations</p></article><article class='card'><h4>18e</h4><p><strong>Score:</strong> 0.79</p><p><strong>Median m2:</strong> 9 597 EUR/m2</p><p><strong>Budget <=500k:</strong> 73%</p><p><strong>Trend 24->25:</strong> 1.1%</p><p><strong>Liquidite:</strong> 15 672 mutations</p></article><article class='card'><h4>20e</h4><p><strong>Score:</strong> 0.77</p><p><strong>Median m2:</strong> 9 000 EUR/m2</p><p><strong>Budget <=500k:</strong> 73%</p><p><strong>Trend 24->25:</strong> 0.7%</p><p><strong>Liquidite:</strong> 9 820 mutations</p></article><article class='card'><h4>19e</h4><p><strong>Score:</strong> 0.73</p><p><strong>Median m2:</strong> 8 756 EUR/m2</p><p><strong>Budget <=500k:</strong> 72%</p><p><strong>Trend 24->25:</strong> 0.8%</p><p><strong>Liquidite:</strong> 8 074 mutations</p></article><article class='card'><h4>13e</h4><p><strong>Score:</strong> 0.73</p><p><strong>Median m2:</strong> 9 286 EUR/m2</p><p><strong>Budget <=500k:</strong> 70%</p><p><strong>Trend 24->25:</strong> -0.2%</p><p><strong>Liquidite:</strong> 7 270 mutations</p></article><article class='card'><h4>11e</h4><p><strong>Score:</strong> 0.73</p><p><strong>Median m2:</strong> 10 549 EUR/m2</p><p><strong>Budget <=500k:</strong> 65%</p><p><strong>Trend 24->25:</strong> 1.1%</p><p><strong>Liquidite:</strong> 12 422 mutations</p></article><article class='card'><h4>17e</h4><p><strong>Score:</strong> 0.72</p><p><strong>Median m2:</strong> 10 877 EUR/m2</p><p><strong>Budget <=500k:</strong> 53%</p><p><strong>Trend 24->25:</strong> -0.1%</p><p><strong>Liquidite:</strong> 13 075 mutations</p></article><article class='card'><h4>12e</h4><p><strong>Score:</strong> 0.70</p><p><strong>Median m2:</strong> 9 737 EUR/m2</p><p><strong>Budget <=500k:</strong> 65%</p><p><strong>Trend 24->25:</strong> 0.3%</p><p><strong>Liquidite:</strong> 8 266 mutations</p></article><article class='card'><h4>14e</h4><p><strong>Score:</strong> 0.65</p><p><strong>Median m2:</strong> 10 130 EUR/m2</p><p><strong>Budget <=500k:</strong> 63%</p><p><strong>Trend 24->25:</strong> 0.9%</p><p><strong>Liquidite:</strong> 7 751 mutations</p></article><article class='card'><h4>10e</h4><p><strong>Score:</strong> 0.64</p><p><strong>Median m2:</strong> 10 145 EUR/m2</p><p><strong>Budget <=500k:</strong> 63%</p><p><strong>Trend 24->25:</strong> 0.7%</p><p><strong>Liquidite:</strong> 7 993 mutations</p></article></div>
-    </section>
+  <section class="card wide"><div class="card-head"><div><p class="eyebrow">Lecture historique</p><h2>Heatmap 2021–2025</h2><p>Prix médian pondéré annuel. Plus la case est foncée, plus le niveau de prix est élevé.</p></div></div><div class="heatmap" id="heatmap"></div></section>
 
-    <section class="panel grid2">
-      <div>
-        <h2>Matrice budget (part de transactions)</h2>
-        <div class="table-wrap" style="max-height:420px">
-          <table>
-            <thead><tr><th>Arr.</th><th>&lt;=300k</th><th>&lt;=500k</th><th>&lt;=700k</th><th>&lt;=1M</th><th>Median ticket</th></tr></thead>
-            <tbody><tr><td>1e</td><td>23%</td><td>45%</td><td>60%</td><td>73%</td><td>562 448 EUR</td></tr><tr><td>2e</td><td>33%</td><td>59%</td><td>72%</td><td>85%</td><td>419 000 EUR</td></tr><tr><td>3e</td><td>25%</td><td>50%</td><td>66%</td><td>80%</td><td>500 000 EUR</td></tr><tr><td>4e</td><td>21%</td><td>45%</td><td>62%</td><td>77%</td><td>555 000 EUR</td></tr><tr><td>5e</td><td>27%</td><td>54%</td><td>69%</td><td>81%</td><td>471 050 EUR</td></tr><tr><td>6e</td><td>17%</td><td>35%</td><td>47%</td><td>61%</td><td>760 000 EUR</td></tr><tr><td>7e</td><td>14%</td><td>30%</td><td>42%</td><td>53%</td><td>908 546 EUR</td></tr><tr><td>8e</td><td>17%</td><td>32%</td><td>44%</td><td>56%</td><td>840 000 EUR</td></tr><tr><td>9e</td><td>27%</td><td>48%</td><td>65%</td><td>80%</td><td>517 900 EUR</td></tr><tr><td>10e</td><td>36%</td><td>63%</td><td>79%</td><td>91%</td><td>390 000 EUR</td></tr><tr><td>11e</td><td>34%</td><td>65%</td><td>81%</td><td>93%</td><td>385 000 EUR</td></tr><tr><td>12e</td><td>32%</td><td>65%</td><td>83%</td><td>94%</td><td>400 000 EUR</td></tr><tr><td>13e</td><td>37%</td><td>70%</td><td>87%</td><td>96%</td><td>360 245 EUR</td></tr><tr><td>14e</td><td>32%</td><td>63%</td><td>80%</td><td>92%</td><td>400 000 EUR</td></tr><tr><td>15e</td><td>27%</td><td>57%</td><td>76%</td><td>91%</td><td>448 000 EUR</td></tr><tr><td>16e</td><td>16%</td><td>32%</td><td>45%</td><td>61%</td><td>800 000 EUR</td></tr><tr><td>17e</td><td>27%</td><td>53%</td><td>69%</td><td>82%</td><td>480 000 EUR</td></tr><tr><td>18e</td><td>41%</td><td>73%</td><td>87%</td><td>95%</td><td>343 000 EUR</td></tr><tr><td>19e</td><td>39%</td><td>72%</td><td>89%</td><td>97%</td><td>356 000 EUR</td></tr><tr><td>20e</td><td>39%</td><td>73%</td><td>91%</td><td>98%</td><td>354 475 EUR</td></tr></tbody>
-          </table>
-        </div>
-      </div>
-      <div>
-        <h2>Top 5 arrondissements par tranche surface</h2>
-        <div class="table-wrap" style="max-height:420px">
-          <table>
-            <thead><tr><th>Tranche</th><th>Arrondissements les moins chers (EUR/m2)</th></tr></thead>
-            <tbody><tr><td>20-30m2</td><td>19e (8 913), 20e (9 259), 18e (9 433), 13e (9 643), 12e (9 974)</td></tr><tr><td>30-40m2</td><td>19e (8 857), 20e (9 079), 13e (9 324), 18e (9 459), 12e (9 566)</td></tr><tr><td>40-50m2</td><td>19e (8 792), 20e (9 027), 13e (9 125), 18e (9 497), 12e (9 687)</td></tr><tr><td>50-70m2</td><td>19e (8 600), 20e (8 900), 13e (9 000), 12e (9 590), 18e (9 746)</td></tr><tr><td>70-90m2</td><td>19e (8 405), 20e (8 424), 13e (8 727), 12e (9 667), 18e (9 996)</td></tr><tr><td>90m2+</td><td>20e (8 381), 19e (8 582), 13e (8 958), 18e (9 734), 12e (9 785)</td></tr></tbody>
-          </table>
-        </div>
-      </div>
-    </section>
-
-    <section class="panel">
-      <h2>Comparatif detaille - Paris arrondissements</h2>
-      <p class="small">Dispersion = (P90-P10)/mediane en EUR/m2. Plus c'est eleve, plus l'incertitude de prix est forte.</p>
-      <div class="table-wrap">
-        <table>
-          <thead>
-            <tr>
-              <th>Arr.</th><th>Mut.</th><th>Med. EUR/m2</th><th>Intensite prix</th><th>Med. ticket</th><th>IQR EUR/m2</th><th>Dispersion</th><th>Trend 23->24</th><th>Trend 24->25*</th><th>Vol 2025 vs 2024/2</th><th>% <=500k</th><th>Intensite liq.</th><th>Score</th>
-            </tr>
-          </thead>
-          <tbody><tr><td>1e</td><td>1 570</td><td>12 875</td><td><div class='bar price' style='width:86%'></div></td><td>562 448 EUR</td><td>10 746 - 15 527</td><td>85.6%</td><td>-4.5%</td><td>-3.3%</td><td>-0.4%</td><td>45%</td><td><div class='bar liq' style='width:10%'></div></td><td>0.28</td></tr><tr><td>2e</td><td>2 241</td><td>11 750</td><td><div class='bar price' style='width:78%'></div></td><td>419 000 EUR</td><td>10 000 - 13 457</td><td>66.2%</td><td>-3.5%</td><td>-0.3%</td><td>-13.2%</td><td>59%</td><td><div class='bar liq' style='width:14%'></div></td><td>0.45</td></tr><tr><td>3e</td><td>3 360</td><td>12 342</td><td><div class='bar price' style='width:82%'></div></td><td>500 000 EUR</td><td>10 667 - 14 210</td><td>64.7%</td><td>-5.1%</td><td>2.1%</td><td>0.3%</td><td>50%</td><td><div class='bar liq' style='width:21%'></div></td><td>0.40</td></tr><tr><td>4e</td><td>2 633</td><td>13 043</td><td><div class='bar price' style='width:87%'></div></td><td>555 000 EUR</td><td>11 129 - 15 305</td><td>72.8%</td><td>-4.5%</td><td>-0.1%</td><td>8.0%</td><td>45%</td><td><div class='bar liq' style='width:16%'></div></td><td>0.34</td></tr><tr><td>5e</td><td>4 324</td><td>12 334</td><td><div class='bar price' style='width:82%'></div></td><td>471 050 EUR</td><td>10 598 - 14 118</td><td>63.3%</td><td>-4.4%</td><td>-1.6%</td><td>-22.0%</td><td>54%</td><td><div class='bar liq' style='width:27%'></div></td><td>0.46</td></tr><tr><td>6e</td><td>3 957</td><td>14 917</td><td><div class='bar price' style='width:100%'></div></td><td>760 000 EUR</td><td>12 556 - 17 750</td><td>82.6%</td><td>-3.1%</td><td>-3.5%</td><td>-23.0%</td><td>35%</td><td><div class='bar liq' style='width:25%'></div></td><td>0.21</td></tr><tr><td>7e</td><td>4 624</td><td>14 599</td><td><div class='bar price' style='width:97%'></div></td><td>908 546 EUR</td><td>12 296 - 17 723</td><td>83.4%</td><td>-5.5%</td><td>3.7%</td><td>-10.1%</td><td>30%</td><td><div class='bar liq' style='width:29%'></div></td><td>0.15</td></tr><tr><td>8e</td><td>3 316</td><td>12 703</td><td><div class='bar price' style='width:85%'></div></td><td>840 000 EUR</td><td>10 808 - 15 000</td><td>87.5%</td><td>-4.4%</td><td>-0.3%</td><td>-11.4%</td><td>32%</td><td><div class='bar liq' style='width:21%'></div></td><td>0.30</td></tr><tr><td>9e</td><td>5 859</td><td>11 389</td><td><div class='bar price' style='width:76%'></div></td><td>517 900 EUR</td><td>9 773 - 12 941</td><td>61.8%</td><td>-7.0%</td><td>0.5%</td><td>-13.4%</td><td>48%</td><td><div class='bar liq' style='width:37%'></div></td><td>0.51</td></tr><tr><td>10e</td><td>7 993</td><td>10 145</td><td><div class='bar price' style='width:68%'></div></td><td>390 000 EUR</td><td>8 673 - 11 511</td><td>59.3%</td><td>-7.3%</td><td>0.7%</td><td>-15.6%</td><td>63%</td><td><div class='bar liq' style='width:51%'></div></td><td>0.64</td></tr><tr><td>11e</td><td>12 422</td><td>10 549</td><td><div class='bar price' style='width:70%'></div></td><td>385 000 EUR</td><td>9 210 - 11 775</td><td>52.4%</td><td>-4.8%</td><td>1.1%</td><td>-27.0%</td><td>65%</td><td><div class='bar liq' style='width:79%'></div></td><td>0.73</td></tr><tr><td>12e</td><td>8 266</td><td>9 737</td><td><div class='bar price' style='width:65%'></div></td><td>400 000 EUR</td><td>8 491 - 10 887</td><td>51.1%</td><td>-6.6%</td><td>0.3%</td><td>-19.1%</td><td>65%</td><td><div class='bar liq' style='width:52%'></div></td><td>0.70</td></tr><tr><td>13e</td><td>7 270</td><td>9 286</td><td><div class='bar price' style='width:62%'></div></td><td>360 245 EUR</td><td>7 955 - 10 581</td><td>58.0%</td><td>-4.6%</td><td>-0.2%</td><td>-26.5%</td><td>70%</td><td><div class='bar liq' style='width:46%'></div></td><td>0.73</td></tr><tr><td>14e</td><td>7 751</td><td>10 130</td><td><div class='bar price' style='width:67%'></div></td><td>400 000 EUR</td><td>8 750 - 11 490</td><td>56.8%</td><td>-6.8%</td><td>0.9%</td><td>-16.7%</td><td>63%</td><td><div class='bar liq' style='width:49%'></div></td><td>0.65</td></tr><tr><td>15e</td><td>15 647</td><td>10 214</td><td><div class='bar price' style='width:68%'></div></td><td>448 000 EUR</td><td>8 898 - 11 490</td><td>52.5%</td><td>-5.4%</td><td>0.0%</td><td>-23.7%</td><td>57%</td><td><div class='bar liq' style='width:99%'></div></td><td>0.79</td></tr><tr><td>16e</td><td>12 534</td><td>11 463</td><td><div class='bar price' style='width:76%'></div></td><td>800 000 EUR</td><td>9 860 - 13 333</td><td>66.5%</td><td>-5.3%</td><td>1.7%</td><td>-13.1%</td><td>32%</td><td><div class='bar liq' style='width:79%'></div></td><td>0.58</td></tr><tr><td>17e</td><td>13 075</td><td>10 877</td><td><div class='bar price' style='width:72%'></div></td><td>480 000 EUR</td><td>9 305 - 12 341</td><td>57.7%</td><td>-6.5%</td><td>-0.1%</td><td>-15.2%</td><td>53%</td><td><div class='bar liq' style='width:83%'></div></td><td>0.72</td></tr><tr><td>18e</td><td>15 672</td><td>9 597</td><td><div class='bar price' style='width:64%'></div></td><td>343 000 EUR</td><td>8 000 - 11 226</td><td>67.0%</td><td>-6.9%</td><td>1.1%</td><td>-12.0%</td><td>73%</td><td><div class='bar liq' style='width:100%'></div></td><td>0.79</td></tr><tr><td>19e</td><td>8 074</td><td>8 756</td><td><div class='bar price' style='width:58%'></div></td><td>356 000 EUR</td><td>7 412 - 10 000</td><td>59.7%</td><td>-9.4%</td><td>0.8%</td><td>-21.5%</td><td>72%</td><td><div class='bar liq' style='width:51%'></div></td><td>0.73</td></tr><tr><td>20e</td><td>9 820</td><td>9 000</td><td><div class='bar price' style='width:60%'></div></td><td>354 475 EUR</td><td>7 818 - 10 158</td><td>52.6%</td><td>-6.3%</td><td>0.7%</td><td>-17.6%</td><td>73%</td><td><div class='bar liq' style='width:62%'></div></td><td>0.77</td></tr></tbody>
-        </table>
-      </div>
-      <p class="small">*Trend 24->25 calcule sur medianes EUR/m2, avec 2025 limite au S1.</p>
-    </section>
-
-    <section class="panel grid2">
-      <div>
-        <h2>Heatmap de signaux acheteur</h2>
-        <p class="small">Plus vert = plus favorable acheteur (baisse prix, budget accessible, faible dispersion).</p>
-        <div class="table-wrap" style="max-height:420px">
-          <table>
-            <thead><tr><th>Arr.</th><th>Trend 23->24</th><th>Trend 24->25</th><th>% &lt;=500k</th><th>Dispersion</th></tr></thead>
-            <tbody><tr><td>1e</td><td style='background:#efad94'>-4.5%</td><td style='background:#9fd5a8'>-3.3%</td><td style='background:#efbb94'>45%</td><td style='background:#ef9a94'>85.6%</td></tr><tr><td>2e</td><td style='background:#ef9b94'>-3.5%</td><td style='background:#e7ce96'>-0.3%</td><td style='background:#d2d09b'>59%</td><td style='background:#e0cf97'>66.2%</td></tr><tr><td>3e</td><td style='background:#efb894'>-5.1%</td><td style='background:#efad94'>+2.1%</td><td style='background:#efca94'>50%</td><td style='background:#d9d099'>64.7%</td></tr><tr><td>4e</td><td style='background:#efae94'>-4.5%</td><td style='background:#ecce94'>-0.1%</td><td style='background:#efbd94'>45%</td><td style='background:#efc294'>72.8%</td></tr><tr><td>5e</td><td style='background:#efad94'>-4.4%</td><td style='background:#c7d19e'>-1.6%</td><td style='background:#e6ce96'>54%</td><td style='background:#d3d09b'>63.3%</td></tr><tr><td>6e</td><td style='background:#ef9494'>-3.1%</td><td style='background:#9bd6aa'>-3.5%</td><td style='background:#efa094'>35%</td><td style='background:#efa394'>82.6%</td></tr><tr><td>7e</td><td style='background:#efc094'>-5.5%</td><td style='background:#ef9494'>+3.7%</td><td style='background:#ef9494'>30%</td><td style='background:#efa094'>83.4%</td></tr><tr><td>8e</td><td style='background:#efac94'>-4.4%</td><td style='background:#e6ce96'>-0.3%</td><td style='background:#ef9894'>32%</td><td style='background:#ef9494'>87.5%</td></tr><tr><td>9e</td><td style='background:#dacf99'>-7.0%</td><td style='background:#efc694'>+0.5%</td><td style='background:#efc594'>48%</td><td style='background:#ccd19d'>61.8%</td></tr><tr><td>10e</td><td style='background:#d1d09b'>-7.3%</td><td style='background:#efc394'>+0.7%</td><td style='background:#c3d29f'>63%</td><td style='background:#c0d2a0'>59.3%</td></tr><tr><td>11e</td><td style='background:#efb394'>-4.8%</td><td style='background:#efbc94'>+1.1%</td><td style='background:#b9d3a1'>65%</td><td style='background:#a0d5a8'>52.4%</td></tr><tr><td>12e</td><td style='background:#e5ce96'>-6.6%</td><td style='background:#efca94'>+0.3%</td><td style='background:#b9d3a1'>65%</td><td style='background:#9bd6aa'>51.1%</td></tr><tr><td>13e</td><td style='background:#efaf94'>-4.6%</td><td style='background:#e9ce95'>-0.2%</td><td style='background:#a5d5a7'>70%</td><td style='background:#bad2a1'>58.0%</td></tr><tr><td>14e</td><td style='background:#decf98'>-6.8%</td><td style='background:#efc094'>+0.9%</td><td style='background:#c1d29f'>63%</td><td style='background:#b5d3a3'>56.8%</td></tr><tr><td>15e</td><td style='background:#efbe94'>-5.4%</td><td style='background:#eece94'>+0.0%</td><td style='background:#d8d099'>57%</td><td style='background:#a1d5a8'>52.5%</td></tr><tr><td>16e</td><td style='background:#efbd94'>-5.3%</td><td style='background:#efb394'>+1.7%</td><td style='background:#ef9894'>32%</td><td style='background:#e1cf97'>66.5%</td></tr><tr><td>17e</td><td style='background:#e8ce95'>-6.5%</td><td style='background:#ebce95'>-0.1%</td><td style='background:#eace95'>53%</td><td style='background:#b9d3a2'>57.7%</td></tr><tr><td>18e</td><td style='background:#dbcf98'>-6.9%</td><td style='background:#efbd94'>+1.1%</td><td style='background:#9bd6aa'>73%</td><td style='background:#e4cf96'>67.0%</td></tr><tr><td>19e</td><td style='background:#9bd6aa'>-9.4%</td><td style='background:#efc294'>+0.8%</td><td style='background:#9dd5a9'>72%</td><td style='background:#c2d29f'>59.7%</td></tr><tr><td>20e</td><td style='background:#edce94'>-6.3%</td><td style='background:#efc394'>+0.7%</td><td style='background:#9cd5a9'>73%</td><td style='background:#a1d5a8'>52.6%</td></tr></tbody>
-          </table>
-        </div>
-      </div>
-      <div>
-        <h2>Top 10 opportunites de negociation</h2>
-        <p class="small">Indice combine: baisse recente + profondeur budget + liquidite + dispersion.</p>
-        <div class="table-wrap" style="max-height:420px">
-          <table>
-            <thead><tr><th>Rang</th><th>Arr.</th><th>Indice</th><th>Trend 24->25</th><th>% &lt;=500k</th><th>Dispersion</th><th>Mutations</th></tr></thead>
-            <tbody><tr><td>1</td><td>6e</td><td>0.64</td><td>-3.5%</td><td>35%</td><td>82.6%</td><td>3 957</td></tr><tr><td>2</td><td>1e</td><td>0.63</td><td>-3.3%</td><td>45%</td><td>85.6%</td><td>1 570</td></tr><tr><td>3</td><td>18e</td><td>0.47</td><td>+1.1%</td><td>73%</td><td>67.0%</td><td>15 672</td></tr><tr><td>4</td><td>5e</td><td>0.40</td><td>-1.6%</td><td>54%</td><td>63.3%</td><td>4 324</td></tr><tr><td>5</td><td>15e</td><td>0.35</td><td>+0.0%</td><td>57%</td><td>52.5%</td><td>15 647</td></tr><tr><td>6</td><td>17e</td><td>0.34</td><td>-0.1%</td><td>53%</td><td>57.7%</td><td>13 075</td></tr><tr><td>7</td><td>8e</td><td>0.33</td><td>-0.3%</td><td>32%</td><td>87.5%</td><td>3 316</td></tr><tr><td>8</td><td>11e</td><td>0.32</td><td>+1.1%</td><td>65%</td><td>52.4%</td><td>12 422</td></tr><tr><td>9</td><td>19e</td><td>0.32</td><td>+0.8%</td><td>72%</td><td>59.7%</td><td>8 074</td></tr><tr><td>10</td><td>16e</td><td>0.32</td><td>+1.7%</td><td>32%</td><td>66.5%</td><td>12 534</td></tr></tbody>
-          </table>
-        </div>
-      </div>
-    </section>
-
-    <section class="panel grid2">
-      <div>
-        <h2>Focus surface (median EUR/m2)</h2>
-        <p class="small">Tranches demandees: 20-30, 30-40, 40-50, 50-70, 70-90, 90+ m2. Les biens &lt;20m2 sont hors de ce focus.</p>
-        <div class="table-wrap" style="max-height:420px">
-          <table>
-            <thead><tr><th>Arr.</th><th>20-30</th><th>30-40</th><th>40-50</th><th>50-70</th><th>70-90</th><th>90+</th></tr></thead>
-            <tbody><tr><td>1e</td><td>12 480</td><td>12 321</td><td>12 490</td><td>12 969</td><td>13 072</td><td>14 167</td></tr><tr><td>2e</td><td>11 500</td><td>11 667</td><td>11 667</td><td>11 895</td><td>12 025</td><td>12 336</td></tr><tr><td>3e</td><td>12 015</td><td>12 170</td><td>12 319</td><td>12 347</td><td>12 594</td><td>12 959</td></tr><tr><td>4e</td><td>13 000</td><td>12 900</td><td>12 667</td><td>13 008</td><td>12 954</td><td>13 638</td></tr><tr><td>5e</td><td>12 148</td><td>12 000</td><td>11 837</td><td>12 222</td><td>12 360</td><td>13 283</td></tr><tr><td>6e</td><td>14 108</td><td>13 797</td><td>14 339</td><td>14 835</td><td>15 459</td><td>16 241</td></tr><tr><td>7e</td><td>13 312</td><td>13 564</td><td>13 807</td><td>14 286</td><td>15 008</td><td>16 289</td></tr><tr><td>8e</td><td>12 545</td><td>12 121</td><td>12 771</td><td>12 037</td><td>12 704</td><td>13 214</td></tr><tr><td>9e</td><td>11 087</td><td>11 184</td><td>11 447</td><td>11 538</td><td>11 800</td><td>11 598</td></tr><tr><td>10e</td><td>10 208</td><td>10 056</td><td>10 057</td><td>10 292</td><td>10 142</td><td>9 860</td></tr><tr><td>11e</td><td>10 517</td><td>10 484</td><td>10 588</td><td>10 537</td><td>10 571</td><td>10 421</td></tr><tr><td>12e</td><td>9 974</td><td>9 566</td><td>9 687</td><td>9 590</td><td>9 667</td><td>9 785</td></tr><tr><td>13e</td><td>9 643</td><td>9 324</td><td>9 125</td><td>9 000</td><td>8 727</td><td>8 958</td></tr><tr><td>14e</td><td>10 289</td><td>9 967</td><td>10 000</td><td>9 986</td><td>10 128</td><td>10 363</td></tr><tr><td>15e</td><td>10 425</td><td>10 065</td><td>10 057</td><td>10 091</td><td>10 060</td><td>10 312</td></tr><tr><td>16e</td><td>11 250</td><td>10 977</td><td>10 942</td><td>11 091</td><td>11 419</td><td>12 008</td></tr><tr><td>17e</td><td>10 411</td><td>10 564</td><td>10 750</td><td>10 909</td><td>11 295</td><td>11 640</td></tr><tr><td>18e</td><td>9 433</td><td>9 459</td><td>9 497</td><td>9 746</td><td>9 996</td><td>9 734</td></tr><tr><td>19e</td><td>8 913</td><td>8 857</td><td>8 792</td><td>8 600</td><td>8 405</td><td>8 582</td></tr><tr><td>20e</td><td>9 259</td><td>9 079</td><td>9 027</td><td>8 900</td><td>8 424</td><td>8 381</td></tr></tbody>
-          </table>
-        </div>
-      </div>
-      <div>
-        <h2>Snapshot IDF par departement</h2>
-        <div class="table-wrap" style="max-height:420px">
-          <table>
-            <thead><tr><th>Dep</th><th>Nom</th><th>Mut.</th><th>Mediane</th><th>P90</th></tr></thead>
-            <tbody><tr><td>75</td><td>Paris</td><td>201 547</td><td>365 000 EUR</td><td>1 225 000 EUR</td></tr><tr><td>77</td><td>Seine-et-Marne</td><td>136 993</td><td>209 240 EUR</td><td>410 000 EUR</td></tr><tr><td>78</td><td>Yvelines</td><td>119 578</td><td>267 000 EUR</td><td>677 909 EUR</td></tr><tr><td>91</td><td>Essonne</td><td>102 210</td><td>221 050 EUR</td><td>445 855 EUR</td></tr><tr><td>92</td><td>Hauts-de-Seine</td><td>139 153</td><td>355 000 EUR</td><td>915 684 EUR</td></tr><tr><td>93</td><td>Seine-Saint-Denis</td><td>104 954</td><td>235 000 EUR</td><td>490 000 EUR</td></tr><tr><td>94</td><td>Val-de-Marne</td><td>103 441</td><td>270 000 EUR</td><td>657 500 EUR</td></tr><tr><td>95</td><td>Val-d'Oise</td><td>93 997</td><td>233 000 EUR</td><td>460 000 EUR</td></tr></tbody>
-          </table>
-        </div>
-      </div>
-    </section>
-
-    <section class="panel">
-      <h2>Conjoncture IDF (vue transaction)</h2>
-      <div class="table-wrap" style="max-height:320px">
-        <table>
-          <thead><tr><th>Annee</th><th>Mutations</th><th>Mediane valeur</th><th>P90 valeur</th></tr></thead>
-          <tbody><tr><td>2020</td><td>119 405</td><td>263 150 EUR</td><td>696 373 EUR</td></tr><tr><td>2021</td><td>238 806</td><td>270 000 EUR</td><td>726 725 EUR</td></tr><tr><td>2022</td><td>235 152</td><td>279 565 EUR</td><td>752 049 EUR</td></tr><tr><td>2023</td><td>181 211</td><td>260 000 EUR</td><td>715 000 EUR</td></tr><tr><td>2024</td><td>160 042</td><td>250 000 EUR</td><td>690 000 EUR</td></tr><tr><td>2025</td><td>67 257</td><td>251 000 EUR</td><td>691 580 EUR</td></tr></tbody>
-        </table>
-      </div>
-    </section>
-
-  </div>
+  <section class="method" id="sources"><div><p class="eyebrow">Provenance et limites</p><h2 class="serif">Du vrai DVF, pas des annonces.</h2></div><div>
+    <a class="source" href="https://www.data.gouv.fr/datasets/statistiques-dvf" target="_blank" rel="noreferrer"><small>01</small><span><b>Statistiques DVF · data.gouv.fr</b><span>Dataset officiel mis à jour le 17 juillet 2026. 20 arrondissements + agrégat Paris téléchargés via l'API tabulaire.</span></span><b>↗</b></a>
+    <a class="source" href="https://www.data.gouv.fr/datasets/demandes-de-valeurs-foncieres" target="_blank" rel="noreferrer"><small>02</small><span><b>Demandes de valeurs foncières · DGFiP</b><span>Source transactionnelle sous-jacente : ventes enregistrées, valeurs foncières et surfaces.</span></span><b>↗</b></a>
+    <a class="source" href="https://github.com/etalab/datagouvfr_data_pipelines/tree/main/data_processing/dvf" target="_blank" rel="noreferrer"><small>03</small><span><b>Pipeline de traitement Etalab</b><span>Code public des filtres : appartements isolés, mutations mono-bien et prix au m² inférieur ou égal à 100 k€.</span></span><b>↗</b></a>
+    <p class="note">Garde-fous : les tableaux, graphiques, classements et tickets utilisent uniquement <code>med_prix_m2_appartement</code> et <code>nb_ventes_appartement</code>. Les colonnes « maison », « appartement + maison », « local commercial » et toutes les moyennes sont exclues des scores. Les locaux sont conservés dans une colonne séparée à titre documentaire. Pour chaque année, les médianes mensuelles d'appartements sont pondérées par le nombre de ventes ; ce proxy facilite la comparaison temporelle mais n'est pas une médiane annuelle recalculée mutation par mutation. Fiabilité : forte si ≥ 1 000 ventes et volatilité ≤ 3 %, moyenne si ≥ 400 ventes et volatilité ≤ 5 %, prudence sinon.</p>
+  </div></section>
+</main>
+<footer><div class="wrap"><span>Atlas DVF Paris · données intégrées au fichier</span><span>Dernière actualisation source : 17 juillet 2026</span></div></footer>
+<script>
+const DVF = {"meta":{"source":"data.gouv.fr / DGFiP — Statistiques DVF","updated":"2026-07-17","period":"2021-01/2025-12","totalResource":"851d342f-9c96-41c1-924a-11a7a7aae8a6","monthlyResource":"03fba98d-885b-43c0-8986-d299cabc29da"},"paris":{"id":0,"med":10238,"avg":10449,"sales":150835,"localMed":8333,"localSales":11592,"annual":[[2021,10800,32114,8304,2346,1],[2022,10685,34798,8838,2557,0.9],[2023,10107,28435,8518,2183,2.3],[2024,9533,25812,8070,2061,1],[2025,9669,29662,7809,2421,1.3]],"monthly":[["2021-01",10897,2158],["2021-02",10800,2152],["2021-03",10667,2679],["2021-04",10716,2461],["2021-05",10745,2547],["2021-06",10840,3324],["2021-07",11024,3698],["2021-08",10869,1685],["2021-09",10892,3406],["2021-10",10724,2892],["2021-11",10655,2254],["2021-12",10678,2858],["2022-01",10706,2527],["2022-02",10729,2462],["2022-03",10667,3048],["2022-04",10641,2695],["2022-05",10714,2998],["2022-06",10690,3596],["2022-07",10782,3822],["2022-08",10667,1819],["2022-09",10800,3832],["2022-10",10752,2766],["2022-11",10463,2430],["2022-12",10500,2803],["2023-01",10512,2384],["2023-02",10227,2300],["2023-03",10283,2771],["2023-04",10167,2264],["2023-05",10164,2324],["2023-06",10161,2979],["2023-07",10211,3001],["2023-08",10000,1290],["2023-09",10004,2853],["2023-10",9958,2307],["2023-11",9693,1801],["2023-12",9667,2161],["2024-01",9755,1875],["2024-02",9500,1923],["2024-03",9429,2115],["2024-04",9412,2282],["2024-05",9557,2122],["2024-06",9520,2515],["2024-07",9583,2874],["2024-08",9540,1080],["2024-09",9641,2692],["2024-10",9500,2235],["2024-11",9375,1682],["2024-12",9545,2417],["2025-01",9493,2168],["2025-02",9531,2026],["2025-03",9660,3712],["2025-04",9391,1722],["2025-05",9585,2065],["2025-06",9688,2827],["2025-07",9808,3497],["2025-08",9834,1307],["2025-09",9792,3189],["2025-10",9740,2671],["2025-11",9640,2009],["2025-12",9700,2469]]},"districts":[{"id":1,"med":12647,"avg":12828,"sales":1525,"localMed":10727,"localSales":302,"annual":[[2021,12993,286,11262,61,5.8],[2022,13027,369,9533,58,5.7],[2023,12624,333,9222,53,6.3],[2024,12289,260,11600,52,6.4],[2025,12131,276,10641,77,6.9]]},{"id":2,"med":11498,"avg":11245,"sales":2174,"localMed":9054,"localSales":448,"annual":[[2021,11843,508,8855,84,3.4],[2022,11911,519,8616,96,3.4],[2023,11374,407,9332,89,4.6],[2024,11111,352,8759,81,6.3],[2025,10906,388,8499,97,4.9]]},{"id":3,"med":12059,"avg":11846,"sales":3392,"localMed":9378,"localSales":522,"annual":[[2021,12399,639,9655,105,3.8],[2022,12363,788,9064,119,2.4],[2023,11984,664,9758,100,3.9],[2024,11449,582,10151,90,2.9],[2025,11845,719,7745,108,2.4]]},{"id":4,"med":12895,"avg":12938,"sales":2623,"localMed":11292,"localSales":300,"annual":[[2021,12965,482,11536,65,3],[2022,13059,579,11609,63,3.5],[2023,13074,514,9390,61,4.5],[2024,12319,481,12926,52,5.5],[2025,12633,567,11896,59,3.2]]},{"id":5,"med":12188,"avg":12061,"sales":4333,"localMed":8750,"localSales":363,"annual":[[2021,12640,848,9336,65,2.2],[2022,12774,959,9718,86,2.5],[2023,12092,817,8530,70,4.2],[2024,11638,811,7997,59,2.2],[2025,11716,898,8678,83,3.7]]},{"id":6,"med":14617,"avg":15053,"sales":3953,"localMed":11414,"localSales":478,"annual":[[2021,14932,771,11951,93,3.5],[2022,14971,917,11621,99,2.6],[2023,14879,741,11270,96,4.5],[2024,14143,763,11039,80,5.2],[2025,14026,761,10449,106,3]]},{"id":7,"med":14312,"avg":14867,"sales":4611,"localMed":10792,"localSales":396,"annual":[[2021,14636,943,10513,82,4.5],[2022,14649,1051,11386,86,3.5],[2023,14422,862,11273,81,5.3],[2024,13674,798,9572,72,4.2],[2025,13981,956,11776,75,4.5]]},{"id":8,"med":12415,"avg":13090,"sales":3259,"localMed":10622,"localSales":872,"annual":[[2021,12697,652,10339,171,2.9],[2022,12812,749,11626,167,1.9],[2023,12608,574,10363,156,4.8],[2024,11929,613,10376,155,5.2],[2025,12043,670,10192,219,2.6]]},{"id":9,"med":11167,"avg":10891,"sales":5881,"localMed":9107,"localSales":711,"annual":[[2021,11587,1292,8751,151,3.5],[2022,11583,1382,9422,130,2],[2023,11130,1069,9094,148,2.5],[2024,10448,994,8159,137,2.5],[2025,10795,1143,9527,145,3.5]]},{"id":10,"med":9917,"avg":9680,"sales":7941,"localMed":7760,"localSales":739,"annual":[[2021,10561,1778,7740,141,2.7],[2022,10404,1854,8532,171,1.8],[2023,9789,1544,7851,144,2],[2024,9131,1298,7084,121,2.4],[2025,9273,1467,7476,162,2.5]]},{"id":11,"med":10393,"avg":10188,"sales":12422,"localMed":7692,"localSales":935,"annual":[[2021,10982,2695,8056,180,1.6],[2022,10821,2813,8694,229,1.9],[2023,10247,2358,7692,183,1.9],[2024,9730,2130,6659,159,1.2],[2025,9910,2426,6794,181,1.7]]},{"id":12,"med":9599,"avg":9489,"sales":8374,"localMed":7500,"localSales":508,"annual":[[2021,10295,1715,6832,106,2],[2022,10075,1943,8433,130,1.3],[2023,9463,1653,7682,84,3.8],[2024,8804,1422,6824,94,2],[2025,9004,1641,6626,94,2.5]]},{"id":13,"med":9135,"avg":9041,"sales":7438,"localMed":6479,"localSales":347,"annual":[[2021,9740,1559,6275,63,2.4],[2022,9700,1657,7715,90,2.5],[2023,9023,1393,5957,64,4],[2024,8581,1332,5490,68,2.6],[2025,8604,1497,5435,62,2.1]]},{"id":14,"med":9957,"avg":9926,"sales":7797,"localMed":8023,"localSales":492,"annual":[[2021,10623,1627,8220,101,1.6],[2022,10399,1732,8684,101,2.3],[2023,9764,1500,8934,102,3],[2024,9198,1381,7553,81,2.4],[2025,9387,1557,6935,105,2.4]]},{"id":15,"med":10033,"avg":10056,"sales":15805,"localMed":7188,"localSales":941,"annual":[[2021,10698,3448,7077,214,1.2],[2022,10511,3589,7618,227,1.1],[2023,9927,2952,7216,172,2.1],[2024,9405,2722,7092,163,1.5],[2025,9476,3093,6450,162,2]]},{"id":16,"med":11259,"avg":11478,"sales":12434,"localMed":9516,"localSales":795,"annual":[[2021,11554,2721,9189,150,1.6],[2022,11634,2902,9953,176,2],[2023,11263,2357,9244,138,1.9],[2024,10682,2008,9293,147,2.2],[2025,10841,2443,9339,182,2.4]]},{"id":17,"med":10686,"avg":10506,"sales":13084,"localMed":9035,"localSales":924,"annual":[[2021,11270,2831,9050,213,1.3],[2022,11205,3044,9683,190,1.9],[2023,10610,2402,9194,178,3.2],[2024,9961,2237,9452,168,1.9],[2025,10009,2568,8071,173,1.8]]},{"id":18,"med":9375,"avg":9405,"sales":15654,"localMed":6727,"localSales":751,"annual":[[2021,10166,3419,6660,142,2.3],[2022,9841,3702,7008,167,2.2],[2023,9210,2934,7267,141,4],[2024,8569,2531,7188,134,2.2],[2025,8825,3065,5853,166,2.4]]},{"id":19,"med":8606,"avg":8529,"sales":8088,"localMed":6182,"localSales":374,"annual":[[2021,9333,1809,6990,90,2.2],[2022,9042,1881,6772,77,2.5],[2023,8590,1505,6066,52,3.5],[2024,7781,1356,5474,72,3.9],[2025,8017,1536,6386,82,2.8]]},{"id":20,"med":8847,"avg":8765,"sales":10047,"localMed":6497,"localSales":394,"annual":[[2021,9554,2091,6953,69,2],[2022,9332,2368,6618,95,1.4],[2023,8752,1856,6661,71,4],[2024,8187,1741,6183,76,2],[2025,8340,1991,5308,83,2.1]]}]};
+const nf=new Intl.NumberFormat('fr-FR'), euro=new Intl.NumberFormat('fr-FR',{style:'currency',currency:'EUR',maximumFractionDigits:0});
+const state={year:2025,surface:50,budget:500000,metric:'price',sort:'price',dir:1};
+const byId=id=>DVF.districts.find(d=>d.id===Number(id));
+const annual=(d,year=state.year)=>d.annual.find(a=>a[0]===Number(year));
+const pct=n=>`${n>0?'+':''}${n.toLocaleString('fr-FR',{maximumFractionDigits:1})} %`;
+const change=(d,year=state.year)=>{const now=annual(d,year),prev=annual(d,year-1);return now&&prev?(now[1]/prev[1]-1)*100:0};
+const since2021=d=>(annual(d,state.year)[1]/annual(d,2021)[1]-1)*100;
+const signalQuality=(sales,volatility)=>sales>=1000&&volatility<=3?{score:3,label:'Forte',className:'high'}:sales>=400&&volatility<=5?{score:2,label:'Moyenne',className:'medium'}:{score:1,label:'Prudence',className:'low'};
+const snapshot=()=>DVF.districts.map(d=>{const a=annual(d);const ticket=a[1]*state.surface;const q=signalQuality(a[2],a[5]);return{id:d.id,price:a[1],sales:a[2],local:a[3],volatility:a[5],quality:q.score,qualityLabel:q.label,qualityClass:q.className,change:change(d),since:since2021(d),ticket,margin:state.budget-ticket}});
+function svg(tag,attrs='',body=''){return`<${tag} ${attrs}>${body}</${tag}>`}
+function renderKpis(){const p=annual(DVF.paris),prev=annual(DVF.paris,state.year-1);const ch=prev?(p[1]/prev[1]-1)*100:0;const affordable=snapshot().filter(d=>d.ticket<=state.budget).length;document.querySelector('#kpiPrice').textContent=`${nf.format(p[1])} €`;document.querySelector('#kpiSales').textContent=nf.format(p[2]);document.querySelector('#kpiChange').innerHTML=`<span class="delta ${ch>=0?'up':'down'}">${pct(ch)}</span>`;document.querySelector('#kpiAffordable').textContent=`${affordable} / 20`;document.querySelector('#kpiPeak').innerHTML=`<span class="delta ${p[1]>=annual(DVF.paris,2021)[1]?'up':'down'}">${pct((p[1]/annual(DVF.paris,2021)[1]-1)*100)}</span>`}
+function renderScatter(){const data=snapshot(),W=760,H=350,pad={l:58,r:28,t:20,b:42};const minX=Math.min(...data.map(d=>d.price))*0.96,maxX=Math.max(...data.map(d=>d.price))*1.04,maxY=Math.max(...data.map(d=>d.sales))*1.1;const x=v=>pad.l+(v-minX)/(maxX-minX)*(W-pad.l-pad.r),y=v=>H-pad.b-v/maxY*(H-pad.t-pad.b);let body='';for(let i=0;i<5;i++){const yy=pad.t+i*(H-pad.t-pad.b)/4;body+=svg('line',`class="grid-line" x1="${pad.l}" x2="${W-pad.r}" y1="${yy}" y2="${yy}"`);body+=svg('text',`class="axis-label" x="5" y="${yy+4}"`,nf.format(Math.round(maxY*(1-i/4))))}data.forEach(d=>{const color=d.margin>=0?'#ee6b3b':'#a7d6c7';body+=svg('circle',`class="dot" data-id="${d.id}" cx="${x(d.price)}" cy="${y(d.sales)}" r="${5+Math.sqrt(d.sales)/8}" fill="${color}" opacity=".82"`);body+=svg('text',`class="dot-label" x="${x(d.price)+8}" y="${y(d.sales)-8}"`,`${d.id}e`)});for(let i=0;i<5;i++){const val=minX+i*(maxX-minX)/4;body+=svg('text',`class="axis-label" text-anchor="middle" x="${x(val)}" y="${H-10}"`,`${Math.round(val/100)/10}k`)}document.querySelector('#scatterChart').innerHTML=svg('svg',`viewBox="0 0 ${W} ${H}" role="img" aria-label="Prix et volumes par arrondissement"`,body)}
+function renderRanks(){const data=snapshot();const cfg={price:{key:'price',label:v=>`${nf.format(v)} €`,asc:true},sales:{key:'sales',label:v=>nf.format(v),asc:false},change:{key:'change',label:v=>pct(v),asc:false}}[state.metric];data.sort((a,b)=>cfg.asc?a[cfg.key]-b[cfg.key]:b[cfg.key]-a[cfg.key]);const max=Math.max(...data.map(d=>Math.abs(d[cfg.key]))),min=Math.min(...data.map(d=>Math.abs(d[cfg.key])));document.querySelector('#rankBars').innerHTML=data.map(d=>`<div class="rank-row"><b>${d.id}e</b><div class="bar"><i style="width:${20+80*(Math.abs(d[cfg.key])-min)/Math.max(1,max-min)}%"></i></div><span>${cfg.label(d[cfg.key])}</span></div>`).join('')}
+function renderCompare(){const a=byId(document.querySelector('#compareA').value),b=byId(document.querySelector('#compareB').value);const card=d=>{const s=snapshot().find(x=>x.id===d.id);return`<article class="compare-card"><div class="compare-name"><strong>${d.id}e</strong><span>${s.margin>=0?'compatible budget':'hors budget'}</span></div><div class="compare-stat"><span>Fiabilité du signal</span><b><span class="quality-pill ${s.qualityClass}">${s.qualityLabel}</span></b></div><div class="compare-stat"><span>Prix appartement / m²</span><b>${nf.format(s.price)} €</b></div><div class="compare-stat"><span>Ventes d'appartements</span><b>${nf.format(s.sales)}</b></div><div class="compare-stat"><span>Évolution annuelle</span><b>${pct(s.change)}</b></div><div class="compare-stat"><span>Volatilité mensuelle</span><b>${s.volatility.toLocaleString('fr-FR')} %</b></div><div class="compare-stat"><span>Ticket ${state.surface} m²</span><b>${euro.format(s.ticket)}</b></div></article>`};document.querySelector('#compareCards').innerHTML=card(a)+card(b);renderTrend(a,b)}
+function renderTrend(a,b){const W=680,H=350,p={l:52,r:24,t:24,b:38};const vals=[...a.annual,...b.annual].map(x=>x[1]),min=Math.min(...vals)*.95,max=Math.max(...vals)*1.04,x=i=>p.l+i*(W-p.l-p.r)/4,y=v=>p.t+(max-v)/(max-min)*(H-p.t-p.b);let body='';for(let i=0;i<5;i++){const yy=p.t+i*(H-p.t-p.b)/4,val=max-i*(max-min)/4;body+=svg('line',`class="grid-line" x1="${p.l}" x2="${W-p.r}" y1="${yy}" y2="${yy}"`)+svg('text',`class="axis-label" x="2" y="${yy+4}"`,`${Math.round(val/100)/10}k`)}[a,b].forEach((d,di)=>{const points=d.annual.map((v,i)=>`${x(i)},${y(v[1])}`).join(' ');body+=svg('polyline',`class="line-${di?'b':'a'}" points="${points}"`);d.annual.forEach((v,i)=>{body+=svg('circle',`class="point-${di?'b':'a'}" cx="${x(i)}" cy="${y(v[1])}" r="5"`);if(di===0)body+=svg('text',`class="axis-label" text-anchor="middle" x="${x(i)}" y="${H-10}"`,v[0])})});document.querySelector('#trendChart').innerHTML=svg('svg',`viewBox="0 0 ${W} ${H}" role="img"`,body);document.querySelector('#trendLegend').innerHTML=`<span><i style="background:#ee6b3b"></i>${a.id}e</span><span><i style="background:#4e9f92"></i>${b.id}e</span>`}
+function renderTable(){const data=snapshot();data.sort((a,b)=>(a[state.sort]-b[state.sort])*state.dir);document.querySelector('#surfaceHeader').textContent=`${state.surface} m²`;document.querySelector('#statsTable tbody').innerHTML=data.map(d=>`<tr data-id="${d.id}"><td><b>Paris ${d.id}e</b></td><td>${nf.format(d.price)} €</td><td>${nf.format(d.sales)}</td><td><span class="quality-pill ${d.qualityClass}">${d.qualityLabel}</span></td><td><span class="pill ${d.change<=0?'good':'bad'}">${pct(d.change)}</span></td><td>${pct(d.since)}</td><td>${d.volatility.toLocaleString('fr-FR')} %</td><td>${nf.format(d.local)} €</td><td>${euro.format(d.ticket)}</td><td class="${d.margin>=0?'delta down':'delta up'}">${d.margin>=0?'+':'−'}${euro.format(Math.abs(d.margin))}</td></tr>`).join('')}
+function renderHeatmap(){const all=DVF.districts.flatMap(d=>d.annual.map(a=>a[1])),min=Math.min(...all),max=Math.max(...all);let html='<div class="heat-cell head">Arr.</div>'+[2021,2022,2023,2024,2025].map(y=>`<div class="heat-cell head">${y}</div>`).join('');DVF.districts.forEach(d=>{html+=`<div class="heat-cell arr">${d.id}e</div>`;d.annual.forEach(a=>{const t=(a[1]-min)/(max-min);html+=`<div class="heat-cell" style="background:hsl(${168-150*t},${40+35*t}%,${91-35*t}%)">${nf.format(a[1])} €</div>`})});document.querySelector('#heatmap').innerHTML=html}
+function renderDashboard(){state.year=Number(document.querySelector('#yearSelect').value);state.surface=Number(document.querySelector('#surface').value);state.budget=Number(document.querySelector('#budget').value);document.querySelector('#surfaceValue').textContent=`${state.surface} m²`;document.querySelector('#budgetValue').textContent=`${nf.format(state.budget/1000)} k€`;renderKpis();renderScatter();renderRanks();renderCompare();renderTable();renderHeatmap()}
+const options=DVF.districts.map(d=>`<option value="${d.id}">Paris ${d.id}e</option>`).join('');document.querySelector('#compareA').innerHTML=options;document.querySelector('#compareB').innerHTML=options;document.querySelector('#compareA').value='11';document.querySelector('#compareB').value='19';
+['yearSelect','surface','budget','compareA','compareB'].forEach(id=>document.querySelector('#'+id).addEventListener('input',renderDashboard));document.querySelector('#metricSwitch').addEventListener('click',e=>{const b=e.target.closest('button[data-metric]');if(!b)return;state.metric=b.dataset.metric;document.querySelectorAll('#metricSwitch button').forEach(x=>x.classList.toggle('active',x===b));renderRanks()});document.querySelector('#statsTable thead').addEventListener('click',e=>{const th=e.target.closest('[data-sort]');if(!th)return;state.dir=state.sort===th.dataset.sort?-state.dir:1;state.sort=th.dataset.sort;renderTable()});document.addEventListener('click',e=>{const item=e.target.closest('[data-id]');if(!item)return;document.querySelector('#compareB').value=item.dataset.id;renderCompare();document.querySelector('.compare-section').scrollIntoView({behavior:'smooth',block:'center'})});renderDashboard();
+</script>
 </body>
 </html>

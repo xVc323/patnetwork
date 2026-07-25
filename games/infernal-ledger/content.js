@@ -124,5 +124,35 @@
     return lines[Math.abs(index) % lines.length];
   }
 
-  return { CARD_ART, CARD_ORDER, ACTOR_CROPS, ACTOR_FACING, RELIC_PRESENTATION, BARKS, lineFor };
+  const ICON_PATHS = {
+    battle: 'm5 4 6 6-2 2-6-6V4h2Zm14 0v2l-6 6-2-2 6-6h2ZM8 13l3 3-4 4H4v-3l4-4Zm8 0 4 4v3h-3l-4-4 3-3Z',
+    elite: 'm12 2 3 4 5 1-2 5 2 5-5 1-3 4-3-4-5-1 2-5-2-5 5-1 3-4Zm-3 8v5h2v-2h2v2h2v-5h-2v1h-2v-1H9Z',
+    event: 'M12 2a8 8 0 0 1 5 14l-3 2H10l-3-2a8 8 0 0 1 5-14Zm0 3c-2 0-4 1-4 3h3c0-1 2-1 2 0 0 2-3 2-3 5h3c0-2 3-2 3-5 0-2-2-3-4-3Zm-2 14h4v3h-4v-3Z',
+    shop: 'M4 3h16l2 5-2 3v10H4V11L2 8l2-5Zm2 9v6h5v-5h5v5h2v-6a4 4 0 0 1-3-1 4 4 0 0 1-6 0 4 4 0 0 1-3 1Z',
+    campfire: 'M13 2c2 4-1 5 1 8 1-2 3-3 3-5 4 5 5 12 0 16H7C1 16 5 9 10 6c0 3 0 4 2 5 2-3-1-5 1-9Zm-1 11c-3 2-3 5 0 6 3-1 3-4 0-6Z',
+    cache: 'M3 7h18v14H3V7Zm2-4h14l2 3H3l2-3Zm5 7v3H7v2h3v3h4v-3h3v-2h-3v-3h-4Z',
+    contract: 'M5 2h11l3 3v17H5V2Zm3 5h8V5h-2V3H8v4Zm0 4h8V9H8v2Zm0 4h5v-2H8v2Zm7 4 5-5 2 2-5 5h-2v-2Z',
+    boss: 'm3 6 5 4 4-7 4 7 5-4-2 13H5L3 6Zm4 11h10l1-6-3 3-3-5-3 5-3-3 1 6Z',
+    strength: 'm5 3 7 7-2 2-7-7V3h2Zm14 0v2l-7 7-2-2 7-7h2ZM8 13l3 3-4 5H3v-4l5-4Zm8 0 5 4v4h-4l-5-5 4-3Z',
+    ritual: 'm12 1 2 7 7-2-5 6 5 6-7-2-2 7-2-7-7 2 5-6-5-6 7 2 2-7Z',
+    filing: 'M3 4h7l2 2h9v15H3V4Zm4 6v2h10v-2H7Zm0 4v2h8v-2H7Z',
+    bribed: 'M4 7h16v12H4V7Zm3 3v6h10v-6H7Zm5-8 5 4H7l5-4Zm0 9a2 2 0 1 1 0 4 2 2 0 0 1 0-4Z',
+    weak: 'M10 3h4v10l4-4 3 3-9 9-9-9 3-3 4 4V3Z',
+    vulnerable: 'm12 2 10 10-10 10L2 12 12 2Zm0 5-5 5 5 5 5-5-5-5Z',
+    bleed: 'M12 2c2 5 7 9 7 14a7 7 0 0 1-14 0c0-5 5-9 7-14Zm-4 14c0 2 2 4 4 4v-3c-1 0-2-1-2-2l-2 1Z',
+    debt: 'M15 4c-1-2-5-2-6 0-2 4 7 3 6 7-1 3-5 3-7 1l-2 2c1 2 3 3 5 3v3h3v-3c3-1 5-3 4-6-1-5-8-4-6-7 1-1 3 0 4 1l2-2-3-2v3Z',
+    'pending-debt': 'M6 2h12v4c0 3-2 5-4 6 2 1 4 3 4 6v4H6v-4c0-3 2-5 4-6-2-1-4-3-4-6V2Zm3 3v1c0 2 1 3 3 4 2-1 3-2 3-4V5H9Zm3 9c-2 1-3 2-3 4v1h6v-1c0-2-1-3-3-4Z',
+    passive: 'M12 2 4 5v6c0 5 3 9 8 11 5-2 8-6 8-11V5l-8-3Zm0 4 4 2v4c0 3-2 5-4 6-2-1-4-3-4-6V8l4-2Z',
+    deck: 'M5 3h13v16H5V3Zm3 3v10h7V6H8ZM2 6h2v15h12v2H2V6Z',
+    draw: 'M3 4h12v16H3V4Zm3 3v10h6V7H6Zm11 1 5 4-5 4v-3h-4v-2h4V8Z',
+    discard: 'M5 4h12v4h-2V6H7v12h8v-2h2v4H5V4Zm9 5 7 3-7 3v-2h-4v-2h4V9Z',
+    exhaust: 'M5 3h14l-1 19H6L5 3Zm3 4 1 11h6l1-11H8Zm3-5h2v5h-2V2Zm-6 2 2-2 3 5-2 1-3-4Zm14 0-3 4-2-1 3-5 2 2Z',
+  };
+  function iconMarkup(id, className = 'infernal-icon') {
+    const path = ICON_PATHS[id] || ICON_PATHS.event;
+    const safeClass = String(className).replace(/[^a-z0-9_-]/gi, '');
+    return `<svg class="${safeClass}" aria-hidden="true" viewBox="0 0 24 24" focusable="false"><path d="${path}"></path></svg>`;
+  }
+
+  return { CARD_ART, CARD_ORDER, ACTOR_CROPS, ACTOR_FACING, RELIC_PRESENTATION, BARKS, lineFor, iconMarkup };
 });

@@ -7,7 +7,7 @@
   <meta name="description" content="An independent archive of useful experiments, prototypes, and small internet artifacts by Pat.">
   <meta name="theme-color" content="#0b0f13">
   <link rel="icon" type="image/svg+xml" href="favicon.svg?v=20260714">
-  <link rel="stylesheet" href="styles.css?v=20260714-progressive-v3">
+  <link rel="stylesheet" href="styles.css?v=20260716-ledger-ui-v3">
 </head>
 <body>
   <a class="skip-link" href="#main">Skip to content</a>
@@ -175,7 +175,12 @@
         <section class="infernal-screen" id="infernal-combat" aria-label="Card battle" hidden>
           <div class="infernal-actor-plate player">
             <div><span>MINOR DEMON</span><strong id="infernal-player-hp-text">40/40</strong></div>
-            <div class="infernal-health" id="infernal-player-hp" role="progressbar" aria-label="Player health" aria-valuemin="0" aria-valuemax="40" aria-valuenow="40"></div>
+            <div class="infernal-vitals-frame">
+              <div class="infernal-health-module">
+                <div class="infernal-health" id="infernal-player-hp" role="progressbar" aria-label="Player health" aria-valuemin="0" aria-valuemax="40" aria-valuenow="40"></div>
+              </div>
+              <div class="infernal-resource-tokens" id="infernal-resource-tokens"></div>
+            </div>
             <span class="infernal-block" id="infernal-player-block" aria-label="Player Block">0</span>
             <div class="infernal-statuses" id="infernal-player-statuses" aria-label="Player statuses"></div>
           </div>
@@ -186,9 +191,10 @@
             <div class="infernal-statuses" id="infernal-enemy-statuses" aria-label="Enemy statuses"></div>
           </div>
           <div class="infernal-intent" id="infernal-intent" role="status" aria-live="polite" aria-atomic="true"></div>
-          <div class="infernal-resource-tokens" id="infernal-resource-tokens"></div>
           <div class="infernal-status-detail" id="infernal-status-detail" role="status" hidden></div>
           <div class="infernal-combat-bark" id="infernal-combat-bark" hidden></div>
+          <div class="infernal-combat-effects" id="infernal-combat-effects" aria-hidden="true"></div>
+          <div class="infernal-combat-piles" id="infernal-combat-piles"></div>
           <div class="infernal-hand" id="infernal-hand"></div>
           <button class="infernal-end-turn" id="infernal-end-turn" type="button">End turn <kbd>E</kbd></button>
         </section>
@@ -218,8 +224,8 @@
 
   <script src="script.js?v=20260713-dungeon"></script>
   <script src="games/infernal-ledger/data.js?v=20260714-progressive-v3"></script>
-  <script src="games/infernal-ledger/core.js?v=20260714-progressive-v3"></script>
-  <script src="games/infernal-ledger/content.js?v=20260714-audit-v2"></script>
-  <script src="games/infernal-ledger/game.js?v=20260714-progressive-v3"></script>
+  <script src="games/infernal-ledger/core.js?v=20260716-ledger-ui-v3"></script>
+  <script src="games/infernal-ledger/content.js?v=20260716-ledger-ui-v3"></script>
+  <script src="games/infernal-ledger/game.js?v=20260716-ledger-ui-v3"></script>
 </body>
 </html>

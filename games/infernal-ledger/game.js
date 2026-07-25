@@ -41,6 +41,8 @@
   const enemyStatuses = document.getElementById('infernal-enemy-statuses');
   const resourceTokens = document.getElementById('infernal-resource-tokens');
   const statusDetail = document.getElementById('infernal-status-detail');
+  const combatEffects = document.getElementById('infernal-combat-effects');
+  const combatPiles = document.getElementById('infernal-combat-piles');
   const deckButton = document.getElementById('infernal-deck-toggle');
   const deckDrawer = document.getElementById('infernal-deck-drawer');
   const deckClose = document.getElementById('infernal-deck-close');
@@ -57,12 +59,12 @@
     || !narrativePortrait || !narrativeRole || !narrativeSpeaker || !narrativeCopy || !narrativeNext
     || !hud || !effectStatus || !cardStatus || !log || !relics || !closeButton || !startButton || !endTurnButton
     || !playerHp || !playerHpText || !playerBlock || !enemyHp || !enemyHpText || !enemyBlock || !enemyName
-    || !playerStatuses || !enemyStatuses || !resourceTokens || !statusDetail
+    || !playerStatuses || !enemyStatuses || !resourceTokens || !statusDetail || !combatEffects || !combatPiles
     || !deckButton || !deckDrawer || !deckClose || !pileTabs || !deckList || !tutorialTitle || !tutorialCopy
     || !tutorialProgress || !tutorialBack || !tutorialSkip || !tutorialNext) return;
 
-  const { CARD_LIBRARY, ENEMIES, resolveCardDefinition, resolveCardPlayability } = window.InfernalCore;
-  const { CARD_ART, ACTOR_CROPS, ACTOR_FACING, RELIC_PRESENTATION, lineFor } = window.InfernalContent;
+  const { CARD_LIBRARY, ENEMIES, RELICS, resolveCardDefinition, resolveCardPlayability } = window.InfernalCore;
+  const { CARD_ART, ACTOR_CROPS, ACTOR_FACING, RELIC_PRESENTATION, lineFor, iconMarkup } = window.InfernalContent;
   const ATLAS = {
     demon: [0, 0], demonAttack: [1, 0], penitent: [2, 0], mouth: [3, 0],
     wretch: [0, 1], chair: [1, 1], intern: [2, 1], hr: [3, 1],
@@ -83,6 +85,7 @@
   const extraAtlas = new Image();
   extraAtlas.src = 'games/infernal-ledger/assets/extra-enemy-atlas.png';
   extraAtlas.addEventListener('load', () => render());
+  deckButton.innerHTML = iconMarkup('deck');
 
   let run = null;
   let previousFocus = null;
@@ -226,15 +229,15 @@
     { title: 'Keyboard, clavier, claws.', copy: 'Click cards once. On touch, tap once to inspect and double-tap the same card to play. Use arrows or A/Q and D to select, Enter/Space to play, E to end turn, F for fullscreen.' },
   ];
   const STATUS_DEFINITIONS = {
-    strength: { icon: '⚔', name: 'Strength', text: 'Adds {amount} damage to every enemy attack.', polarity: 'positive' },
-    ritual: { icon: '✦', name: 'Ritual', text: 'Adds {amount} damage to every card attack this combat.', polarity: 'positive' },
-    filing: { icon: '▤', name: 'Filing', text: 'Stored paperwork consumed by Filing cards.', polarity: 'resource' },
-    bribed: { icon: '₵', name: 'Bribed', text: 'Cancels the next enemy attack damage.', polarity: 'negative' },
-    weak: { icon: '↓', name: 'Weak', text: 'Deals 25% less attack damage.', polarity: 'negative' },
-    vulnerable: { icon: '◇', name: 'Vulnerable', text: 'Takes 50% more attack damage.', polarity: 'negative' },
-    bleed: { icon: '†', name: 'Bleed', text: 'Loses HP at turn end, then decreases by 1.', polarity: 'negative' },
-    debt: { icon: '§', name: 'Soul Debt', text: 'Removes {amount} Hellfire next turn, then clears.', polarity: 'negative' },
-    pendingDebt: { icon: '⌛', name: 'Pending Debt', text: 'Becomes Soul Debt at the next combat.', polarity: 'negative' },
+    strength: { icon: 'strength', name: 'Strength', text: 'Adds {amount} damage to every enemy attack.', polarity: 'positive' },
+    ritual: { icon: 'ritual', name: 'Ritual', text: 'Adds {amount} damage to every card attack this combat.', polarity: 'positive' },
+    filing: { icon: 'filing', name: 'Filing', text: 'Stored paperwork consumed by Filing cards.', polarity: 'resource' },
+    bribed: { icon: 'bribed', name: 'Bribed', text: 'Cancels the next enemy attack damage.', polarity: 'negative' },
+    weak: { icon: 'weak', name: 'Weak', text: 'Deals 25% less attack damage.', polarity: 'negative' },
+    vulnerable: { icon: 'vulnerable', name: 'Vulnerable', text: 'Takes 50% more attack damage.', polarity: 'negative' },
+    bleed: { icon: 'bleed', name: 'Bleed', text: 'Loses HP at turn end, then decreases by 1.', polarity: 'negative' },
+    debt: { icon: 'debt', name: 'Soul Debt', text: 'Removes {amount} Hellfire next turn, then clears.', polarity: 'negative' },
+    pendingDebt: { icon: 'pending-debt', name: 'Pending Debt', text: 'Becomes Soul Debt at the next combat.', polarity: 'negative' },
   };
   const ENEMY_GIMMICK_DEFINITIONS = {
     mirrorBlock: { name: 'Asset Assimilation', text: 'Copies half the Block you gain.', icon: '◈' },
@@ -350,7 +353,7 @@
       const definition = STATUS_DEFINITIONS[id];
       const button = document.createElement('button'); button.type = 'button'; button.className = `infernal-status-chip status-${id}`;
       button.dataset.status = id; button.dataset.polarity = polarity; button.setAttribute('aria-label', `${name}: ${amount}. ${text}`);
-      button.innerHTML = `<span aria-hidden="true">${definition.icon}</span><strong>${amount}</strong>`;
+      button.innerHTML = `<span aria-hidden="true">${iconMarkup(definition.icon)}</span><strong>${amount}</strong>`;
       button.addEventListener('click', () => showStatusDetail(definition.name, amount, text));
       container.appendChild(button);
     });
@@ -363,7 +366,7 @@
     button.dataset.gimmick = enemy.gimmick; button.dataset.polarity = 'negative';
     button.setAttribute('aria-label', `${gimmick.name}. ${gimmick.text}`);
     button.title = gimmick.text;
-    button.innerHTML = `<span aria-hidden="true">${gimmick.icon}</span><strong>PASSIVE</strong>`;
+    button.innerHTML = `<span aria-hidden="true">${iconMarkup('passive')}</span><strong>PASSIVE</strong>`;
     button.addEventListener('click', () => showStatusDetail(gimmick.name, null, gimmick.text));
     container.appendChild(button);
   }
@@ -374,7 +377,7 @@
     const width = Math.max(1, Math.round(rect.width * ratio));
     const height = Math.max(1, Math.round(rect.height * ratio));
     if (canvas.width !== width || canvas.height !== height) {
-      canvas.width = width; canvas.height = height; context.imageSmoothingEnabled = false;
+      canvas.width = width; canvas.height = height; context.imageSmoothingEnabled = true;
     }
     renderCanvas();
   }
@@ -395,13 +398,13 @@
       };
     }
     if (portrait) {
-      const heroSize = Math.min(height * .34, width * .38);
-      const enemySize = Math.min(height * .36, width * .42);
+      const heroSize = Math.min(height * .28, width * .38);
+      const enemySize = Math.min(height * .3, width * .42);
       return {
         mode: 'portrait',
-        hero: { x: width * .04, y: height * .36, size: heroSize },
-        enemy: { x: width * .56, y: height * .34, size: enemySize },
-        enemyHudSafeBottom: height * .31,
+        hero: { x: width * .04, y: height * .48, size: heroSize },
+        enemy: { x: width * .56, y: height * .56, size: enemySize },
+        enemyHudSafeBottom: height * .52,
       };
     }
     const heroSize = Math.min(height * .58, width * .39);
@@ -598,6 +601,17 @@
     });
   }
 
+  function renderCombatEffects() {
+    if (!run || run.state.screen !== 'combat') { combatEffects.innerHTML = ''; return; }
+    const cardName = animation?.cardId ? CARD_LIBRARY[animation.cardId]?.name || 'CARD' : '';
+    const flight = cardName ? `<span class="infernal-card-flight ${animation.type}" data-card-flight="${animation.cardId}">${escapeHtml(cardName)}</span>` : '';
+    const labels = visualEffects.filter((effect) => effect.kind !== 'dialogue').map((effect, index) => {
+      const label = effectLabel(effect);
+      return label ? `<span class="infernal-combat-effect ${effect.kind}" data-visual-effect="${effect.kind}" data-target="${effect.target}" style="--effect-index:${index}">${escapeHtml(label)}</span>` : '';
+    }).join('');
+    combatEffects.innerHTML = `${flight}${labels}`;
+  }
+
   const BARK_PRIORITY = { encounter: 3, phase_two: 5, promotion: 5, defeat: 4, victory: 5, gimmick: 3, low_hp: 4, reward: 1 };
   function showBark(trigger, actor = 'hero', priority = BARK_PRIORITY[trigger] || 2) {
     currentBark = { actor, trigger, priority, text: lineFor(trigger, actor, barkIndex), remaining: 3500 };
@@ -677,8 +691,16 @@
     const combatSummary = `<span>ACT <strong>${run.state.act}/2</strong></span><span>OBOLS <strong>${player.obols}</strong></span><span>DECK <strong>${deck.length}</strong></span><span>FLOOR <strong>${floor}</strong></span>${streak}`;
     const runSummary = `<span>ACT <strong>${run.state.act}/2</strong></span><span>HP <strong>${player.hp}/${player.maxHp}</strong></span><span>OBOLS <strong>${player.obols}</strong></span><span>MANA · HELLFIRE <strong>${player.energy}</strong></span><span class="debt">SOUL DEBT <strong>${player.debt}/${player.debtLimit}</strong></span><span>DECK <strong>${deck.length}</strong></span><span>FLOOR <strong>${floor}</strong></span>`;
     hud.innerHTML = run.state.screen === 'combat' ? combatSummary : runSummary;
-    const companyBenefits = [...run.state.benefits.map((item) => item.name), ...run.state.relics.map((item) => item.name)];
-    relics.textContent = companyBenefits.length ? companyBenefits.join(' · ') : 'NO COMPANY BENEFITS';
+    const benefitLabels = run.state.benefits.map((item) => `<span class="infernal-benefit-chip">${escapeHtml(item.name)}</span>`);
+    const relicLabels = run.state.relics.map((item) => {
+      const definition = RELICS.find((relic) => relic.id === item.id) || item;
+      const presentation = RELIC_PRESENTATION[item.id] || { art: 0 };
+      const x = (presentation.art % 4) / 3 * 100;
+      const y = Math.floor(presentation.art / 4) / 2 * 100;
+      const effect = definition.text || 'Infernal benefit acquired.';
+      return `<button type="button" class="infernal-relic-chip" style="--relic-x:${x}%;--relic-y:${y}%" aria-label="${escapeHtml(`${definition.name}. ${effect}`)}" title="${escapeHtml(effect)}"><span aria-hidden="true"></span><strong>${escapeHtml(definition.name)}</strong></button>`;
+    });
+    relics.innerHTML = benefitLabels.length || relicLabels.length ? [...benefitLabels, ...relicLabels].join('') : '<span>NO COMPANY BENEFITS</span>';
     const outsideCombatBark = currentBark && run.state.screen !== 'combat';
     log.textContent = outsideCombatBark ? currentBark.text : (run.state.log.at(-1) || 'No irregularities reported.');
     log.classList.toggle('bark', Boolean(outsideCombatBark));
@@ -717,7 +739,7 @@
       exhaust: inCombat ? run.state.combat.exhaust : [],
     };
     pileTabs.hidden = !inCombat;
-    pileTabs.innerHTML = inCombat ? Object.entries(piles).map(([id, cards]) => `<button type="button" class="infernal-pile-tab${selectedPile === id ? ' active' : ''}" data-pile="${id}"><span>${id}</span><strong>${cards.length}</strong></button>`).join('') : '';
+    pileTabs.innerHTML = inCombat ? Object.entries(piles).map(([id, cards]) => `<button type="button" class="infernal-pile-tab${selectedPile === id ? ' active' : ''}" data-pile="${id}">${iconMarkup(id)}<span>${id}</span><strong>${cards.length}</strong></button>`).join('') : '';
     pileTabs.querySelectorAll('.infernal-pile-tab').forEach((button) => button.addEventListener('click', () => { selectedPile = button.dataset.pile; renderDeckDrawer(); }));
     const visibleCards = piles[selectedPile] || piles.deck;
     deckDrawer.querySelector('#infernal-deck-title').textContent = inCombat ? `${selectedPile[0].toUpperCase()}${selectedPile.slice(1)} pile` : 'Current deck';
@@ -746,14 +768,14 @@
   }
 
   const NODE_META = {
-    battle: { icon: '×', label: 'Battle', detail: 'Standard risk' },
-    elite: { icon: '♟', label: 'Elite', detail: 'Relic + Obols' },
-    event: { icon: '?', label: 'Event', detail: 'Unknown clause' },
-    shop: { icon: '₵', label: 'Shop', detail: 'Spend Obols' },
-    campfire: { icon: '♨', label: 'Break', detail: 'Rest / upgrade' },
-    cache: { icon: '◆', label: 'Cache', detail: 'Assets inside' },
-    contract: { icon: '✒', label: 'Contract', detail: 'Debt / reward' },
-    boss: { icon: '♛', label: 'Executive', detail: 'Act review' },
+    battle: { icon: 'battle', label: 'Battle', risk: 'Standard fight', reward: 'Card + Obols' },
+    elite: { icon: 'elite', label: 'Elite', risk: 'Deadly fight', reward: 'Relic + Obols' },
+    event: { icon: 'event', label: 'Event', risk: 'Unknown clause', reward: 'Choice' },
+    shop: { icon: 'shop', label: 'Shop', risk: 'Spend Obols', reward: 'Cards + relics' },
+    campfire: { icon: 'campfire', label: 'Break', risk: 'No reward', reward: 'Rest / upgrade' },
+    cache: { icon: 'cache', label: 'Cache', risk: 'Minor hazard', reward: 'Assets' },
+    contract: { icon: 'contract', label: 'Contract', risk: 'Soul Debt', reward: 'High return' },
+    boss: { icon: 'boss', label: 'Executive', risk: 'Act boss', reward: 'Promotion' },
   };
   const FLOOR_LABELS = {
     1: ['INTAKE', 'CLAIMS', 'REVIEW', 'LEGAL', 'BENEFITS', 'COLLECTION', 'COMPLIANCE', 'AUDIT', 'SEVERANCE', 'FINAL NOTICE', 'PROMOTION'],
@@ -846,14 +868,16 @@
       column.appendChild(floorLabel);
       row.forEach((node, nodeIndex) => {
         const meta = NODE_META[node.type] || NODE_META.event;
+        const optionIndex = state.map.available.indexOf(node.id);
+        const detail = `RISK: ${meta.risk} · REWARD: ${meta.reward}`;
         const button = document.createElement('button');
         button.type = 'button'; button.className = `infernal-map-node type-${node.type}`; button.dataset.nodeId = node.id;
         button.dataset.nodeKind = node.type;
         button.dataset.lane = node.lane ?? 'boss';
-        button.style.setProperty('--map-offset', `${(node.offset || 0) * 7}px`);
-        button.style.setProperty('--node-y', `${row.length === 1 ? 52 : 14 + nodeIndex * (72 / Math.max(1, row.length - 1))}%`);
-        button.innerHTML = `<span class="infernal-map-node-icon" aria-hidden="true">${meta.icon}</span><span class="infernal-map-node-copy"><strong>${meta.label}</strong><small>${meta.detail}</small></span>`;
-        button.setAttribute('aria-label', `${meta.label}. ${meta.detail}. Floor ${rowIndex + 1}.`);
+        button.dataset.nodeY = String(node.visualY ?? 52);
+        button.style.setProperty('--node-y', `${node.visualY ?? (row.length === 1 ? 52 : 14 + nodeIndex * (72 / Math.max(1, row.length - 1)))}%`);
+        button.innerHTML = `${optionIndex >= 0 ? `<span class="infernal-map-option-badge">OPTION ${optionIndex + 1}</span>` : ''}<span class="infernal-map-node-icon" aria-hidden="true">${iconMarkup(meta.icon)}</span><span class="infernal-map-node-copy"><strong>${meta.label}</strong><small class="infernal-map-risk-reward">${detail}</small></span>`;
+        button.setAttribute('aria-label', `${optionIndex >= 0 ? `Option ${optionIndex + 1}. ` : ''}${meta.label}. ${detail}. Floor ${rowIndex + 1}.`);
         const available = state.map.available.includes(node.id);
         button.disabled = !available; button.classList.toggle('available', available);
         button.classList.toggle('reachable', state.map.reachable.includes(node.id));
@@ -875,7 +899,7 @@
     const startAffordance = document.createElement('div'); startAffordance.className = 'infernal-map-scroll-affordance start'; startAffordance.setAttribute('aria-hidden', 'true');
     const endAffordance = document.createElement('div'); endAffordance.className = 'infernal-map-scroll-affordance end'; endAffordance.setAttribute('aria-hidden', 'true');
     const legend = document.createElement('div'); legend.className = 'infernal-map-legend';
-    legend.innerHTML = '<span><i class="available"></i>AVAILABLE FILE</span><span><i></i>FUTURE REVIEW</span><span><b>♟</b>ELITE · BONUS RELIC</span><small>Choose one connected file. Transfers between departments are forbidden.</small>';
+    legend.innerHTML = `<span><i class="available"></i>NUMBERED OPTIONS</span><span><i></i>FUTURE REVIEW</span><span>${iconMarkup('elite')}ELITE · BONUS RELIC</span><small>Every lit file states its risk and reward.</small>`;
     mapScreen.append(heading, scroll, startAffordance, endAffordance, legend);
     const pathRect = paths.getBoundingClientRect();
     paths.setAttribute('viewBox', `0 0 ${pathRect.width} ${pathRect.height}`);
@@ -888,13 +912,16 @@
       const start = { x: sourceRect.right - pathRect.left, y: sourceRect.top + sourceRect.height / 2 - pathRect.top };
       const end = { x: targetRect.left - pathRect.left, y: targetRect.top + targetRect.height / 2 - pathRect.top };
       const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-      const middle = (start.x + end.x) / 2;
-      path.setAttribute('d', `M ${start.x} ${start.y} C ${middle} ${start.y}, ${middle} ${end.y}, ${end.x} ${end.y}`);
+      const third = (end.x - start.x) / 3;
+      const bend = Math.max(-12, Math.min(12, (node.offset || 0) * 2.5));
+      path.setAttribute('d', `M ${start.x} ${start.y} C ${start.x + third} ${start.y + bend}, ${end.x - third} ${end.y - bend}, ${end.x} ${end.y}`);
       path.dataset.from = node.id; path.dataset.to = targetId; path.classList.add('infernal-map-path');
       path.dataset.edgeTrimmed = 'true'; path.dataset.sourceX = sourceRect.left + sourceRect.width / 2 - pathRect.left; path.dataset.targetX = targetRect.left + targetRect.width / 2 - pathRect.left;
       path.dataset.renderStartX = start.x; path.dataset.renderEndX = end.x;
       path.classList.toggle('traversed', state.map.visitedEdges.includes(`${node.id}>${targetId}`));
-      path.classList.toggle('available', state.map.available.includes(node.id));
+      const openingRoute = state.map.progress === 0 && state.map.available.includes(node.id);
+      const nextRoute = state.map.available.includes(targetId) && state.map.visited.includes(node.id);
+      path.classList.toggle('available', openingRoute || nextRoute);
       path.classList.toggle('future', state.map.reachable.includes(node.id) && !path.classList.contains('available') && !path.classList.contains('traversed'));
       path.classList.toggle('impossible', state.map.unreachable.includes(node.id) || state.map.unreachable.includes(targetId));
       paths.appendChild(path);
@@ -942,7 +969,7 @@
       event.preventDefault(); scroll.scrollLeft += event.deltaY;
     }, { passive: false });
     grid.querySelectorAll('.infernal-map-node').forEach((node) => {
-      const preview = (active) => paths.querySelectorAll(`[data-from="${node.dataset.nodeId}"]`).forEach((path) => path.classList.toggle('preview', active));
+      const preview = (active) => paths.querySelectorAll(`[data-to="${node.dataset.nodeId}"], [data-from="${node.dataset.nodeId}"]`).forEach((path) => path.classList.toggle('preview', active));
       node.addEventListener('pointerenter', () => preview(true));
       node.addEventListener('pointerleave', () => preview(false));
       node.addEventListener('focus', () => preview(true));
@@ -1028,9 +1055,10 @@
     renderStatuses(playerStatuses, state.player, 'player');
     renderStatuses(enemyStatuses, enemy, 'enemy');
     renderEnemyGimmick(enemyStatuses, enemy);
-    const hpFill = Math.max(0, Math.min(100, state.player.hp / state.player.maxHp * 100));
     const manaFill = Math.max(0, Math.min(100, state.player.energy / 3 * 100));
-    resourceTokens.innerHTML = `<div class="infernal-resource-orb infernal-hp-orb" style="--orb-fill:${hpFill}%" role="group" aria-label="Health: ${state.player.hp} of ${state.player.maxHp}"><span class="infernal-orb-frame" aria-hidden="true"></span><small>HP</small><strong>${state.player.hp}/${state.player.maxHp}</strong></div><div class="infernal-resource-orb infernal-mana-orb${state.player.debt ? ' has-debt' : ''}" style="--orb-fill:${manaFill}%" role="group" aria-label="Hellfire mana: ${state.player.energy}. Soul Debt: ${state.player.debt} of ${state.player.debtLimit}" title="Each Soul Debt removes 1 Hellfire next turn, then clears."><span class="infernal-orb-frame" aria-hidden="true"></span><i aria-hidden="true"></i><small>HELLFIRE<em>MANA</em></small><strong>${state.player.energy}/3</strong><span class="infernal-orb-debt">DEBT ${state.player.debt}/${state.player.debtLimit}</span></div>`;
+    resourceTokens.setAttribute('role', 'group');
+    resourceTokens.setAttribute('aria-label', `Hellfire mana: ${state.player.energy} of 3. Soul Debt: ${state.player.debt} of ${state.player.debtLimit}.`);
+    resourceTokens.innerHTML = `<div class="infernal-resource-orb infernal-mana-orb${state.player.debt ? ' has-debt' : ''}" style="--orb-fill:${manaFill}%" title="Each Soul Debt removes 1 Hellfire next turn, then clears."><span class="infernal-orb-frame" aria-hidden="true"></span><i aria-hidden="true"></i><strong>${state.player.energy}</strong></div><div class="infernal-resource-copy"><span><small class="infernal-resource-label">HELLFIRE MANA</small><strong>${state.player.energy} / 3</strong></span><span class="infernal-resource-debt"><small class="infernal-resource-label">SOUL DEBT</small><strong>${state.player.debt} / ${state.player.debtLimit}</strong></span></div>`;
     let damage = enemyIntent.damage ? enemyIntent.damage * (enemyIntent.hits || 1) + (enemyIntent.debtScale || 0) * state.player.debt + enemy.strength : 0;
     if (enemy.enemyId === 'chair') damage += Math.max(0, state.combat.turn - 1) * 2;
     if (enemy.weak) damage = Math.floor(damage * .75);
@@ -1049,6 +1077,11 @@
     state.combat.hand.forEach((card, index) => hand.appendChild(cardElement(card, index)));
     const active = state.combat.hand[selectedCard];
     cardStatus.textContent = active ? `Selected card ${selectedCard + 1} of ${state.combat.hand.length}: ${CARD_LIBRARY[active.cardId].name}. ${cardTerms(active, resolveCardPlayability(run.state, active))}` : 'No cards in hand.';
+    combatPiles.innerHTML = `<button type="button" class="infernal-combat-pile draw" data-pile="draw" aria-label="Inspect draw pile: ${state.combat.draw.length} cards">${iconMarkup('draw')}<span>DRAW</span><strong>${state.combat.draw.length}</strong></button><button type="button" class="infernal-combat-pile exhaust" data-pile="exhaust" aria-label="Inspect exhaust pile: ${state.combat.exhaust.length} cards">${iconMarkup('exhaust')}<span>EXHAUST</span><strong>${state.combat.exhaust.length}</strong></button>`;
+    combatPiles.querySelectorAll('.infernal-combat-pile').forEach((button) => button.addEventListener('click', () => {
+      selectedPile = button.dataset.pile; openDeck();
+    }));
+    renderCombatEffects();
   }
 
   function choiceButton(label, detail, callback, disabled = false) {
@@ -1409,6 +1442,8 @@
 
   function settleAnimation(milliseconds) {
     dialogueClock += milliseconds;
+    const effectCount = visualEffects.length;
+    const wasAnimating = Boolean(animation);
     if (animation) {
       animation.remaining = Math.max(0, animation.remaining - milliseconds);
       if (!animation.remaining) animation = null;
@@ -1424,6 +1459,7 @@
       }
     }
     updateBarkPresentation();
+    if (run?.state.screen === 'combat' && (effectCount !== visualEffects.length || wasAnimating !== Boolean(animation))) renderCombatEffects();
     renderCanvas();
   }
 
@@ -1453,6 +1489,7 @@
   function settlePendingFeedback() {
     if (!animation && (visualEffects.length || currentBark || queuedBarks.length)) {
       visualEffects = []; currentBark = null; queuedBarks = []; updateBarkPresentation();
+      renderCombatEffects();
     }
   }
 
@@ -1567,7 +1604,9 @@
   choiceScreen.addEventListener('scroll', clearArmedTouchCard, { passive: true });
   window.addEventListener('blur', clearArmedTouchCard);
   document.addEventListener('visibilitychange', () => { if (document.hidden) clearArmedTouchCard(); });
-  modal.addEventListener('focusout', (event) => { if (!modal.contains(event.relatedTarget)) clearArmedTouchCard(); });
+  modal.addEventListener('focusout', (event) => {
+    if (event.relatedTarget && !modal.contains(event.relatedTarget)) clearArmedTouchCard();
+  });
   document.addEventListener('fullscreenchange', syncFullscreenState); syncFullscreenState();
   new ResizeObserver(resizeCanvas).observe(canvas);
 
