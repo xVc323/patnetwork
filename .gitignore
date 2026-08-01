@@ -2,6 +2,7 @@
 .superpowers/
 .omx/
 .worktrees/
+docs/
 
 # OS/editor noise
 .DS_Store
