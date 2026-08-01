@@ -77,14 +77,20 @@
   };
   const EXTRA_ATLAS = { late_fee_ghoul: [0, 0], redundancy_clone: [1, 0] };
   const atlas = new Image();
-  atlas.src = 'games/infernal-ledger/assets/sprite-atlas.png';
-  atlas.addEventListener('load', () => render());
   const act2Atlas = new Image();
-  act2Atlas.src = 'games/infernal-ledger/assets/act2-sprite-atlas.png';
-  act2Atlas.addEventListener('load', () => render());
   const extraAtlas = new Image();
-  extraAtlas.src = 'games/infernal-ledger/assets/extra-enemy-atlas.png';
-  extraAtlas.addEventListener('load', () => render());
+  const ATLAS_PATHS = {
+    base: 'games/infernal-ledger/assets/sprite-atlas.png',
+    act2: 'games/infernal-ledger/assets/act2-sprite-atlas.png',
+    extra: 'games/infernal-ledger/assets/extra-enemy-atlas.png',
+  };
+  function ensureAtlas(image, path) {
+    if (!image.src) {
+      image.addEventListener('load', render);
+      image.src = path;
+    }
+    return image;
+  }
   deckButton.innerHTML = iconMarkup('deck');
 
   let run = null;
@@ -398,13 +404,13 @@
       };
     }
     if (portrait) {
-      const heroSize = Math.min(height * .28, width * .38);
-      const enemySize = Math.min(height * .3, width * .42);
+      const heroSize = Math.min(height * .23, width * .34);
+      const enemySize = Math.min(height * .2, width * .36);
       return {
         mode: 'portrait',
-        hero: { x: width * .04, y: height * .48, size: heroSize },
-        enemy: { x: width * .56, y: height * .56, size: enemySize },
-        enemyHudSafeBottom: height * .52,
+        hero: { x: width * .04, y: height * .31, size: heroSize },
+        enemy: { x: width * .56, y: height * .43, size: enemySize },
+        enemyHudSafeBottom: height * .33,
       };
     }
     const heroSize = Math.min(height * .58, width * .39);
@@ -427,7 +433,9 @@
   function sprite(key, x, y, width, height, flip = false) {
     const alternate = Boolean(ACT2_ATLAS[key]);
     const extra = Boolean(EXTRA_ATLAS[key]);
-    const source = extra ? extraAtlas : alternate ? act2Atlas : atlas;
+    const source = extra ? ensureAtlas(extraAtlas, ATLAS_PATHS.extra)
+      : alternate ? ensureAtlas(act2Atlas, ATLAS_PATHS.act2)
+        : ensureAtlas(atlas, ATLAS_PATHS.base);
     if (!source.complete || !source.naturalWidth) return;
     const [column, row] = (extra ? EXTRA_ATLAS[key] : alternate ? ACT2_ATLAS[key] : ATLAS[key]) || ATLAS.demon;
     const cellWidth = source.naturalWidth / (extra ? 2 : 4);
@@ -479,6 +487,7 @@
   }
 
   function renderCanvas() {
+    if (modal.hidden) { context.clearRect(0, 0, canvas.width, canvas.height); return; }
     drawBackdrop();
     if (!run) {
       const size = Math.min(canvas.height * .66, canvas.width * .48);
@@ -682,6 +691,22 @@
     outcomeScreen.hidden = screen !== 'outcome';
   }
 
+  function storySnapshot() {
+    const story = run?.state.story || {};
+    return {
+      union: story.union || 0,
+      board: story.board || 0,
+      decisions: story.decisions || 0,
+      route: [...(story.route || [])],
+      flags: [...(story.flags || [])],
+    };
+  }
+
+  function storyPressureLabel(story = storySnapshot()) {
+    if (story.union === story.board) return 'BALANCED PRESSURE';
+    return story.union > story.board ? 'UNION LEVERAGE' : 'BOARD LEVERAGE';
+  }
+
   function renderHud() {
     if (!run) { hud.innerHTML = '<span>Awaiting employee number…</span>'; return; }
     const { player, deck, map } = run.state;
@@ -848,12 +873,14 @@
 
   function renderMap() {
     mapScreen.innerHTML = '';
-    const heading = document.createElement('header'); heading.className = 'infernal-map-heading';
-    const floorCount = run.state.map.rows.length + 1;
-    const mapProgress = Math.min(100, (run.state.map.progress / run.state.map.rows.length) * 100);
-    heading.innerHTML = `<div><p>ACT ${run.state.act} · CORPORATE LADDER</p><h3 id="infernal-map-title">${window.InfernalCore.ACTS[run.state.act - 1]?.name || 'Infernal Administration'}</h3></div><div class="infernal-map-progress"><span>FILE ${String(run.state.map.progress + 1).padStart(2, '0')} / ${floorCount}</span><i style="--map-progress:${mapProgress}%"></i><small>DRAG · SWIPE · FOLLOW THE LIT ROUTES</small></div>`;
-    mapScreen.setAttribute('aria-labelledby', 'infernal-map-title');
     const state = run.state;
+    const story = storySnapshot();
+    const heading = document.createElement('header'); heading.className = 'infernal-map-heading';
+    const floorCount = state.map.rows.length + 1;
+    const mapProgress = Math.min(100, (state.map.progress / state.map.rows.length) * 100);
+    const storyLine = `${storyPressureLabel(story)} · UNION ${story.union} · BOARD ${story.board} · ${story.decisions} DECISIONS`;
+    heading.innerHTML = `<div><p>ACT ${state.act} · CORPORATE LADDER</p><h3 id="infernal-map-title">${window.InfernalCore.ACTS[state.act - 1]?.name || 'Infernal Administration'}</h3><small class="infernal-map-story">${storyLine}</small></div><div class="infernal-map-progress"><span>FILE ${String(state.map.progress + 1).padStart(2, '0')} / ${floorCount}</span><i style="--map-progress:${mapProgress}%"></i><small>DRAG · SWIPE · FOLLOW THE LIT ROUTES</small></div>`;
+    mapScreen.setAttribute('aria-labelledby', 'infernal-map-title');
     const allRows = [...state.map.rows, [state.map.boss]];
     const railWidth = allRows.length * 176;
     let mapGestureMoved = false;
@@ -1385,7 +1412,7 @@
     const outcome = outcomeSummary();
     const dossierRows = [
       ['Cause', outcome.cause], ['Last enemy', outcome.lastEnemy], ['Act / floor', outcome.actFloor], ['Seed', outcome.seed], ['Duration', outcome.duration],
-      ['Deck', outcome.deck], ['Benefits', outcome.benefits], ['Relics', outcome.relics], ['Build recap', outcome.build],
+      ['Deck', outcome.deck], ['Benefits', outcome.benefits], ['Relics', outcome.relics], ['Faction pressure', outcome.pressure], ['Route', outcome.route], ['Build recap', outcome.build],
     ];
     outcomeScreen.setAttribute('aria-labelledby', 'infernal-outcome-title');
     outcomeScreen.innerHTML = `<div class="infernal-audit-head"><div><p class="eyebrow">${victory ? 'ANNUAL REVIEW COMPLETE' : 'EMPLOYMENT STATUS UPDATED'}</p><h3 id="infernal-outcome-title" tabindex="-1">${victory ? 'Management liquidated.' : 'Probation eternal.'}</h3></div><div class="infernal-audit-grade" aria-label="Audit grade ${grade}"><small>AUDIT GRADE</small><strong>${grade}</strong><span>${victory ? 'PROMOTABLE THREAT' : 'REHIRE AS FURNITURE'}</span></div></div><p class="infernal-audit-summary">${joke}</p><div class="infernal-audit-rule"><span>DEPARTMENT OF ETERNAL ACCOUNTS</span><b>${victory ? 'ASSETS SEIZED' : 'SOUL SEIZED'}</b></div><div class="infernal-run-stats" id="infernal-run-stats">${audit.map(([label, value], index) => `<div class="infernal-stat" data-rank="${index + 1}"><small>${label}</small><strong>${value}</strong></div>`).join('')}</div><section class="infernal-outcome-dossier" aria-label="Run dossier"><h4>BUILD RECAP · FORM 66-B</h4>${dossierRows.map(([label, value]) => `<div><small>${label}</small><p>${escapeHtml(value)}</p></div>`).join('')}</section><div class="infernal-audit-verdict"><span class="infernal-audit-seal" aria-hidden="true">${victory ? '✓' : '×'}</span><div><small>FINAL VERDICT · FORM 66-D</small><strong>${victory ? 'Promotion approved under extreme duress.' : 'Termination denied. Employment continues post-mortem.'}</strong><p>Filed, witnessed, and legally regrettable.</p></div></div><div class="infernal-outcome-actions"><button type="button" id="infernal-restart">Begin another audit<small>New file · new liabilities</small></button><button type="button" id="infernal-return">Return to website<small>Clock out before it notices</small></button></div>`;
@@ -1400,6 +1427,8 @@
     const benefits = run.state.benefits.map((item) => item.name).join(' · ') || 'None signed';
     const ownedRelics = run.state.relics.map((item) => item.name).join(' · ') || 'None acquired';
     const upgraded = run.state.deck.filter((card) => card.upgraded).length;
+    const story = storySnapshot();
+    const route = story.route.length ? story.route.map((node) => node.toUpperCase()).join(' → ') : 'No route recorded';
     return {
       cause: run.state.outcomeCause || (run.state.result === 'victory' ? 'The Board liquidated' : 'Unspecified workplace incident'),
       lastEnemy: run.state.lastEnemy || run.state.combat?.enemy?.name || 'No enemy recorded',
@@ -1407,6 +1436,8 @@
       seed: String(run.state.seed),
       duration: `${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, '0')}`,
       deck, benefits, relics: ownedRelics,
+      pressure: `${storyPressureLabel(story)} · Union ${story.union} / Board ${story.board}`,
+      route,
       build: `${run.state.deck.length} cards · ${upgraded} promoted · ${run.state.benefits.length} benefits · ${run.state.relics.length} relics`,
     };
   }
@@ -1626,6 +1657,7 @@
       act: run.state.act,
       actTheme: window.InfernalCore.ACTS[run.state.act - 1]?.palette || 'collections',
       benefits: run.state.benefits,
+      story: storySnapshot(),
       mapProgress: run.state.map?.progress || 0,
         availableNodes: run.state.screen === 'map' ? [...run.state.map.rows.flat(), run.state.map.boss].filter((node) => run.state.map.available.includes(node.id)).map(({ id, type }) => ({ id, type })) : [],
       player: run.state.player, deckSize: run.state.deck.length, relics: run.state.relics,

@@ -132,24 +132,39 @@
     }
 
     function buildMap(act = 1) {
-      const variant = Math.floor(random() * 4);
-      const patterns = [
-        ['battle', 'event', 'cache'],
-        ['event', 'battle'],
-        ['battle', 'cache', 'battle'],
-        ['contract', 'battle'],
-        ['shop', 'battle', 'cache'],
-        ['battle', 'event'],
-        ['elite', 'battle', 'contract'],
-        ['cache', 'battle'],
-        ['battle', 'battle', 'event'],
-        ['campfire', 'campfire'],
+      const variant = Math.floor(random() * 8);
+      const patternSets = [
+        [
+          ['battle', 'event', 'cache'], ['event', 'battle'], ['battle', 'cache', 'battle'], ['contract', 'battle'],
+          ['shop', 'battle', 'cache'], ['battle', 'event'], ['elite', 'battle', 'contract'], ['cache', 'battle'],
+          ['battle', 'battle', 'event'], ['campfire', 'campfire'],
+        ],
+        [
+          ['battle', 'cache', 'event'], ['battle', 'contract'], ['event', 'battle', 'cache'], ['battle', 'campfire'],
+          ['elite', 'battle'], ['event', 'battle', 'cache'], ['battle', 'contract'], ['shop', 'battle'],
+          ['battle', 'campfire', 'battle'], ['battle', 'battle'],
+        ],
+        [
+          ['cache', 'battle'], ['event', 'battle', 'cache'], ['battle', 'contract'], ['campfire', 'battle', 'event'],
+          ['battle', 'shop'], ['elite', 'battle', 'cache'], ['battle', 'battle'], ['contract', 'event'],
+          ['battle', 'campfire', 'cache'], ['battle', 'campfire'],
+        ],
+        [
+          ['event', 'battle', 'cache'], ['battle', 'campfire'], ['battle', 'event', 'contract'], ['cache', 'battle'],
+          ['shop', 'battle', 'event'], ['elite', 'battle'], ['battle', 'contract'], ['battle', 'cache'],
+          ['battle', 'campfire', 'cache'], ['battle', 'battle'],
+        ],
       ];
+      const patterns = patternSets[Math.floor(variant / 2)];
       const laneTemplates = [
         [[0, 2, 4], [1, 3], [0, 2, 4], [0, 3], [1, 2, 4], [1, 4], [0, 2, 3], [0, 3], [1, 2, 4], [1, 3]],
         [[0, 1, 4], [1, 3], [0, 2, 4], [1, 4], [0, 2, 3], [0, 3], [1, 2, 4], [1, 4], [0, 2, 3], [1, 3]],
         [[0, 2, 3], [1, 4], [0, 2, 4], [0, 3], [1, 2, 4], [1, 3], [0, 2, 3], [0, 4], [1, 2, 4], [1, 3]],
         [[1, 2, 4], [0, 3], [0, 2, 4], [1, 4], [0, 2, 3], [0, 3], [1, 2, 4], [0, 3], [0, 2, 4], [1, 3]],
+        [[0, 1, 3], [1, 4], [0, 2, 4], [0, 3], [1, 2], [0, 2, 4], [1, 3], [0, 4], [0, 2, 3], [1, 4]],
+        [[1, 3, 4], [0, 2], [0, 2, 4], [1, 3], [0, 2], [0, 3, 4], [1, 2], [0, 4], [0, 2, 3], [1, 3]],
+        [[0, 2, 4], [0, 3], [1, 2, 4], [0, 2], [1, 3], [0, 2, 4], [0, 3], [1, 2], [0, 2, 4], [1, 3]],
+        [[1, 2, 4], [0, 2], [0, 3, 4], [1, 3], [0, 2, 4], [0, 4], [1, 2], [0, 3], [0, 2, 4], [1, 3]],
       ];
       const rows = patterns.map((types, row) => {
         const lanes = laneTemplates[variant][row];
@@ -187,6 +202,58 @@
     }
 
     const state = {};
+    const STORY_CHOICE_EFFECTS = {
+      bloodMoney: { board: 1, flag: 'blood_contract' },
+      debtHeal: { union: 1, flag: 'union_refusal' },
+      cardForBlood: { board: 1, flag: 'paid_in_blood' },
+      smallMoney: { board: 1, flag: 'cash_first' },
+      bigHeal: { union: 1, flag: 'wellness_claim' },
+      mediumMoney: { board: 1, flag: 'cash_first' },
+      absolveDebt: { union: 1, flag: 'debt_absolved' },
+      upgradeRandom: { union: 1, flag: 'paperwork_upgraded' },
+      filingMoney: { union: 1, flag: 'union_filing' },
+      mediumHeal: { union: 1, flag: 'wellness_claim' },
+      relicForBlood: { board: 1, flag: 'blood_contract' },
+      safeMoney: { board: 1, flag: 'cash_first' },
+      maxHpDebt: { board: 1, flag: 'executive_signature' },
+      executiveHeal: { board: 1, flag: 'executive_signature' },
+      buyRare: { board: 1, flag: 'executive_signature' },
+      reportGhost: { union: 1, flag: 'union_refusal' },
+      removeStarter: { union: 1, flag: 'paperwork_cleared' },
+      curseForObols: { board: 1, flag: 'blood_contract' },
+      transformStarter: { union: 1, flag: 'paperwork_upgraded' },
+      rareForMaxHp: { union: 1, flag: 'paperwork_upgraded' },
+      auditLottery: { board: 1, flag: 'executive_signature' },
+      maxHpForCurse: { board: 1, flag: 'executive_signature' },
+      upgradeStarter: { union: 1, flag: 'paperwork_upgraded' },
+      ambush: { board: 1, flag: 'executive_signature' },
+      forcedFine: { board: 1, flag: 'cash_first' },
+      healForObols: { union: 1, flag: 'wellness_claim' },
+      moneyDebt: { board: 1, flag: 'blood_contract' },
+      purgeCurse: { union: 1, flag: 'paperwork_cleared' },
+      relicForDebt: { board: 1, flag: 'executive_signature' },
+      maxHpForMoney: { board: 1, flag: 'executive_signature' },
+      debtForUpgrades: { board: 1, flag: 'executive_signature' },
+      parachuteGamble: { board: 1, flag: 'executive_signature' },
+      fullHealForCurses: { union: 1, flag: 'wellness_claim' },
+      bloodRemove: { union: 1, flag: 'paperwork_cleared' },
+    };
+
+    function applyStoryChoice(choice) {
+      const consequence = STORY_CHOICE_EFFECTS[choice.effect];
+      if (!consequence) return;
+      state.story.union += consequence.union || 0;
+      state.story.board += consequence.board || 0;
+      state.story.decisions += 1;
+      if (consequence.flag && !state.story.flags.includes(consequence.flag)) state.story.flags.push(consequence.flag);
+    }
+
+    function recordStoryNode(node) {
+      state.story.route.push(node.type);
+      if (state.story.route.length > 12) state.story.route.shift();
+      if (node.type === 'contract') state.story.board += 1;
+      if (node.type === 'campfire') state.story.union += 1;
+    }
 
     function startingDeck() {
       return [
@@ -200,6 +267,7 @@
       Object.assign(state, {
         seed, screen: 'benefit', act: 1, floor: 0, map: null, currentNode: null,
         benefitChoice: [], benefits: [],
+        story: { union: 0, board: 0, decisions: 0, route: [], flags: [] },
         player: { hp: 40, maxHp: 40, block: 0, energy: 3, debt: 0, debtLimit: 2, pendingDebt: 0, obols: 30, weak: 0, vulnerable: 0, bleed: 0, filing: 0, ritual: 0 },
         deck: startingDeck(), relics: [], combat: null, reward: null, shop: null,
         event: null, result: null, outcomeCause: null, lastEnemy: null, log: ['Probation begins.'],
@@ -347,6 +415,8 @@
       if (state.benefits.some((benefit) => benefit.effect === 'filing')) state.player.filing += 2;
       if (state.relics.some((relic) => relic.id === 'filing_cabinet')) state.player.filing += 2;
       if (state.relics.some((relic) => relic.id === 'union_pin')) state.player.block += 4;
+      if (state.story.union >= 2) { state.player.block += 2; state.player.filing += 1; }
+      if (state.story.board >= 2) state.combat.lootMultiplier = 1.15;
       if (state.relics.some((relic) => relic.id === 'interest_waiver')) { state.player.energy = 4; state.player.debt = Math.min(state.player.debtLimit, state.player.debt + 1); }
       state.combat.enemy.intent = intentFor(state.combat.enemy);
       state.lastEnemy = definition.name;
@@ -716,6 +786,7 @@
       state.currentNode = node; state.floor = node.row + 1; state.map.progress = node.row + 1; state.map.available = [...node.connections];
       state.map.visited.push(node.id);
       if (previous) state.map.visitedEdges.push(`${previous}>${node.id}`);
+      recordStoryNode(node);
       refreshMapReachability(state.map);
       if (['battle', 'elite', 'boss'].includes(node.type)) return startCombat(node.type);
       if (node.type === 'shop') { state.shop = createShop(); state.screen = 'shop'; return { kind: 'shop' }; }
@@ -746,6 +817,8 @@
       }
       if (choice.effect === 'healForObols' && state.player.obols < 25) return { kind: 'unaffordable', reason: 'Requires 25 Obols.' };
       if (choice.effect === 'purgeCurse' && !state.deck.some((card) => card.cardId === 'form_66b')) return { kind: 'unaffordable', reason: 'No Form 66-B to sell.' };
+      if (choice.effect === 'buyRare' && state.player.obols < 20) return { kind: 'unaffordable', reason: 'Requires 20 Obols.' };
+      applyStoryChoice(choice);
       delete state.event.error;
       if (choice.effect === 'bloodMoney') { losePlayerHp(5, 'event'); state.player.obols += 45; }
       else if (choice.effect === 'debtHeal') { healPlayer(6, 'event'); state.player.pendingDebt = 1; }
@@ -769,7 +842,6 @@
       else if (choice.effect === 'maxHpDebt') { state.player.maxHp += 4; state.player.hp += 4; state.player.pendingDebt = Math.min(state.player.debtLimit, state.player.pendingDebt + 1); }
       else if (choice.effect === 'executiveHeal') healPlayer(10, 'event');
       else if (choice.effect === 'buyRare') {
-        if (state.player.obols < 20) return { kind: 'unaffordable' };
         state.player.obols -= 20; const cardId = weightedCards(1, { rarity: 'rare' })[0]; if (cardId) state.deck.push(makeCard(cardId));
       }
       else if (choice.effect === 'reportGhost') state.player.obols += 30;
