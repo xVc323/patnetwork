@@ -167,7 +167,8 @@
         [[1, 2, 4], [0, 2], [0, 3, 4], [1, 3], [0, 2, 4], [0, 4], [1, 2], [0, 3], [0, 2, 4], [1, 3]],
       ];
       const rows = patterns.map((types, row) => {
-        const lanes = laneTemplates[variant][row];
+        const laneTemplate = laneTemplates[variant]?.[row] || [];
+        const lanes = laneTemplate.length === types.length ? laneTemplate : (types.length === 3 ? [0, 2, 4] : [1, 3]);
         const rotated = row === 0 ? types : types.map((_, index) => types[(index + variant + row) % types.length]);
         return rotated.map((type, column) => {
           const lane = lanes[column];
